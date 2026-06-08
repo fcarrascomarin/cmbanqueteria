@@ -1,0 +1,295 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CM Banquetería & Restaurant</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">
+        <span class="brand-mark">CM</span>
+        <span>CM Banquetería<br><small>& Restaurant</small></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#colaciones">Colaciones</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#banqueteria">Banquetería</a>
+        <a href="#eventos">Eventos</a>
+        <a href="/seguimiento.html">Sigue tu pedido</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/panel.html">Panel</a>
+        <a class="btn btn-primary" href="#delivery">Pedir ahora</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+        <div>
+          <div class="kicker">Restaurant familiar en Laja</div>
+          <h1>Lo casero de siempre, con un toque gourmet.</h1>
+          <p class="lead">
+            Colaciones, restaurant, delivery y banquetería para quienes buscan comida cercana,
+            rica y bien presentada. Una experiencia familiar para cada etapa de tu vida.
+          </p>
+          <div class="hero-buttons">
+            <a class="btn btn-gold" href="#delivery">Pedir colación</a>
+            <a class="btn btn-ghost" href="#cotiza">Cotizar evento</a>
+          </div>
+          <div class="pill-row">
+            <span class="pill">Delivery 12:00 a 16:00</span>
+            <span class="pill">Costanera Norte 1012</span>
+            <span class="pill">Eventos con reserva previa</span>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <h3>Comida de casa, servicio cuidado</h3>
+          <p>
+            CM Banquetería & Restaurant une recetas familiares, preparaciones abundantes
+            y detalles de presentación pensados para transformar una colación diaria
+            o un evento especial en una experiencia más cálida y memorable.
+          </p>
+          <div class="notice">
+            Desde esta web podrás pedir, pagar por Webpay, recibir un enlace único y seguir
+            el avance de tu pedido con tu teléfono y número de pedido.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="colaciones">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Casero + gourmet</div>
+            <h2>Colaciones con sabor familiar y presentación cuidada.</h2>
+          </div>
+          <p>
+            No se trata solo de almorzar rápido. La propuesta de CM es mantener el sabor de la
+            cocina casera, pero con una experiencia más ordenada, confiable y atractiva:
+            buenos ingredientes, preparación diaria, porciones claras y un servicio pensado para
+            el cliente que trabaja, estudia o quiere resolver su almuerzo sin complicaciones.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h3>Restaurant</h3>
+            <p>Atención en local para quienes prefieren almorzar en un espacio cercano y familiar.</p>
+          </article>
+          <article class="card">
+            <h3>Delivery propio</h3>
+            <p>Pedidos desde la web, pago en línea y seguimiento del avance hasta la entrega.</p>
+          </article>
+          <article class="card">
+            <h3>Banquetería</h3>
+            <p>Servicios para celebraciones, empresas, actividades familiares y eventos especiales.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="delivery">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Pide desde la web</div>
+            <h2>Reparto a domicilio</h2>
+          </div>
+          <p>
+            Elige el menú disponible, agrega productos al carrito, indica si deseas retiro o delivery,
+            paga por Webpay y sigue el pedido mediante enlace único o ingresando tu teléfono y número de pedido.
+          </p>
+        </div>
+
+        <div class="delivery-box">
+          <div>
+            <div id="menuList" class="grid-3"></div>
+          </div>
+
+          <aside class="card cart">
+            <h3>Tu pedido</h3>
+            <div id="cartItems"></div>
+            <div class="total">
+              <span>Total</span>
+              <span id="cartTotal">$0</span>
+            </div>
+            <p class="form-note">El costo de reparto demo se agrega al seleccionar delivery.</p>
+            <button class="btn btn-primary" id="openCheckout">Finalizar pedido</button>
+            <a class="btn btn-secondary" href="/seguimiento.html" style="margin-top:10px;width:100%;">Sigue tu pedido</a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="banqueteria">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Momentos importantes</div>
+            <h2>Banquetería con sello familiar.</h2>
+          </div>
+          <p>
+            Servicios de alimentación para celebraciones familiares, encuentros institucionales,
+            reuniones empresariales, cócteles, coffee break, almuerzos, cenas y actividades privadas.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card card-soft">
+            <h3>Coffee break</h3>
+            <p>Formatos simples y cuidados para reuniones, jornadas y actividades institucionales.</p>
+          </article>
+          <article class="card card-soft">
+            <h3>Cócteles y celebraciones</h3>
+            <p>Preparaciones para encuentros familiares, fechas especiales y eventos privados.</p>
+          </article>
+          <article class="card card-soft">
+            <h3>Almuerzos y cenas</h3>
+            <p>Servicio gastronómico para eventos que requieren una propuesta más completa.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="cotiza">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Cotiza tu evento</div>
+            <h2>Cuéntanos qué necesitas.</h2>
+          </div>
+          <p>
+            Esta base deja preparado el formulario visual. En producción debe conectarse al panel interno,
+            correo corporativo o base de datos para administrar solicitudes de cotización.
+          </p>
+        </div>
+
+        <form class="card form-grid" id="quoteForm">
+          <div class="two-cols">
+            <div class="form-line">
+              <label>Nombre</label>
+              <input class="input" required />
+            </div>
+            <div class="form-line">
+              <label>Teléfono</label>
+              <input class="input" required />
+            </div>
+          </div>
+          <div class="two-cols">
+            <div class="form-line">
+              <label>Fecha del evento</label>
+              <input class="input" type="date" />
+            </div>
+            <div class="form-line">
+              <label>Número aproximado de personas</label>
+              <input class="input" type="number" min="1" />
+            </div>
+          </div>
+          <div class="form-line">
+            <label>Tipo de evento</label>
+            <select>
+              <option>Celebración familiar</option>
+              <option>Evento institucional</option>
+              <option>Empresa</option>
+              <option>Cena especial</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-line">
+            <label>Comentarios</label>
+            <textarea placeholder="Cuéntanos lugar, comuna, tipo de servicio y detalles relevantes."></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Enviar solicitud</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="eventos">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Fechas especiales</div>
+            <h2>Eventos exclusivos y controlados.</h2>
+          </div>
+          <p>
+            CM podrá publicar cenas temáticas, actividades privadas o celebraciones con cupos limitados.
+            Cuando corresponda, el servicio de alcohol se informará solo para fechas previamente autorizadas
+            y conforme a la normativa municipal aplicable.
+          </p>
+        </div>
+
+        <div class="notice">
+          Próximamente: calendario de eventos, reservas con cupos, pago anticipado y condiciones especiales.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <h3 style="color:white;">CM Banquetería & Restaurant</h3>
+      <p>Costanera Norte 1012 · Laja · Colaciones y delivery de lunes a viernes, 12:00 a 16:00 hrs.</p>
+    </div>
+  </footer>
+
+  <dialog class="modal" id="checkoutModal">
+    <form class="modal-content form-grid" id="checkoutForm">
+      <div>
+        <div class="kicker">Finalizar pedido</div>
+        <h2>Datos de entrega</h2>
+      </div>
+
+      <div class="two-cols">
+        <div class="form-line">
+          <label>Nombre</label>
+          <input class="input" name="name" required placeholder="Nombre del cliente" />
+        </div>
+        <div class="form-line">
+          <label>Teléfono</label>
+          <input class="input" name="phone" required placeholder="+56 9..." />
+        </div>
+      </div>
+
+      <div class="form-line">
+        <label>Tipo de entrega</label>
+        <select name="deliveryType" id="deliveryType">
+          <option value="pickup">Retiro en local</option>
+          <option value="delivery">Reparto a domicilio</option>
+        </select>
+      </div>
+
+      <div class="form-line" id="addressLine">
+        <label>Dirección</label>
+        <input class="input" name="address" placeholder="Calle, número, sector" />
+      </div>
+
+      <div class="form-line">
+        <label>Referencia u observaciones</label>
+        <textarea name="reference" placeholder="Ejemplo: sin cebolla, casa azul, llamar al llegar."></textarea>
+      </div>
+
+      <div class="notice">
+        Al pagar, recibirás un número de pedido y un enlace único para seguir el avance. También podrás consultar
+        con tu teléfono y número de pedido en la sección “Sigue tu pedido”.
+      </div>
+
+      <div class="hero-buttons">
+        <button class="btn btn-primary" type="submit">Pagar con Webpay</button>
+        <button class="btn btn-secondary" type="button" id="closeCheckout">Volver</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>

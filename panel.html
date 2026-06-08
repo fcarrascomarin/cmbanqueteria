@@ -1,0 +1,52 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel CM · Administración, cocina y reparto</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">
+        <span class="brand-mark">CM</span>
+        <span>Panel CM<br><small>Pedidos y reparto</small></span>
+      </a>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="/">Inicio</a>
+        <button class="btn btn-primary" id="refresh">Actualizar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container panel-grid">
+      <aside class="sidebar">
+        <h3>Vista del panel</h3>
+        <p class="form-note">Base demo sin login. En producción, cada usuario debe iniciar sesión según rol.</p>
+        <button class="btn btn-secondary" data-view="admin">Administración</button>
+        <button class="btn btn-secondary" data-view="cocina">Cocina</button>
+        <button class="btn btn-secondary" data-view="repartidor">Repartidor</button>
+      </aside>
+
+      <section>
+        <div class="section-head" style="margin-bottom:18px;">
+          <div>
+            <div class="kicker" id="panelKicker">Administración</div>
+            <h2 id="panelTitle">Pedidos</h2>
+          </div>
+          <p id="panelDescription">
+            Acepta pedidos, cambia estados, asigna repartidores, cancela por falta de disponibilidad y gestiona devoluciones.
+          </p>
+        </div>
+
+        <div id="orders" class="order-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/panel.js"></script>
+</body>
+</html>
