@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+<rect width="800" height="800" fill="#5a1624"/>
+<circle cx="400" cy="400" r="310" fill="none" stroke="#d6a64f" stroke-width="38"/>
+<text x="400" y="380" font-family="Arial, sans-serif" font-size="180" font-weight="800" text-anchor="middle" fill="#fff7ec">CM</text>
+<text x="400" y="510" font-family="Arial, sans-serif" font-size="58" font-weight="700" text-anchor="middle" fill="#d6a64f">BANQUETERÍA</text>
+</svg>
