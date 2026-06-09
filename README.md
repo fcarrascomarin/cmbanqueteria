@@ -1,57 +1,60 @@
-# CM Banquetería & Restaurant — Base web para VS Code
+# CM Banquetería & Restaurant — Base con Neon Postgres
 
-Base inicial para una web operativa de CM Banquetería & Restaurant.
+Base web con persistencia real en Neon Postgres.
 
-## Qué incluye
-
-- Página de inicio con estética cálida: burdeo, crema, dorado y fotos reales como base visual.
-- Concepto de marca: restaurant que mezcla lo casero y lo gourmet.
-- Menú del día con stock.
-- Carrito de compra.
-- Pedido con retiro en local o reparto a domicilio.
-- Pago Webpay en modo mock/demo.
-- Seguimiento del pedido por:
-  - enlace único del pedido; y
-  - teléfono + número de pedido.
-- Panel interno para administración/cocina.
-- Portal de repartidores.
-- Estados y mensajes automáticos del pedido.
-- Flujo de cancelación y devolución en modo mock.
-
-## Cómo usar en VS Code
-
-1. Abre esta carpeta en VS Code.
-2. Ejecuta:
+## Uso local
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-3. Abre:
+En Windows PowerShell:
 
-```text
-http://localhost:3000
+```bash
+copy .env.example .env
+npm run dev
 ```
 
-## Páginas principales
+Edita `.env` y agrega tu URL de Neon:
 
-- `/` Inicio y pedido.
-- `/seguimiento.html` Sigue tu pedido.
-- `/panel.html` Panel interno: administración, cocina y repartidores.
+```env
+DATABASE_URL=postgresql://usuario:password@host.neon.tech/database?sslmode=require
+WEBPAY_ENV=mock
+SITE_URL=http://localhost:3000
+```
 
-## Importante sobre Webpay
+## Render
 
-Esta base trae Webpay en modo mock para poder desarrollar sin credenciales reales.
-La integración real debe hacerse en backend, nunca solo en frontend, usando las credenciales del comercio y el SDK/documentación oficial de Transbank.
+Variables de entorno:
 
-## Imágenes
+```env
+DATABASE_URL=tu_url_de_neon
+WEBPAY_ENV=mock
+SITE_URL=https://tu-servicio.onrender.com
+```
 
-Reemplaza estos archivos por imágenes reales:
+Build command:
 
-- `public/assets/local-fondo.jpg`
-- `public/assets/plato-1.jpg`
-- `public/assets/plato-2.jpg`
-- `public/assets/plato-3.jpg`
+```bash
+npm install
+```
 
-Si no existen, el diseño usa gradientes y tarjetas como respaldo.
+Start command:
+
+```bash
+npm start
+```
+
+## Tablas
+
+El servidor crea automáticamente las tablas al iniciar. También puedes ver el esquema en:
+
+```text
+scripts/schema.sql
+```
+
+## Seguridad
+
+No subas `.env` a GitHub. La integración Webpay real debe hacerse desde backend con credenciales reales de Transbank.

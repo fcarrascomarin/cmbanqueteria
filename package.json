@@ -1,7 +1,7 @@
 {
-  "name": "cm-banqueteria-web-base",
-  "version": "1.0.0",
-  "description": "Base web para CM Banquetería & Restaurant: pedidos, Webpay mock, seguimiento, cocina y repartidores.",
+  "name": "cm-banqueteria-web-neon",
+  "version": "1.1.0",
+  "description": "Base web para CM Banquetería & Restaurant con Neon Postgres.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
