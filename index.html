@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CM Banquetería & Restaurant</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">
+        <img class="brand-logo" src="/assets/logo-cm.png" alt="CM Banquetería & Restaurant" />
+        <span>CM Banquetería<br><small>& Restaurant</small></span>
+      </a>
+      <nav class="nav-links">
+        <a href="#orden">Plan de orden</a>
+        <a href="#menu">Menú</a>
+        <a href="#banqueteria">Banquetería</a>
+        <a href="#cotiza">Cotiza</a>
+      </nav>
+      <a class="btn btn-secondary" href="/admin.html">Acceso interno</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="kicker">Desde 2015 · Costanera Norte 1012 · Laja</div>
+          <h1>Lo casero de siempre, con una gestión más ordenada.</h1>
+          <p class="lead">CM Banquetería & Restaurant une cocina familiar, presentación cuidada y una plataforma para ordenar costos, stock, minutas, cotizaciones, documentos y comunicación visual del restaurant.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a class="btn btn-gold" href="#menu">Ver menú del día</a>
+            <a class="btn btn-secondary" href="#cotiza">Cotizar evento</a>
+          </div>
+        </div>
+        <div style="display:grid;place-items:center"><img class="hero-logo" src="/assets/logo-cm.png" alt="Logo CM" /></div>
+      </div>
+    </section>
+
+    <section class="section" id="orden">
+      <div class="container">
+        <div class="section-head">
+          <div><div class="kicker">Vitrina + orden interno</div><h2>Una web que muestra el restaurant y ordena la operación.</h2></div>
+          <p class="muted">La plataforma se diseña como herramienta viva para observar, registrar, medir y decidir con datos. No reemplaza el carácter familiar de CM: lo protege con procesos simples, editables y útiles.</p>
+        </div>
+        <div class="grid-3">
+          <article class="card"><h3>Costeo y rentabilidad</h3><p class="muted">Fichas de costo por preparación, raciones, precio de venta y margen estimado por menú.</p></article>
+          <article class="card"><h3>Minutas y menú diario</h3><p class="muted">Planificación semanal editable y publicación del menú del día en web y pantallas.</p></article>
+          <article class="card"><h3>Bitácora e inventario</h3><p class="muted">Observaciones diarias, gastos, stock crítico, documentos, personal y cotizaciones.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="menu">
+      <div class="container">
+        <div class="section-head">
+          <div><div class="kicker">Menú público</div><h2>Menú del día</h2></div>
+          <p class="muted">Este bloque se alimenta desde el panel interno de administración.</p>
+        </div>
+        <div class="card" id="todayMenu"><p class="muted">Cargando menú...</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="banqueteria">
+      <div class="container">
+        <div class="section-head">
+          <div><div class="kicker">Banquetería</div><h2>Eventos familiares, empresas y fechas especiales.</h2></div>
+          <p class="muted">Coffee break, cócteles, almuerzos, cenas, celebraciones y actividades controladas con reserva previa. Las solicitudes quedan ordenadas en el panel interno.</p>
+        </div>
+        <div class="notice">La web funciona como vitrina comercial, pero el valor principal está en el sistema interno: registrar, medir, ordenar y tomar decisiones con respaldo.</div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="cotiza">
+      <div class="container">
+        <div class="section-head">
+          <div><div class="kicker">Cotiza tu evento</div><h2>Cuéntanos qué necesitas.</h2></div>
+          <p class="muted">La solicitud se guarda en el panel interno y puede enviarse al correo corporativo de cotizaciones.</p>
+        </div>
+        <form class="card form-grid" id="quoteForm">
+          <div class="two-cols"><div class="form-line"><label>Nombre</label><input name="clientName" required /></div><div class="form-line"><label>Teléfono</label><input name="phone" required /></div></div>
+          <div class="two-cols"><div class="form-line"><label>Correo</label><input name="email" type="email" /></div><div class="form-line"><label>Fecha del evento</label><input name="eventDate" type="date" /></div></div>
+          <div class="two-cols"><div class="form-line"><label>Tipo de evento</label><input name="eventType" /></div><div class="form-line"><label>Número de personas</label><input name="guests" type="number" min="1" /></div></div>
+          <div class="two-cols"><div class="form-line"><label>Lugar / comuna</label><input name="location" /></div><div class="form-line"><label>Presupuesto estimado</label><input name="estimatedBudget" type="number" min="0" /></div></div>
+          <div class="form-line"><label>Servicio requerido</label><input name="requestedService" placeholder="Coffee break, almuerzo, cóctel, cena..." /></div>
+          <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Cuéntanos detalles relevantes del evento."></textarea></div>
+          <button class="btn btn-primary" type="submit">Enviar solicitud</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="container"><img src="/assets/logo-cm.png" style="width:90px" alt="CM"><p>CM Banquetería & Restaurant · Costanera Norte 1012 · Laja.</p></div></footer>
+  <script src="/public.js"></script>
+</body>
+</html>

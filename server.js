@@ -1,342 +1,45 @@
-require("dotenv").config();
-const fs = require("fs");
-const express = require("express");
-const cors = require("cors");
-const { nanoid } = require("nanoid");
-const { Pool } = require("pg");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-const SITE_URL = process.env.SITE_URL || `http://localhost:${PORT}`;
+require('dotenv').config();
+const express=require('express'), cors=require('cors'), session=require('express-session'), nodemailer=require('nodemailer');
+const {Pool}=require('pg');
+const app=express(); const PORT=process.env.PORT||3000; const SITE_URL=process.env.SITE_URL||`http://localhost:${PORT}`;
+const pool=new Pool({connectionString:process.env.DATABASE_URL, ssl:process.env.DATABASE_URL?.includes('neon.tech')?{rejectUnauthorized:false}:undefined});
+app.use(cors()); app.use(express.json({limit:'1mb'})); app.use(express.urlencoded({extended:true}));
+app.use(session({name:'cm_admin_sid',secret:process.env.SESSION_SECRET||'dev-secret-change-me',resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:SITE_URL.startsWith('https://'),maxAge:1000*60*60*8}}));
+app.use(express.static('public'));
+const schema=`
 
-if (!process.env.DATABASE_URL) {
-  console.warn("Falta DATABASE_URL. Crea .env local o agrega la variable en Render.");
-}
+CREATE TABLE IF NOT EXISTS observations (id BIGSERIAL PRIMARY KEY, obs_date DATE NOT NULL DEFAULT CURRENT_DATE, area TEXT NOT NULL, title TEXT NOT NULL, description TEXT, priority TEXT NOT NULL DEFAULT 'media', status TEXT NOT NULL DEFAULT 'abierta', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS screen_media (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, media_type TEXT NOT NULL DEFAULT 'video', url TEXT NOT NULL, active BOOLEAN NOT NULL DEFAULT TRUE, sort_order INTEGER NOT NULL DEFAULT 0, duration_seconds INTEGER NOT NULL DEFAULT 10, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE INDEX IF NOT EXISTS idx_observations_date ON observations(obs_date);
+CREATE TABLE IF NOT EXISTS expenses (id BIGSERIAL PRIMARY KEY, expense_date DATE NOT NULL DEFAULT CURRENT_DATE, category TEXT NOT NULL, supplier TEXT, description TEXT NOT NULL, amount INTEGER NOT NULL CHECK (amount>=0), payment_method TEXT, document_url TEXT, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS inventory_items (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, category TEXT, unit TEXT NOT NULL DEFAULT 'unidad', current_stock NUMERIC(12,2) NOT NULL DEFAULT 0, min_stock NUMERIC(12,2) NOT NULL DEFAULT 0, unit_cost INTEGER NOT NULL DEFAULT 0, supplier TEXT, notes TEXT, active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS inventory_movements (id BIGSERIAL PRIMARY KEY, item_id BIGINT NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE, movement_date DATE NOT NULL DEFAULT CURRENT_DATE, type TEXT NOT NULL CHECK (type IN ('entrada','salida','ajuste')), quantity NUMERIC(12,2) NOT NULL, reason TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS daily_menus (id BIGSERIAL PRIMARY KEY, menu_date DATE NOT NULL, title TEXT NOT NULL, main_dish TEXT, side_dish TEXT, salad TEXT, dessert TEXT, price INTEGER NOT NULL DEFAULT 0, planned_portions INTEGER NOT NULL DEFAULT 0, available_portions INTEGER NOT NULL DEFAULT 0, cost_per_portion INTEGER NOT NULL DEFAULT 0, notes TEXT, public_visible BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS weekly_menus (id BIGSERIAL PRIMARY KEY, week_start DATE NOT NULL, week_end DATE NOT NULL, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS weekly_menu_days (id BIGSERIAL PRIMARY KEY, weekly_menu_id BIGINT NOT NULL REFERENCES weekly_menus(id) ON DELETE CASCADE, day_name TEXT NOT NULL, menu_date DATE, title TEXT, planned_portions INTEGER NOT NULL DEFAULT 0, notes TEXT);
+CREATE TABLE IF NOT EXISTS rations (id BIGSERIAL PRIMARY KEY, ration_date DATE NOT NULL DEFAULT CURRENT_DATE, title TEXT NOT NULL, planned_portions INTEGER NOT NULL DEFAULT 0, estimated_total_cost INTEGER NOT NULL DEFAULT 0, estimated_cost_per_portion INTEGER NOT NULL DEFAULT 0, sale_price INTEGER NOT NULL DEFAULT 0, estimated_margin INTEGER NOT NULL DEFAULT 0, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS event_quotes (id BIGSERIAL PRIMARY KEY, client_name TEXT NOT NULL, phone TEXT NOT NULL, email TEXT, event_date DATE, event_type TEXT, guests INTEGER, location TEXT, requested_service TEXT, estimated_budget INTEGER, status TEXT NOT NULL DEFAULT 'recibida', quoted_total INTEGER NOT NULL DEFAULT 0, internal_notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS staff (id BIGSERIAL PRIMARY KEY, full_name TEXT NOT NULL, rut TEXT, role TEXT, phone TEXT, start_date DATE, contract_type TEXT, schedule TEXT, status TEXT NOT NULL DEFAULT 'activo', notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS documents (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, document_type TEXT NOT NULL, owner_type TEXT NOT NULL DEFAULT 'empresa', staff_id BIGINT REFERENCES staff(id) ON DELETE SET NULL, document_date DATE, expiration_date DATE, file_url TEXT, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`;
+function auth(req,res,next){ if(req.session?.admin) return next(); res.status(401).json({error:'No autorizado.'}); }
+function int(v){v=Number(v||0); return Number.isFinite(v)?Math.max(0,Math.round(v)):0} function num(v){v=Number(v||0); return Number.isFinite(v)?v:0}
+function mailer(){ if(!process.env.SMTP_HOST||!process.env.SMTP_USER||!process.env.SMTP_PASS) return null; return nodemailer.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT||465),secure:String(process.env.SMTP_SECURE||'true')==='true',auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}}); }
+function esc(v=''){return String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+app.get('/health',(req,res)=>res.json({ok:true}));
+app.get('/api/public/menu/today',async(req,res)=>{try{const r=await pool.query(`SELECT * FROM daily_menus WHERE menu_date=CURRENT_DATE AND public_visible=TRUE ORDER BY id DESC LIMIT 1`);res.json({menu:r.rows[0]||null})}catch(e){console.error(e);res.status(500).json({error:'No se pudo cargar el menú.'})}});
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL?.includes("neon.tech") ? { rejectUnauthorized: false } : undefined
-});
+app.get('/api/public/screen',async(req,res)=>{try{const [menu,media]=await Promise.all([pool.query(`SELECT * FROM daily_menus WHERE menu_date=CURRENT_DATE AND public_visible=TRUE ORDER BY id DESC LIMIT 1`),pool.query(`SELECT * FROM screen_media WHERE active=TRUE ORDER BY sort_order ASC,id DESC`)]);res.json({menu:menu.rows[0]||null,media:media.rows})}catch(e){console.error(e);res.status(500).json({error:'No se pudo cargar pantalla.'})}});
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
-
-const statusMessages = {
-  PENDIENTE_PAGO: "Tu pedido fue creado, pero aún falta confirmar el pago.",
-  PAGO_CONFIRMADO: "El pago fue aprobado correctamente.",
-  PEDIDO_RECIBIDO: "Hemos recibido tu pedido.",
-  PEDIDO_ACEPTADO: "CM Banquetería confirmó tu pedido.",
-  EN_PREPARACION: "Estamos preparando tu colación.",
-  LISTO_REPARTO: "Tu pedido está listo para salir a reparto.",
-  ASIGNADO_REPARTIDOR: "Tu pedido fue asignado a un repartidor.",
-  RETIRADO_LOCAL: "El repartidor retiró tu pedido del local.",
-  EN_CAMINO: "Tu pedido ya salió a reparto.",
-  CERCA: "Tu repartidor está cerca de la dirección indicada.",
-  ENTREGADO: "Tu pedido fue entregado. Gracias por preferirnos.",
-  CANCELADO: "El pedido fue cancelado. Revisa el motivo informado.",
-  REEMBOLSO_SOLICITADO: "Hemos iniciado la gestión de devolución del pago.",
-  REEMBOLSO_REALIZADO: "La devolución fue registrada como realizada."
-};
-
-const labels = {
-  PENDIENTE_PAGO: "Pendiente de pago",
-  PAGO_CONFIRMADO: "Pago confirmado",
-  PEDIDO_RECIBIDO: "Pedido recibido",
-  PEDIDO_ACEPTADO: "Pedido aceptado",
-  EN_PREPARACION: "En preparación",
-  LISTO_REPARTO: "Listo para reparto",
-  ASIGNADO_REPARTIDOR: "Asignado a repartidor",
-  RETIRADO_LOCAL: "Retirado del local",
-  EN_CAMINO: "En camino",
-  CERCA: "Repartidor cerca",
-  ENTREGADO: "Entregado",
-  CANCELADO: "Cancelado",
-  REEMBOLSO_SOLICITADO: "Reembolso solicitado",
-  REEMBOLSO_REALIZADO: "Reembolso realizado"
-};
-
-function labelStatus(status) { return labels[status] || status; }
-function normalize(value) { return String(value || "").replace(/[^\d]/g, ""); }
-function maskPhone(phone) { return phone && phone.length > 4 ? `•••• ${phone.slice(-4)}` : (phone || ""); }
-function trackingUrl(order) { return `${SITE_URL}/seguimiento.html?pedido=${order.order_number}&token=${order.tracking_token}`; }
-
-async function initDb() {
-  const schema = fs.readFileSync("./scripts/schema.sql", "utf8");
-  await pool.query(schema);
-  const count = await pool.query("SELECT COUNT(*)::int AS total FROM menu_items");
-  if (count.rows[0].total === 0) {
-    await pool.query(`
-      INSERT INTO menu_items (id, name, description, price, stock, image, tags)
-      VALUES
-      ('menu-1', 'Colación casera gourmet', 'Plato del día con sabor de casa, montaje cuidado y acompañamiento fresco.', 5500, 18, '/assets/plato-1.jpg', ARRAY['Casero','Gourmet','Almuerzo']),
-      ('menu-2', 'Almuerzo ejecutivo CM', 'Preparación abundante y equilibrada para la jornada laboral.', 6200, 12, '/assets/plato-2.jpg', ARRAY['Ejecutivo','Restaurant']),
-      ('menu-3', 'Menú especial del chef', 'Receta familiar con presentación especial y selección de acompañamientos.', 7500, 8, '/assets/plato-3.jpg', ARRAY['Especial','Gourmet'])
-      ON CONFLICT (id) DO NOTHING
-    `);
-  }
-}
-
-async function addTimeline(client, orderId, status, actor = "Sistema", customMessage = null) {
-  await client.query(
-    `INSERT INTO order_timeline (order_id, status, label, actor, message)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [orderId, status, labelStatus(status), actor, customMessage || statusMessages[status] || "Estado actualizado."]
-  );
-  await client.query("UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2", [status, orderId]);
-}
-
-async function fullOrder(orderId) {
-  const orderRes = await pool.query("SELECT * FROM orders WHERE id = $1", [orderId]);
-  if (!orderRes.rowCount) return null;
-  const order = orderRes.rows[0];
-  const items = await pool.query("SELECT * FROM order_items WHERE order_id = $1 ORDER BY id", [orderId]);
-  const timeline = await pool.query("SELECT * FROM order_timeline WHERE order_id = $1 ORDER BY at, id", [orderId]);
-  return publicOrder(order, items.rows, timeline.rows);
-}
-
-function publicOrder(order, items = [], timeline = []) {
-  return {
-    orderId: order.id,
-    orderNumber: order.order_number,
-    trackingToken: order.tracking_token,
-    trackingUrl: trackingUrl(order),
-    customer: { name: order.customer_name, phone: maskPhone(order.customer_phone) },
-    deliveryType: order.delivery_type,
-    address: order.delivery_type === "delivery" ? order.address : "Retiro en local",
-    total: order.total,
-    status: order.status,
-    statusLabel: labelStatus(order.status),
-    items: items.map(i => ({ name: i.name, quantity: i.quantity, unitPrice: i.unit_price })),
-    timeline: timeline.map(t => ({ at: t.at, status: t.status, label: t.label, actor: t.actor, message: t.message })),
-    courier: order.courier_name ? { name: order.courier_name } : null,
-    createdAt: order.created_at
-  };
-}
-
-app.get("/api/menu", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT id, name, description, price, stock, image, tags FROM menu_items WHERE active = TRUE ORDER BY created_at, id");
-    res.json({ menu: result.rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "No se pudo cargar el menú." });
-  }
-});
-
-app.post("/api/orders", async (req, res) => {
-  const { customer, deliveryType, address, reference, items } = req.body;
-  if (!customer?.name || !customer?.phone) return res.status(400).json({ error: "Faltan datos del cliente." });
-  if (!Array.isArray(items) || !items.length) return res.status(400).json({ error: "El pedido no tiene productos." });
-  if (deliveryType === "delivery" && !address) return res.status(400).json({ error: "Falta dirección de entrega." });
-
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const menuIds = items.map(i => i.menuId);
-    const menuRes = await client.query("SELECT * FROM menu_items WHERE id = ANY($1::text[]) AND active = TRUE FOR UPDATE", [menuIds]);
-    const menu = new Map(menuRes.rows.map(row => [row.id, row]));
-    const orderItems = [];
-    let total = 0;
-
-    for (const reqItem of items) {
-      const m = menu.get(reqItem.menuId);
-      const quantity = Number(reqItem.quantity || 0);
-      if (!m || quantity <= 0) throw new Error("Producto inválido.");
-      if (m.stock < quantity) throw new Error(`No hay stock suficiente para ${m.name}.`);
-      await client.query("UPDATE menu_items SET stock = stock - $1, updated_at = NOW() WHERE id = $2", [quantity, m.id]);
-      orderItems.push({ menuId: m.id, name: m.name, quantity, unitPrice: m.price });
-      total += m.price * quantity;
-    }
-
-    if (deliveryType === "delivery") total += 1500;
-
-    const orderId = nanoid();
-    const seq = await client.query("SELECT 'CM-' || LPAD(nextval('order_serial')::text, 4, '0') AS order_number");
-    const orderNumber = seq.rows[0].order_number;
-    const token = nanoid(16);
-
-    await client.query(
-      `INSERT INTO orders (id, order_number, tracking_token, customer_name, customer_phone, customer_phone_normalized, delivery_type, address, reference, total, payment_mode, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-      [orderId, orderNumber, token, customer.name, customer.phone, normalize(customer.phone), deliveryType || "pickup", address || "", reference || "", total, process.env.WEBPAY_ENV || "mock", "PENDIENTE_PAGO"]
-    );
-
-    for (const item of orderItems) {
-      await client.query(
-        `INSERT INTO order_items (order_id, menu_id, name, quantity, unit_price) VALUES ($1,$2,$3,$4,$5)`,
-        [orderId, item.menuId, item.name, item.quantity, item.unitPrice]
-      );
-    }
-
-    await addTimeline(client, orderId, "PENDIENTE_PAGO", "Sistema");
-    await client.query("COMMIT");
-    res.status(201).json({ orderId, orderNumber, total, trackingUrl: `${SITE_URL}/seguimiento.html?pedido=${orderNumber}&token=${token}` });
-  } catch (err) {
-    await client.query("ROLLBACK");
-    console.error(err);
-    res.status(409).json({ error: err.message || "No se pudo crear el pedido." });
-  } finally {
-    client.release();
-  }
-});
-
-app.post("/api/payments/webpay/create", async (req, res) => {
-  const { orderId } = req.body;
-  try {
-    const order = await pool.query("SELECT * FROM orders WHERE id = $1", [orderId]);
-    if (!order.rowCount) return res.status(404).json({ error: "Pedido no encontrado." });
-    if (order.rows[0].status !== "PENDIENTE_PAGO") return res.status(409).json({ error: "El pedido no está pendiente de pago." });
-    const token = `mock_${nanoid(10)}`;
-    await pool.query("UPDATE orders SET payment_token = $1, updated_at = NOW() WHERE id = $2", [token, orderId]);
-    res.json({ mode: "mock", paymentUrl: `${SITE_URL}/pago-demo.html?orderId=${orderId}&token=${token}`, token });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "No se pudo iniciar el pago." });
-  }
-});
-
-app.post("/api/payments/mock/approve", async (req, res) => {
-  const { orderId, token } = req.body;
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const order = await client.query("SELECT * FROM orders WHERE id = $1 FOR UPDATE", [orderId]);
-    if (!order.rowCount) throw new Error("Pedido no encontrado.");
-    if (order.rows[0].payment_token !== token) throw new Error("Token inválido.");
-    await client.query("UPDATE orders SET payment_status = 'APROBADO', payment_transaction_id = $1, updated_at = NOW() WHERE id = $2", [`TX-${nanoid(8)}`, orderId]);
-    await addTimeline(client, orderId, "PAGO_CONFIRMADO", "Webpay demo");
-    await addTimeline(client, orderId, "PEDIDO_RECIBIDO", "Sistema");
-    await client.query("COMMIT");
-    res.json({ ok: true, order: await fullOrder(orderId) });
-  } catch (err) {
-    await client.query("ROLLBACK");
-    console.error(err);
-    res.status(400).json({ error: err.message || "No se pudo aprobar el pago." });
-  } finally {
-    client.release();
-  }
-});
-
-app.get("/api/orders", async (req, res) => {
-  try {
-    const rows = await pool.query("SELECT * FROM orders ORDER BY created_at DESC LIMIT 100");
-    const result = [];
-    for (const order of rows.rows) result.push(await fullOrder(order.id));
-    res.json({ orders: result });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "No se pudieron cargar los pedidos." });
-  }
-});
-
-app.get("/api/orders/track", async (req, res) => {
-  const { phone, orderNumber, token } = req.query;
-  try {
-    let order;
-    if (token && orderNumber) {
-      order = await pool.query("SELECT * FROM orders WHERE order_number = $1 AND tracking_token = $2", [orderNumber, token]);
-    } else if (phone && orderNumber) {
-      order = await pool.query("SELECT * FROM orders WHERE order_number = $1 AND customer_phone_normalized = $2", [orderNumber, normalize(phone)]);
-    } else {
-      return res.status(400).json({ error: "Ingresa número de pedido y teléfono, o usa el enlace único." });
-    }
-    if (!order.rowCount) return res.status(404).json({ error: "No encontramos un pedido con esos datos." });
-    res.json({ order: await fullOrder(order.rows[0].id) });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "No se pudo consultar el pedido." });
-  }
-});
-
-app.post("/api/orders/:orderId/status", async (req, res) => {
-  const { orderId } = req.params;
-  const { status, actor, message } = req.body;
-  if (!statusMessages[status]) return res.status(400).json({ error: "Estado inválido." });
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const order = await client.query("SELECT * FROM orders WHERE id = $1 FOR UPDATE", [orderId]);
-    if (!order.rowCount) throw new Error("Pedido no encontrado.");
-    await addTimeline(client, orderId, status, actor || "Equipo CM", message || null);
-    await client.query("COMMIT");
-    res.json({ order: await fullOrder(orderId) });
-  } catch (err) {
-    await client.query("ROLLBACK");
-    res.status(404).json({ error: err.message || "No se pudo actualizar el pedido." });
-  } finally {
-    client.release();
-  }
-});
-
-app.post("/api/orders/:orderId/assign", async (req, res) => {
-  const { orderId } = req.params;
-  const { courierName } = req.body;
-  if (!courierName) return res.status(400).json({ error: "Falta nombre del repartidor." });
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const order = await client.query("SELECT * FROM orders WHERE id = $1 FOR UPDATE", [orderId]);
-    if (!order.rowCount) throw new Error("Pedido no encontrado.");
-    await client.query("UPDATE orders SET courier_name = $1, updated_at = NOW() WHERE id = $2", [courierName, orderId]);
-    await addTimeline(client, orderId, "ASIGNADO_REPARTIDOR", courierName);
-    await client.query("COMMIT");
-    res.json({ order: await fullOrder(orderId) });
-  } catch (err) {
-    await client.query("ROLLBACK");
-    res.status(404).json({ error: err.message || "No se pudo asignar repartidor." });
-  } finally {
-    client.release();
-  }
-});
-
-app.post("/api/orders/:orderId/cancel-refund", async (req, res) => {
-  const { orderId } = req.params;
-  const { reason } = req.body;
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const orderRes = await client.query("SELECT * FROM orders WHERE id = $1 FOR UPDATE", [orderId]);
-    if (!orderRes.rowCount) throw new Error("Pedido no encontrado.");
-    const order = orderRes.rows[0];
-    if (!order.stock_released) {
-      const items = await client.query("SELECT * FROM order_items WHERE order_id = $1", [orderId]);
-      for (const item of items.rows) {
-        await client.query("UPDATE menu_items SET stock = stock + $1, updated_at = NOW() WHERE id = $2", [item.quantity, item.menu_id]);
-      }
-      await client.query("UPDATE orders SET stock_released = TRUE, updated_at = NOW() WHERE id = $1", [orderId]);
-    }
-    await addTimeline(client, orderId, "CANCELADO", "Administración", reason || "Pedido cancelado.");
-    await addTimeline(client, orderId, "REEMBOLSO_SOLICITADO", "Administración", "Se registró la solicitud de devolución del pago.");
-    await client.query("COMMIT");
-
-    setTimeout(async () => {
-      const c = await pool.connect();
-      try {
-        await c.query("BEGIN");
-        await addTimeline(c, orderId, "REEMBOLSO_REALIZADO", "Webpay demo");
-        await c.query("COMMIT");
-      } catch (err) {
-        await c.query("ROLLBACK");
-        console.error(err);
-      } finally {
-        c.release();
-      }
-    }, 1200);
-
-    res.json({ order: await fullOrder(orderId) });
-  } catch (err) {
-    await client.query("ROLLBACK");
-    console.error(err);
-    res.status(404).json({ error: err.message || "No se pudo cancelar el pedido." });
-  } finally {
-    client.release();
-  }
-});
-
-initDb()
-  .then(() => app.listen(PORT, () => console.log(`CM Banquetería con Neon corriendo en ${SITE_URL}`)))
-  .catch(err => {
-    console.error("No se pudo inicializar Neon/Postgres:", err);
-    process.exit(1);
-  });
+app.post('/api/public/quotes',async(req,res)=>{const b=req.body;if(!b.clientName||!b.phone)return res.status(400).json({error:'Nombre y teléfono son obligatorios.'});try{const r=await pool.query(`INSERT INTO event_quotes(client_name,phone,email,event_date,event_type,guests,location,requested_service,estimated_budget,internal_notes) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,[b.clientName,b.phone,b.email||null,b.eventDate||null,b.eventType||null,b.guests?Number(b.guests):null,b.location||null,b.requestedService||null,int(b.estimatedBudget),b.internalNotes||null]); const m=mailer(); if(m){await m.sendMail({from:process.env.MAIL_FROM||`"CM Banquetería" <${process.env.SMTP_USER}>`,to:process.env.MAIL_TO||'cotizaciones@cmbanqueteria.cl',replyTo:b.email||undefined,subject:`Nueva cotización web - ${b.clientName}`,text:`Nueva cotización\nNombre: ${b.clientName}\nTeléfono: ${b.phone}\nCorreo: ${b.email||'No informado'}\nFecha: ${b.eventDate||'No informada'}\nTipo: ${b.eventType||''}\nPersonas: ${b.guests||''}\nLugar: ${b.location||''}\nServicio: ${b.requestedService||''}\nComentarios: ${b.internalNotes||''}`,html:`<h2>Nueva cotización</h2><p><b>Nombre:</b> ${esc(b.clientName)}</p><p><b>Teléfono:</b> ${esc(b.phone)}</p><p><b>Correo:</b> ${esc(b.email||'')}</p><p><b>Fecha:</b> ${esc(b.eventDate||'')}</p><p><b>Tipo:</b> ${esc(b.eventType||'')}</p><p><b>Personas:</b> ${esc(b.guests||'')}</p><p><b>Lugar:</b> ${esc(b.location||'')}</p><p><b>Servicio:</b> ${esc(b.requestedService||'')}</p><p>${esc(b.internalNotes||'')}</p>`})}res.status(201).json({ok:true,quote:r.rows[0]})}catch(e){console.error(e);res.status(500).json({error:'No se pudo enviar la cotización.'})}});
+app.post('/api/admin/login',(req,res)=>{const {user,password}=req.body; if(user===(process.env.ADMIN_USER||'admin@cmbanqueteria.cl')&&password===(process.env.ADMIN_PASS||'admin')){req.session.admin={user}; return res.json({ok:true,user})} res.status(401).json({error:'Usuario o contraseña incorrectos.'})});
+app.post('/api/admin/logout',(req,res)=>req.session.destroy(()=>res.json({ok:true}))); app.get('/api/admin/me',auth,(req,res)=>res.json({user:req.session.admin.user}));
+app.get('/api/admin/dashboard',auth,async(req,res)=>{try{const [today,w,m,stock,quotes,docs,obs,media]=await Promise.all([pool.query(`SELECT * FROM daily_menus WHERE menu_date=CURRENT_DATE ORDER BY id DESC LIMIT 1`),pool.query(`SELECT COALESCE(SUM(amount),0)::int total FROM expenses WHERE expense_date>=CURRENT_DATE-INTERVAL '7 days'`),pool.query(`SELECT COALESCE(SUM(amount),0)::int total FROM expenses WHERE date_trunc('month',expense_date)=date_trunc('month',CURRENT_DATE)`),pool.query(`SELECT * FROM inventory_items WHERE active=TRUE AND current_stock<=min_stock ORDER BY name LIMIT 10`),pool.query(`SELECT COUNT(*)::int count FROM event_quotes WHERE status IN ('recibida','en_revision','cotizada')`),pool.query(`SELECT * FROM documents WHERE expiration_date IS NOT NULL AND expiration_date<=CURRENT_DATE+INTERVAL '30 days' ORDER BY expiration_date LIMIT 10`),pool.query(`SELECT COUNT(*)::int count FROM observations WHERE status <> 'cerrada'`),pool.query(`SELECT COUNT(*)::int count FROM screen_media WHERE active=TRUE`)]);res.json({todayMenu:today.rows[0]||null,weekExpenses:w.rows[0].total,monthExpenses:m.rows[0].total,criticalStock:stock.rows,pendingQuotes:quotes.rows[0].count,expiringDocuments:docs.rows,openObservations:obs.rows[0].count,activeMedia:media.rows[0].count})}catch(e){console.error(e);res.status(500).json({error:'No se pudo cargar panel.'})}});
+function crud(table,fields,required=[]){app.get(`/api/admin/${table}`,auth,async(req,res)=>{try{let order='id DESC'; if(table==='expenses')order='expense_date DESC,id DESC'; if(table==='daily_menus')order='menu_date DESC,id DESC'; if(table==='documents')order='expiration_date NULLS LAST,id DESC'; const r=await pool.query(`SELECT * FROM ${table} ORDER BY ${order} LIMIT 300`);res.json({items:r.rows})}catch(e){console.error(e);res.status(500).json({error:'No se pudo cargar.'})}});app.post(`/api/admin/${table}`,auth,async(req,res)=>{try{for(const f of required)if(!req.body[f])return res.status(400).json({error:`Falta ${f}.`});const fs=fields.filter(f=>req.body[f]!==undefined), vals=fs.map(f=>req.body[f]===''?null:req.body[f]), ph=fs.map((_,i)=>`$${i+1}`);const r=await pool.query(`INSERT INTO ${table}(${fs.join(',')}) VALUES(${ph.join(',')}) RETURNING *`,vals);res.status(201).json({item:r.rows[0]})}catch(e){console.error(e);res.status(500).json({error:'No se pudo guardar.'})}});app.patch(`/api/admin/${table}/:id`,auth,async(req,res)=>{try{const fs=fields.filter(f=>req.body[f]!==undefined); const vals=fs.map(f=>req.body[f]===''?null:req.body[f]); vals.push(req.params.id); const touch=['inventory_items','daily_menus','event_quotes'].includes(table)?', updated_at=NOW()':'';const r=await pool.query(`UPDATE ${table} SET ${fs.map((f,i)=>`${f}=$${i+1}`).join(',')} ${touch} WHERE id=$${vals.length} RETURNING *`,vals);res.json({item:r.rows[0]})}catch(e){console.error(e);res.status(500).json({error:'No se pudo actualizar.'})}});app.delete(`/api/admin/${table}/:id`,auth,async(req,res)=>{try{await pool.query(`DELETE FROM ${table} WHERE id=$1`,[req.params.id]);res.json({ok:true})}catch(e){console.error(e);res.status(500).json({error:'No se pudo eliminar.'})}})}
+crud('observations',['obs_date','area','title','description','priority','status'],['area','title']); crud('screen_media',['title','media_type','url','active','sort_order','duration_seconds','notes'],['title','url']); crud('expenses',['expense_date','category','supplier','description','amount','payment_method','document_url','notes'],['category','description','amount']); crud('inventory_items',['name','category','unit','current_stock','min_stock','unit_cost','supplier','notes','active'],['name']); crud('daily_menus',['menu_date','title','main_dish','side_dish','salad','dessert','price','planned_portions','available_portions','cost_per_portion','notes','public_visible'],['menu_date','title']); crud('event_quotes',['client_name','phone','email','event_date','event_type','guests','location','requested_service','estimated_budget','status','quoted_total','internal_notes'],['client_name','phone']); crud('staff',['full_name','rut','role','phone','start_date','contract_type','schedule','status','notes'],['full_name']); crud('documents',['title','document_type','owner_type','staff_id','document_date','expiration_date','file_url','notes'],['title','document_type']);
+app.post('/api/admin/inventory_items/:id/movement',auth,async(req,res)=>{const c=await pool.connect();try{const {type,quantity,reason}=req.body, q=num(quantity); if(!['entrada','salida','ajuste'].includes(type))return res.status(400).json({error:'Tipo inválido.'}); await c.query('BEGIN'); const it=await c.query('SELECT * FROM inventory_items WHERE id=$1 FOR UPDATE',[req.params.id]); if(!it.rowCount)throw Error('Producto no encontrado.'); let ns=Number(it.rows[0].current_stock); if(type==='entrada')ns+=q; if(type==='salida')ns-=q; if(type==='ajuste')ns=q; await c.query('UPDATE inventory_items SET current_stock=$1,updated_at=NOW() WHERE id=$2',[ns,req.params.id]); await c.query('INSERT INTO inventory_movements(item_id,type,quantity,reason) VALUES($1,$2,$3,$4)',[req.params.id,type,q,reason||null]); await c.query('COMMIT'); res.json({ok:true,current_stock:ns})}catch(e){await c.query('ROLLBACK'); console.error(e);res.status(500).json({error:e.message||'No se pudo registrar movimiento.'})}finally{c.release()}});
+app.get('/api/admin/inventory_movements',auth,async(req,res)=>{const r=await pool.query(`SELECT m.*,i.name item_name,i.unit FROM inventory_movements m JOIN inventory_items i ON i.id=m.item_id ORDER BY m.created_at DESC LIMIT 200`);res.json({items:r.rows})});
+app.post('/api/admin/weekly_menus',auth,async(req,res)=>{const c=await pool.connect();try{const {week_start,week_end,notes,days}=req.body;if(!week_start||!week_end)return res.status(400).json({error:'Faltan fechas.'}); await c.query('BEGIN'); const w=await c.query('INSERT INTO weekly_menus(week_start,week_end,notes) VALUES($1,$2,$3) RETURNING *',[week_start,week_end,notes||null]); for(const d of days||[]) await c.query('INSERT INTO weekly_menu_days(weekly_menu_id,day_name,menu_date,title,planned_portions,notes) VALUES($1,$2,$3,$4,$5,$6)',[w.rows[0].id,d.day_name,d.menu_date||null,d.title||null,Number(d.planned_portions||0),d.notes||null]); await c.query('COMMIT'); res.status(201).json({item:w.rows[0]})}catch(e){await c.query('ROLLBACK');console.error(e);res.status(500).json({error:'No se pudo guardar minuta.'})}finally{c.release()}});
+app.get('/api/admin/weekly_menus',auth,async(req,res)=>{const w=await pool.query('SELECT * FROM weekly_menus ORDER BY week_start DESC LIMIT 50');const full=[];for(const x of w.rows){const d=await pool.query('SELECT * FROM weekly_menu_days WHERE weekly_menu_id=$1 ORDER BY id',[x.id]);full.push({...x,days:d.rows})}res.json({items:full})}); app.delete('/api/admin/weekly_menus/:id',auth,async(req,res)=>{await pool.query('DELETE FROM weekly_menus WHERE id=$1',[req.params.id]);res.json({ok:true})});
+app.post('/api/admin/rations',auth,async(req,res)=>{const b=req.body, portions=Number(b.planned_portions||0), total=int(b.estimated_total_cost), price=int(b.sale_price), cpp=portions>0?Math.round(total/portions):0;const r=await pool.query('INSERT INTO rations(ration_date,title,planned_portions,estimated_total_cost,estimated_cost_per_portion,sale_price,estimated_margin,notes) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',[b.ration_date||new Date().toISOString().slice(0,10),b.title,portions,total,cpp,price,price-cpp,b.notes||null]);res.status(201).json({item:r.rows[0]})}); app.get('/api/admin/rations',auth,async(req,res)=>{const r=await pool.query('SELECT * FROM rations ORDER BY ration_date DESC,id DESC LIMIT 100');res.json({items:r.rows})}); app.delete('/api/admin/rations/:id',auth,async(req,res)=>{await pool.query('DELETE FROM rations WHERE id=$1',[req.params.id]);res.json({ok:true})});
+pool.query(schema).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});
