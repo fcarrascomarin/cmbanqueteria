@@ -2,10 +2,15 @@
 require('dotenv').config();
 const express=require('express'), cors=require('cors'), session=require('express-session'), nodemailer=require('nodemailer');
 const {Pool}=require('pg');
-const app=express(); const PORT=process.env.PORT||3000; const SITE_URL=process.env.SITE_URL||`http://localhost:${PORT}`;
+cors=require('cors'), session=require('express-session'), nodemailer=require('nodemailer');
+const app=express(); 
+app.set("trust proxy", 1);
+
+const PORT = process.env.PORT || 3000;
+const SITE_URL = process.env.SITE_URL || `http://localhost:${PORT}`;
 const pool=new Pool({connectionString:process.env.DATABASE_URL, ssl:process.env.DATABASE_URL?.includes('neon.tech')?{rejectUnauthorized:false}:undefined});
 app.use(cors()); app.use(express.json({limit:'1mb'})); app.use(express.urlencoded({extended:true}));
-app.use(session({name:'cm_admin_sid',secret:process.env.SESSION_SECRET||'dev-secret-change-me',resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:SITE_URL.startsWith('https://'),maxAge:1000*60*60*8}}));
+app.use(session({name:'cm_admin_sid',secret:process.env.SESSION_SECRET||'dev-secret',resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:SITE_URL.startsWith('https://'),maxAge:1000*60*60*8}}));
 app.use(express.static('public'));
 const schema=`
 
