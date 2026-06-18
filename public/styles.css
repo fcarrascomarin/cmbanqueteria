@@ -27,3 +27,106 @@
     height: 220px;
   }
 }
+
+.hero-photo {
+  position: relative;
+  min-height: 680px;
+  display: flex;
+  align-items: center;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(32, 2, 10, 0.92) 0%,
+      rgba(64, 9, 24, 0.82) 34%,
+      rgba(64, 9, 24, 0.38) 62%,
+      rgba(32, 2, 10, 0.18) 100%
+    ),
+    url("/assets/hero.png");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: #fff;
+  overflow: hidden;
+}
+
+.hero-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 72% 55%, rgba(214, 166, 79, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-copy {
+  max-width: 640px;
+  padding: 72px 0;
+}
+
+.hero-photo .kicker {
+  color: #d6a64f;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.hero-photo h1 {
+  color: #fff;
+  font-size: clamp(2.8rem, 6vw, 5.9rem);
+  line-height: 0.95;
+  max-width: 760px;
+  text-shadow: 0 5px 26px rgba(0, 0, 0, 0.55);
+}
+
+.hero-photo .lead {
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 560px;
+  font-size: 1.18rem;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.hero-secondary {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+.hero-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 900px) {
+  .hero-photo {
+    min-height: 620px;
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(32, 2, 10, 0.9) 0%,
+        rgba(64, 9, 24, 0.76) 48%,
+        rgba(32, 2, 10, 0.38) 100%
+      ),
+      url("/assets/hero.png");
+    background-position: center center;
+  }
+
+  .hero-copy {
+    padding: 56px 0;
+  }
+
+  .hero-photo .lead {
+    font-size: 1.05rem;
+  }
+}
