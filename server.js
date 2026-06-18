@@ -1,8 +1,6 @@
-
 require('dotenv').config();
 const express=require('express'), cors=require('cors'), session=require('express-session'), nodemailer=require('nodemailer');
 const {Pool}=require('pg');
-cors=require('cors'), session=require('express-session'), nodemailer=require('nodemailer');
 const app=express(); 
 app.set("trust proxy", 1);
 
@@ -36,7 +34,39 @@ app.get('/api/public/menu/today',async(req,res)=>{try{const r=await pool.query(`
 
 app.get('/api/public/screen',async(req,res)=>{try{const [menu,media]=await Promise.all([pool.query(`SELECT * FROM daily_menus WHERE menu_date=CURRENT_DATE AND public_visible=TRUE ORDER BY id DESC LIMIT 1`),pool.query(`SELECT * FROM screen_media WHERE active=TRUE ORDER BY sort_order ASC,id DESC`)]);res.json({menu:menu.rows[0]||null,media:media.rows})}catch(e){console.error(e);res.status(500).json({error:'No se pudo cargar pantalla.'})}});
 
-app.post('/api/public/quotes',async(req,res)=>{const b=req.body;if(!b.clientName||!b.phone)return res.status(400).json({error:'Nombre y teléfono son obligatorios.'});try{const r=await pool.query(`INSERT INTO event_quotes(client_name,phone,email,event_date,event_type,guests,location,requested_service,estimated_budget,internal_notes) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,[b.clientName,b.phone,b.email||null,b.eventDate||null,b.eventType||null,b.guests?Number(b.guests):null,b.location||null,b.requestedService||null,int(b.estimatedBudget),b.internalNotes||null]); const m=mailer(); if(m){await m.sendMail({from:process.env.MAIL_FROM||`"CM Banquetería" <${process.env.SMTP_USER}>`,to:process.env.MAIL_TO||'cotizaciones@cmbanqueteria.cl',replyTo:b.email||undefined,subject:`Nueva cotización web - ${b.clientName}`,text:`Nueva cotización\nNombre: ${b.clientName}\nTeléfono: ${b.phone}\nCorreo: ${b.email||'No informado'}\nFecha: ${b.eventDate||'No informada'}\nTipo: ${b.eventType||''}\nPersonas: ${b.guests||''}\nLugar: ${b.location||''}\nServicio: ${b.requestedService||''}\nComentarios: ${b.internalNotes||''}`,html:`<h2>Nueva cotización</h2><p><b>Nombre:</b> ${esc(b.clientName)}</p><p><b>Teléfono:</b> ${esc(b.phone)}</p><p><b>Correo:</b> ${esc(b.email||'')}</p><p><b>Fecha:</b> ${esc(b.eventDate||'')}</p><p><b>Tipo:</b> ${esc(b.eventType||'')}</p><p><b>Personas:</b> ${esc(b.guests||'')}</p><p><b>Lugar:</b> ${esc(b.location||'')}</p><p><b>Servicio:</b> ${esc(b.requestedService||'')}</p><p>${esc(b.internalNotes||'')}</p>`})}res.status(201).json({ok:true,quote:r.rows[0]})}catch(e){console.error(e);res.status(500).json({error:'No se pudo enviar la cotización.'})}});
+app.post('/api/public/quotes',async(req,res)=>{
+  const b=req.body;
+  const clientName=b.clientName||b.client_name;
+  const eventDate=b.eventDate||b.event_date;
+  const eventType=b.eventType||b.event_type;
+  const requestedService=b.requestedService||b.requested_service;
+  const estimatedBudget=b.estimatedBudget||b.estimated_budget;
+  const internalNotes=b.internalNotes||b.internal_notes;
+
+  if(!clientName||!b.phone)return res.status(400).json({error:'Nombre y teléfono son obligatorios.'});
+  try{
+    const r=await pool.query(
+      `INSERT INTO event_quotes(client_name,phone,email,event_date,event_type,guests,location,requested_service,estimated_budget,internal_notes)
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [clientName,b.phone,b.email||null,eventDate||null,eventType||null,b.guests?Number(b.guests):null,b.location||null,requestedService||null,int(estimatedBudget),internalNotes||null]
+    );
+    const m=mailer();
+    if(m){
+      await m.sendMail({
+        from:process.env.MAIL_FROM||`"CM Banquetería" <${process.env.SMTP_USER}>`,
+        to:process.env.MAIL_TO||'cotizaciones@cmbanqueteria.cl',
+        replyTo:b.email||undefined,
+        subject:`Nueva cotización web - ${clientName}`,
+        text:`Nueva cotización\nNombre: ${clientName}\nTeléfono: ${b.phone}\nCorreo: ${b.email||'No informado'}\nFecha: ${eventDate||'No informada'}\nTipo: ${eventType||''}\nPersonas: ${b.guests||''}\nLugar: ${b.location||''}\nServicio: ${requestedService||''}\nComentarios: ${internalNotes||''}`,
+        html:`<h2>Nueva cotización</h2><p><b>Nombre:</b> ${esc(clientName)}</p><p><b>Teléfono:</b> ${esc(b.phone)}</p><p><b>Correo:</b> ${esc(b.email||'')}</p><p><b>Fecha:</b> ${esc(eventDate||'')}</p><p><b>Tipo:</b> ${esc(eventType||'')}</p><p><b>Personas:</b> ${esc(b.guests||'')}</p><p><b>Lugar:</b> ${esc(b.location||'')}</p><p><b>Servicio:</b> ${esc(requestedService||'')}</p><p>${esc(internalNotes||'')}</p>`
+      });
+    }
+    res.status(201).json({ok:true,quote:r.rows[0]});
+  }catch(e){
+    console.error(e);
+    res.status(500).json({error:'No se pudo enviar la cotización.'});
+  }
+});
 app.post('/api/admin/login',(req,res)=>{const {user,password}=req.body; if(user===(process.env.ADMIN_USER||'admin@cmbanqueteria.cl')&&password===(process.env.ADMIN_PASS||'admin')){req.session.admin={user}; return res.json({ok:true,user})} res.status(401).json({error:'Usuario o contraseña incorrectos.'})});
 app.post('/api/admin/logout',(req,res)=>req.session.destroy(()=>res.json({ok:true}))); app.get('/api/admin/me',auth,(req,res)=>res.json({user:req.session.admin.user}));
 app.get('/api/admin/dashboard',auth,async(req,res)=>{try{const [today,w,m,stock,quotes,docs,obs,media]=await Promise.all([pool.query(`SELECT * FROM daily_menus WHERE menu_date=CURRENT_DATE ORDER BY id DESC LIMIT 1`),pool.query(`SELECT COALESCE(SUM(amount),0)::int total FROM expenses WHERE expense_date>=CURRENT_DATE-INTERVAL '7 days'`),pool.query(`SELECT COALESCE(SUM(amount),0)::int total FROM expenses WHERE date_trunc('month',expense_date)=date_trunc('month',CURRENT_DATE)`),pool.query(`SELECT * FROM inventory_items WHERE active=TRUE AND current_stock<=min_stock ORDER BY name LIMIT 10`),pool.query(`SELECT COUNT(*)::int count FROM event_quotes WHERE status IN ('recibida','en_revision','cotizada')`),pool.query(`SELECT * FROM documents WHERE expiration_date IS NOT NULL AND expiration_date<=CURRENT_DATE+INTERVAL '30 days' ORDER BY expiration_date LIMIT 10`),pool.query(`SELECT COUNT(*)::int count FROM observations WHERE status <> 'cerrada'`),pool.query(`SELECT COUNT(*)::int count FROM screen_media WHERE active=TRUE`)]);res.json({todayMenu:today.rows[0]||null,weekExpenses:w.rows[0].total,monthExpenses:m.rows[0].total,criticalStock:stock.rows,pendingQuotes:quotes.rows[0].count,expiringDocuments:docs.rows,openObservations:obs.rows[0].count,activeMedia:media.rows[0].count})}catch(e){console.error(e);res.status(500).json({error:'No se pudo cargar panel.'})}});
