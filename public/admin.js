@@ -44,4 +44,46 @@ async function menus(){
   window.loadMenuDesign=id=>{const item=cache.menuItems.find(x=>Number(x.id)===Number(id));if(!item)return;form.menu_date.value=String(item.menu_date).slice(0,10);form.option_1.value=item.option_1||item.main_dish||'';form.option_2.value=item.option_2||item.side_dish||'';form.option_3.value=item.option_3||item.salad||'';form.accompaniment_change_price.value=item.accompaniment_change_price||1200;form.scrollIntoView({behavior:'smooth',block:'start'});redraw()};
 }
 
+cfg.weekly=['Consultoría','Avances y entregables'];
+const safe=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+const consultationStatus={pendiente:'Pendiente',en_curso:'En curso',completado:'Completado',proyectado:'Proyectado',en_revision:'En revisión',entregado:'Entregado',aprobado:'Aprobado'};
+
+async function dashboard(){
+  const [d,c]=await Promise.all([api('/api/admin/dashboard'),api('/api/admin/consultation/summary')]);
+  const current=c.current?`Semana ${c.current.week_number}: ${safe(c.current.title)}`:'Consultoría completada';
+  content.innerHTML=`
+    <section class="consultation-summary">
+      <div><div class="kicker">Consultoría Metamorfosis Lab</div><h3>${current}</h3><p>${c.completed} de ${c.total} hitos completados · ${c.documents} informes registrados</p></div>
+      <div class="summary-progress"><strong>${c.progress}%</strong><div class="progress-track"><span style="width:${c.progress}%"></span></div><button class="btn btn-secondary btn-small" type="button" onclick="renderView('weekly')">Ver avance</button></div>
+    </section>
+    <div class="stat-grid"><div class="stat"><span>Gastos últimos 7 días</span><strong>${money(d.weekExpenses)}</strong></div><div class="stat"><span>Gastos del mes</span><strong>${money(d.monthExpenses)}</strong></div><div class="stat"><span>Cotizaciones pendientes</span><strong>${d.pendingQuotes}</strong></div><div class="stat"><span>Stock crítico</span><strong>${d.criticalStock.length}</strong></div><div class="stat"><span>Observaciones abiertas</span><strong>${d.openObservations||0}</strong></div><div class="stat"><span>Videos activos</span><strong>${d.activeMedia||0}</strong></div></div>
+    <div class="grid-2"><div class="card"><h3>Menú de hoy</h3>${d.todayMenu?`<p><strong>${safe(d.todayMenu.title)}</strong></p><p class="muted">${safe(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}</div><div class="card"><h3>Documentos por vencer</h3>${d.expiringDocuments.length?d.expiringDocuments.map(x=>`<p><span class="badge red">${fmtDate(x.expiration_date)}</span> ${safe(x.title)}</p>`).join(''):'<p class="muted">Sin vencimientos próximos registrados.</p>'}</div></div>
+    <div class="card" style="margin-top:18px"><h3>Stock crítico</h3>${d.criticalStock.length?d.criticalStock.map(x=>`<p><span class="badge red">${x.current_stock} ${safe(x.unit)}</span> ${safe(x.name)} · mínimo: ${x.min_stock}</p>`).join(''):'<p class="muted">Sin alertas de stock.</p>'}</div>`;
+}
+
+async function weekly(){
+  viewTitle.textContent='Seguimiento de la consultoría';
+  const data=await api('/api/admin/consultation'),milestones=data.milestones,documents=data.documents;
+  const completed=milestones.filter(x=>x.status==='completado').length,progress=milestones.length?Math.round(completed*100/milestones.length):0,current=milestones.find(x=>x.status==='en_curso');
+  content.innerHTML=`
+    <section class="consultation-hero">
+      <div><div class="kicker">Plan de trabajo CM Banquetería</div><h3>${current?`Etapa actual: ${safe(current.title)}`:'Proceso completado'}</h3><p>Diagnóstico, regularización y consolidación del negocio en seis hitos.</p></div>
+      <div class="consultation-progress"><strong>${progress}%</strong><div class="progress-track"><span style="width:${progress}%"></span></div><small>${completed} de ${milestones.length} hitos completados</small></div>
+    </section>
+    <div class="consultation-tabs" role="tablist"><button class="btn btn-primary" type="button" data-consult-tab="timeline">Línea de tiempo</button><button class="btn btn-secondary" type="button" data-consult-tab="reports">Informes y entregables</button></div>
+    <section id="consultTimeline" class="consultation-panel">
+      <div class="consultation-timeline">${milestones.map(m=>{const deliverables=m.deliverables.split('|'),count=documents.filter(d=>Number(d.milestone_id)===Number(m.id)).length;return `<article class="milestone ${m.status}"><div class="milestone-marker">${m.status==='completado'?'✓':m.week_number}</div><div class="milestone-body"><div class="milestone-heading"><div><span class="badge ${m.status==='completado'?'green':m.status==='en_curso'?'blue':''}">${consultationStatus[m.status]}</span><h3>Semana ${m.week_number} · ${safe(m.title)}</h3></div><span class="milestone-doc-count">${count} informe${count===1?'':'s'}</span></div><p>${safe(m.objective)}</p><div class="deliverable-list">${deliverables.map(x=>`<span>${safe(x)}</span>`).join('')}</div><div class="row-actions">${m.status==='en_curso'?`<button class="btn btn-primary btn-small" type="button" onclick="changeConsultationProgress(${m.sort_order+1})">Completar hito</button>`:`<button class="btn btn-secondary btn-small" type="button" onclick="changeConsultationProgress(${m.sort_order})">${m.status==='completado'?'Volver a esta etapa':'Marcar como etapa actual'}</button>`}<button class="btn btn-secondary btn-small" type="button" onclick="openConsultationDocumentForm(${m.id})">Agregar informe</button></div></div></article>`}).join('')}</div>
+    </section>
+    <section id="consultReports" class="consultation-panel hidden">
+      <div class="toolbar"><div><h3>Registro de informes y entregables</h3><p class="admin-help">Registra aquí los enlaces a informes, actas, fichas, matrices y respaldos de cada hito.</p></div><button class="btn btn-primary" type="button" onclick="openConsultationDocumentForm()">Agregar informe</button></div>
+      ${table(['Hito','Informe','Tipo','Fecha','Estado','Archivo','Acciones'],documents.map(d=>`<tr><td>Semana ${d.milestone_order}<br><small>${safe(d.milestone_title)}</small></td><td><strong>${safe(d.title)}</strong><br><small>${safe(d.notes||'')}</small></td><td>${safe(d.document_type)}</td><td>${fmtDate(d.report_date)}</td><td><span class="badge ${d.status==='aprobado'?'green':'blue'}">${consultationStatus[d.status]||safe(d.status)}</span></td><td><a class="btn btn-secondary btn-small" href="${safe(d.file_url)}" target="_blank" rel="noopener">Abrir</a></td><td><button class="btn btn-danger btn-small" type="button" onclick="removeConsultationDocument(${d.id})">Eliminar</button></td></tr>`))}
+    </section>`;
+  cache.consultationMilestones=milestones;
+  document.querySelectorAll('[data-consult-tab]').forEach(button=>button.onclick=()=>{const timeline=button.dataset.consultTab==='timeline';document.querySelector('#consultTimeline').classList.toggle('hidden',!timeline);document.querySelector('#consultReports').classList.toggle('hidden',timeline);document.querySelectorAll('[data-consult-tab]').forEach(x=>{x.classList.toggle('btn-primary',x===button);x.classList.toggle('btn-secondary',x!==button)})});
+}
+
+window.changeConsultationProgress=async order=>{await api('/api/admin/consultation/progress',{method:'POST',body:JSON.stringify({current_order:order})});weekly()};
+window.removeConsultationDocument=async id=>{if(!confirm('¿Eliminar este informe del registro?'))return;await api(`/api/admin/consultation/documents/${id}`,{method:'DELETE'});weekly()};
+window.openConsultationDocumentForm=selectedId=>{const milestones=cache.consultationMilestones||[],options=milestones.map(m=>`<option value="${m.id}" ${Number(selectedId)===Number(m.id)?'selected':''}>Semana ${m.week_number} · ${safe(m.title)}</option>`).join('');openForm('Agregar informe o entregable',`<div class="form-line"><label>Hito</label><select name="milestone_id" required>${options}</select></div><div class="two-cols">${field('title','Nombre del informe','text','','required')}${selectField('document_type','Tipo',['Informe','Acta','Checklist','Croquis','Ficha','Matriz','Registro','Plan de acción','Otro'])}</div><div class="two-cols">${field('report_date','Fecha','date',today(),'required')}${selectField('status','Estado',['proyectado','en_revision','entregado','aprobado'])}</div>${field('file_url','Enlace al archivo','url','','required placeholder="https://drive.google.com/..."')}${textArea('notes','Descripción breve')}`,async e=>{e.preventDefault();await api('/api/admin/consultation/documents',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget).entries()))});modal.close();weekly()})};
+
 checkAuth();

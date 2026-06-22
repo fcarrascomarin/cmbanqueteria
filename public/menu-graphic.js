@@ -3,7 +3,7 @@
   let templatePromise;
 
   function loadTemplate(){
-    if(!templatePromise)templatePromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-template.png?v=20260622'});
+    if(!templatePromise)templatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-template.png?v=20260623-consultoria'});
     return templatePromise;
   }
 
@@ -27,7 +27,11 @@
 
   function menuOptions(menu){return [menu.option_1||menu.main_dish||'Opción 1',menu.option_2||menu.side_dish||'Opción 2',menu.option_3||menu.salad||'Opción 3']}
 
- 
+  function drawFriesIcon(ctx){
+    const x=472,y=815,r=50;ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=colors.wine;ctx.fill();ctx.strokeStyle=colors.white;ctx.lineWidth=4;ctx.stroke();ctx.beginPath();ctx.arc(x,y,r-7,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle=colors.white;ctx.lineWidth=4;ctx.lineCap='round';[[450,785,456,823],[462,779,465,821],[475,783,474,823],[487,777,482,823],[498,785,490,824]].forEach(v=>{ctx.beginPath();ctx.moveTo(v[0],v[1]);ctx.lineTo(v[2],v[3]);ctx.stroke()});ctx.beginPath();ctx.moveTo(447,813);ctx.lineTo(455,845);ctx.lineTo(490,845);ctx.lineTo(499,813);ctx.closePath();ctx.stroke();ctx.restore();
+  }
+
   function drawLandscape(ctx,menu,template){
     const w=1920,h=1080;if(template)ctx.drawImage(template,0,0,w,h);else{ctx.fillStyle=colors.deep;ctx.fillRect(0,0,w,h)}
     centered(ctx,dateLabel(menu.menu_date),960,449,1060,92,62,400,'Allura, "Brush Script MT", cursive');
@@ -44,8 +48,10 @@
   }
 
   async function render(menu,format='landscape'){
-    await Promise.all([document.fonts?.load('400 92px Allura'),document.fonts?.load('700 43px "Roboto Condensed"'),document.fonts?.ready]);
-    const template=await loadTemplate(),canvas=document.createElement('canvas');canvas.width=format==='portrait'?1080:1920;canvas.height=format==='portrait'?1920:1080;
+    const fonts=document.fonts?Promise.allSettled([document.fonts.load('400 92px Allura'),document.fonts.load('700 43px "Roboto Condensed"')]):Promise.resolve();
+    const fontTimeout=new Promise(resolve=>setTimeout(resolve,650));
+    const templateTimeout=new Promise(resolve=>setTimeout(()=>resolve(null),1800));
+    const [template]=await Promise.all([Promise.race([loadTemplate(),templateTimeout]),Promise.race([fonts,fontTimeout])]),canvas=document.createElement('canvas');canvas.width=format==='portrait'?1080:1920;canvas.height=format==='portrait'?1920:1080;
     const ctx=canvas.getContext('2d');if(format==='portrait')drawPortrait(ctx,menu,template);else drawLandscape(ctx,menu,template);return canvas;
   }
 
