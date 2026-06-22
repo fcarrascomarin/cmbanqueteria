@@ -10,7 +10,9 @@ Versión alineada con el plan de trabajo de CM Banquetería: ordenar, medir, reg
 - Bitácora diaria de observaciones.
 - Gastos.
 - Inventario y stock crítico.
-- Menús diarios editables.
+- Generador diario de menús con publicación automática en la web.
+- Descarga para pantalla en video MP4 16:9 de 30 segundos.
+- Descarga para Instagram en imagen PNG 9:16.
 - Minutas semanales.
 - Costeo/raciones.
 - Cotizaciones de eventos.
