@@ -91,13 +91,13 @@ app.post('/api/admin/daily_menus/publish',auth,async(req,res)=>{
   }finally{c.release()}
 });
 app.post('/api/admin/daily_menus/video',auth,async(req,res)=>{
-  const match=String(req.body.image||'').match(/^data:image\/png;base64,(.+)$/);
+  const match=String(req.body.image||'').match(/^data:image\/(png|jpeg);base64,(.+)$/);
   if(!match)return res.status(400).json({error:'La imagen del menú no es válida.'});
   let ffmpeg=process.env.FFMPEG_PATH||'ffmpeg';
   try{ffmpeg=require('ffmpeg-static')||ffmpeg}catch{}
-  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cm-menu-')), input=path.join(dir,'menu.png'), output=path.join(dir,'menu.mp4');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cm-menu-')), input=path.join(dir,match[1]==='jpeg'?'menu.jpg':'menu.png'), output=path.join(dir,'menu.mp4');
   try{
-    fs.writeFileSync(input,Buffer.from(match[1],'base64'));
+    fs.writeFileSync(input,Buffer.from(match[2],'base64'));
     await new Promise((resolve,reject)=>{
       const proc=spawn(ffmpeg,['-y','-loop','1','-i',input,'-t','30','-r','30','-c:v','libx264','-preset','veryfast','-pix_fmt','yuv420p','-movflags','+faststart','-vf','scale=1920:1080',output]);
       let details=''; proc.stderr.on('data',d=>details+=d); proc.on('error',reject); proc.on('close',code=>code===0?resolve():reject(Error(details||`FFmpeg terminó con código ${code}`)));
