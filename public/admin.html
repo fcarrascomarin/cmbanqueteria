@@ -1,2 +1,33 @@
-
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Panel interno · CM Banquetería</title><link rel="stylesheet" href="/styles.css"></head><body><div id="loginView" class="login-page"><form class="card login-card form-grid" id="loginForm"><img src="/assets/logo-cm.png" style="width:120px;margin:auto" alt="CM"><div><div class="kicker">Acceso interno</div><h2>CM Administración</h2><p class="muted">Panel privado para administrar bitácora diaria, gastos, stock, costeo, menús, minutas, raciones, cotizaciones, personal, documentos y pantallas del restaurant.</p></div><div class="form-line"><label>Usuario</label><input name="user" type="email" required></div><div class="form-line"><label>Contraseña</label><input name="password" type="password" required></div><button class="btn btn-primary" type="submit">Ingresar</button><a class="btn btn-secondary" href="/">Volver a la web</a></form></div><div id="adminView" class="hidden"><header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel interno<br><small>Administración</small></span></a><div style="display:flex;gap:10px"><a class="btn btn-secondary" href="/pantalla.html" target="_blank">Pantalla restaurant</a><a class="btn btn-secondary" href="/" target="_blank">Ver web</a><button class="btn btn-primary" id="logoutBtn">Salir</button></div></div></header><div class="admin-shell"><aside class="sidebar"><h3>Módulos</h3><button class="side-btn active" data-view="dashboard">Panel</button><button class="side-btn" data-view="observations">Bitácora diaria</button><button class="side-btn" data-view="expenses">Gastos</button><button class="side-btn" data-view="inventory">Stock</button><button class="side-btn" data-view="menus">Menús diarios</button><button class="side-btn" data-view="weekly">Minutas semanales</button><button class="side-btn" data-view="rations">Costeo / Raciones</button><button class="side-btn" data-view="quotes">Cotizaciones</button><button class="side-btn" data-view="staff">Personal</button><button class="side-btn" data-view="documents">Documentos</button><button class="side-btn" data-view="screenMedia">Pantallas / videos</button></aside><main class="admin-main"><div class="toolbar"><div><div class="kicker" id="viewKicker">Panel</div><h2 id="viewTitle">Resumen operativo</h2></div><div id="viewActions"></div></div><section id="content"></section></main></div></div><dialog class="modal" id="modal"><form class="modal-content form-grid" id="modalForm"></form></dialog><script src="/admin.js"></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Panel interno · CM Banquetería</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="loginView" class="login-page">
+    <form class="card login-card form-grid" id="loginForm">
+      <img src="/assets/logo-cm.png" style="width:120px;margin:auto" alt="CM">
+      <div><div class="kicker">Acceso interno</div><h2>CM Administración</h2><p class="muted">Panel privado para administrar la operación del restaurant.</p></div>
+      <div class="form-line"><label>Usuario</label><input name="user" type="email" required></div>
+      <div class="form-line"><label>Contraseña</label><input name="password" type="password" required></div>
+      <button class="btn btn-primary" type="submit">Ingresar</button><a class="btn btn-secondary" href="/">Volver a la web</a>
+    </form>
+  </div>
+  <div id="adminView" class="hidden">
+    <header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel interno<br><small>Administración</small></span></a><div style="display:flex;gap:10px"><a class="btn btn-secondary" href="/pantalla.html" target="_blank">Pantalla restaurant</a><a class="btn btn-secondary" href="/" target="_blank">Ver web</a><button class="btn btn-primary" id="logoutBtn">Salir</button></div></div></header>
+    <div class="admin-shell">
+      <aside class="sidebar"><h3>Módulos</h3><button class="side-btn active" data-view="dashboard">Panel</button><button class="side-btn" data-view="observations">Bitácora diaria</button><button class="side-btn" data-view="expenses">Gastos</button><button class="side-btn" data-view="inventory">Stock</button><button class="side-btn" data-view="menus">Crear menú</button><button class="side-btn" data-view="weekly">Minutas semanales</button><button class="side-btn" data-view="rations">Costeo / Raciones</button><button class="side-btn" data-view="quotes">Cotizaciones</button><button class="side-btn" data-view="staff">Personal</button><button class="side-btn" data-view="documents">Documentos</button><button class="side-btn" data-view="screenMedia">Pantallas / videos</button></aside>
+      <main class="admin-main"><div class="toolbar"><div><div class="kicker" id="viewKicker">Panel</div><h2 id="viewTitle">Resumen operativo</h2></div><div id="viewActions"></div></div><section id="content"></section></main>
+    </div>
+  </div>
+  <dialog class="modal" id="modal"><form class="modal-content form-grid" id="modalForm"></form></dialog>
+  <script src="/menu-graphic.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

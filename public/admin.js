@@ -2,4 +2,45 @@ const money=v=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',ma
 async function observations(){addAction('Agregar observación',()=>openForm('Agregar observación',`<div class="two-cols">${field('obs_date','Fecha','date',today())}${selectField('area','Área',['Cocina','Comedor','Stock','Compras','Personal','Cliente','Sanitario','Caja','Otro'])}</div>${field('title','Título')}<div class="two-cols">${selectField('priority','Prioridad',['baja','media','alta'])}${selectField('status','Estado',['abierta','en_revision','cerrada'])}</div>${textArea('description','Descripción / observación diaria')}`,async e=>{e.preventDefault();await api('/api/admin/observations',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget).entries()))});modal.close();observations()}));const d=await api('/api/admin/observations');content.innerHTML=table(['Fecha','Área','Título','Prioridad','Estado','Descripción','Acciones'],d.items.map(x=>`<tr><td>${fmtDate(x.obs_date)}</td><td>${x.area}</td><td>${x.title}</td><td><span class="badge ${x.priority==='alta'?'red':''}">${x.priority}</span></td><td>${x.status}</td><td>${x.description||''}</td><td><button class="btn btn-danger btn-small" onclick="removeRow('observations',${x.id})">Eliminar</button></td></tr>`))}
 async function screenMedia(){addAction('Agregar video/imagen',()=>openForm('Agregar video o imagen para pantalla',`<div class="two-cols">${field('title','Título')}${selectField('media_type','Tipo',['video','image'])}</div>${field('url','URL del archivo o video')}<div class="two-cols">${selectField('active','Activo',['true','false'])}${field('sort_order','Orden','number',0)}</div><div class="two-cols">${field('duration_seconds','Duración segundos','number',10)}<div></div></div>${textArea('notes','Notas internas')}<div class="notice">Usa links directos a videos/imágenes. La vista para TV está en /pantalla.html.</div>`,async e=>{e.preventDefault();await api('/api/admin/screen_media',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget).entries()))});modal.close();screenMedia()}));const d=await api('/api/admin/screen_media');content.innerHTML=table(['Orden','Título','Tipo','Activo','Duración','URL','Acciones'],d.items.map(x=>`<tr><td>${x.sort_order}</td><td>${x.title}</td><td>${x.media_type}</td><td><span class="badge ${x.active?'green':'red'}">${x.active?'Sí':'No'}</span></td><td>${x.duration_seconds}s</td><td><a href="${x.url}" target="_blank">Abrir</a></td><td><button class="btn btn-danger btn-small" onclick="removeRow('screen_media',${x.id})">Eliminar</button></td></tr>`))}
 
+async function menus(){
+  viewTitle.textContent='Generador de gráficas del menú';
+  const d=await api('/api/admin/daily_menus');cache.menuItems=d.items;
+  content.innerHTML=`
+    <div class="menu-studio">
+      <form class="card form-grid menu-editor" id="menuGraphicForm">
+        <div><div class="kicker">Generador diario</div><h3>Información del menú</h3><p class="admin-help">Completa los datos una sola vez. Al guardar, el menú se publica automáticamente en la web.</p></div>
+        ${field('menu_date','Fecha','date',today(),'required')}
+        ${field('option_1','Opción 1','text','','required maxlength="90" placeholder="Ej.: Pollo asado con puré"')}
+        ${field('option_2','Opción 2','text','','required maxlength="90" placeholder="Ej.: Chuleta primavera con arroz"')}
+        ${field('option_3','Opción 3','text','','required maxlength="90" placeholder="Ej.: Estofado mixto"')}
+        ${field('accompaniment_change_price','Cambio a papas fritas','number',1200,'required min="0" step="100"')}
+        <button class="btn btn-primary" type="submit" id="publishMenuBtn">Guardar y publicar menú</button>
+        <div class="menu-publish-status" id="menuPublishStatus" aria-live="polite"></div>
+      </form>
+      <section class="card menu-preview-card">
+        <div class="toolbar"><div><div class="kicker">Vista previa</div><h3 id="menuPreviewTitle">Pantalla 16:9</h3></div><div class="preview-switch"><button class="btn btn-small btn-primary" type="button" data-format="landscape">Pantalla</button><button class="btn btn-small btn-secondary" type="button" data-format="portrait">Instagram</button></div></div>
+        <div class="menu-canvas-wrap landscape" id="menuCanvasWrap"><p class="muted">Generando vista previa...</p></div>
+        <div class="menu-downloads">
+          <button class="btn btn-primary" type="button" id="downloadScreenBtn">Descargar versión pantalla</button>
+          <button class="btn btn-secondary" type="button" id="downloadInstagramBtn">Descargar versión Instagram</button>
+        </div>
+        <p class="admin-help">Pantalla: video MP4 horizontal de 30 segundos. Instagram: imagen PNG vertical para crear una historia.</p>
+      </section>
+    </div>
+    <section class="menu-history">
+      <div class="toolbar"><h3>Menús creados</h3><span class="badge green">Publicación automática</span></div>
+      ${table(['Fecha','Opciones','Cambio acompañamiento','Estado','Acciones'],d.items.map(x=>`<tr><td>${fmtDate(x.menu_date)}</td><td>${[x.option_1||x.main_dish,x.option_2||x.side_dish,x.option_3||x.salad].filter(Boolean).map(v=>`<div>${v}</div>`).join('')}</td><td>+$${new Intl.NumberFormat('es-CL').format(x.accompaniment_change_price||0)}</td><td><span class="badge ${x.public_visible?'green':'red'}">${x.public_visible?'Publicado':'Anterior'}</span></td><td class="row-actions"><button class="btn btn-secondary btn-small" type="button" onclick="loadMenuDesign(${x.id})">Usar datos</button><button class="btn btn-danger btn-small" onclick="removeRow('daily_menus',${x.id})">Eliminar</button></td></tr>`))}
+    </section>`;
+
+  const form=document.querySelector('#menuGraphicForm'),wrap=document.querySelector('#menuCanvasWrap');let format='landscape',renderToken=0;
+  const values=()=>Object.fromEntries(new FormData(form).entries());
+  const redraw=async()=>{const token=++renderToken,canvas=await CMMenuGraphic.render(values(),format);if(token!==renderToken)return;wrap.innerHTML='';wrap.className=`menu-canvas-wrap ${format}`;wrap.appendChild(canvas)};
+  let redrawTimer;form.addEventListener('input',()=>{clearTimeout(redrawTimer);redrawTimer=setTimeout(redraw,80)});redraw();
+  document.querySelectorAll('[data-format]').forEach(btn=>btn.onclick=()=>{format=btn.dataset.format;document.querySelectorAll('[data-format]').forEach(x=>{x.classList.toggle('btn-primary',x===btn);x.classList.toggle('btn-secondary',x!==btn)});document.querySelector('#menuPreviewTitle').textContent=format==='landscape'?'Pantalla 16:9':'Instagram 9:16';redraw()});
+  form.onsubmit=async e=>{e.preventDefault();const btn=document.querySelector('#publishMenuBtn'),status=document.querySelector('#menuPublishStatus');try{btn.disabled=true;btn.textContent='Publicando...';await api('/api/admin/daily_menus/publish',{method:'POST',body:JSON.stringify(values())});status.className='menu-publish-status success';status.textContent='Menú guardado y publicado correctamente en la web.';setTimeout(()=>menus(),900)}catch(err){status.className='menu-publish-status error';status.textContent=err.message}finally{btn.disabled=false;btn.textContent='Guardar y publicar menú'}};
+  document.querySelector('#downloadInstagramBtn').onclick=async()=>{const canvas=await CMMenuGraphic.render(values(),'portrait');CMMenuGraphic.download(canvas,`menu-instagram-${values().menu_date||today()}.png`)};
+  document.querySelector('#downloadScreenBtn').onclick=async e=>{const btn=e.currentTarget,original=btn.textContent;try{btn.disabled=true;btn.textContent='Generando video de 30 segundos...';const canvas=await CMMenuGraphic.render(values(),'landscape');const res=await fetch('/api/admin/daily_menus/video',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:canvas.toDataURL('image/png'),menu_date:values().menu_date})});if(!res.ok){const data=await res.json().catch(()=>({}));throw Error(data.error||'No se pudo generar el video.')}const blob=await res.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`menu-pantalla-${values().menu_date||today()}.mp4`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent=original}};
+  window.loadMenuDesign=id=>{const item=cache.menuItems.find(x=>Number(x.id)===Number(id));if(!item)return;form.menu_date.value=String(item.menu_date).slice(0,10);form.option_1.value=item.option_1||item.main_dish||'';form.option_2.value=item.option_2||item.side_dish||'';form.option_3.value=item.option_3||item.salad||'';form.accompaniment_change_price.value=item.accompaniment_change_price||1200;form.scrollIntoView({behavior:'smooth',block:'start'});redraw()};
+}
+
 checkAuth();
