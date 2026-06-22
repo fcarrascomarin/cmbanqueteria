@@ -1,78 +1,69 @@
 (function(){
-  const colors={wine:'#7c0b19',deep:'#4a0610',cream:'#fffaf4',gold:'#d6a64f',white:'#fffdf9'};
-  let logoPromise;
+  const colors={wine:'#780b16',deep:'#41030a',cream:'#fbf7f2',white:'#fffdf9'};
+  let templatePromise;
 
-  function loadLogo(){
-    if(!logoPromise)logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/logo-cm.png'});
-    return logoPromise;
+  function loadTemplate(){
+    if(!templatePromise)templatePromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-template.png?v=20260622'});
+    return templatePromise;
   }
 
-  function rounded(ctx,x,y,w,h,r,fill,stroke,line=2){
-    ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line;ctx.stroke()}
+  function fit(ctx,text,maxWidth,startSize,minSize=24,weight=700,family='"Roboto Condensed", Arial, sans-serif'){
+    let size=startSize;
+    do{ctx.font=`${weight} ${size}px ${family}`;if(ctx.measureText(text).width<=maxWidth||size<=minSize)return size;size-=2}while(size>minSize);
+    return minSize;
   }
 
-  function cloth(ctx,w,h){
-    ctx.fillStyle=colors.deep;ctx.fillRect(0,0,w,h);
-    ctx.save();ctx.translate(w/2,h/2);ctx.rotate(-Math.PI/7);ctx.translate(-w/2,-h/2);
-    const size=Math.max(64,Math.round(w/15));
-    for(let y=-h;y<h*2;y+=size){for(let x=-w;x<w*2;x+=size){ctx.fillStyle=((x/size+y/size)&1)?'#8e1824':'#66101a';ctx.fillRect(x,y,size,size)}}
-    ctx.globalAlpha=.18;ctx.strokeStyle='#f5d8d5';ctx.lineWidth=2;
-    for(let x=-w;x<w*2;x+=size/4){ctx.beginPath();ctx.moveTo(x,-h);ctx.lineTo(x,h*2);ctx.stroke()}
-    ctx.restore();
-    const g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,'rgba(35,0,7,.22)');g.addColorStop(.5,'rgba(124,11,25,.16)');g.addColorStop(1,'rgba(25,0,5,.42)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
-  }
-
-  function fit(ctx,text,maxWidth,startSize,minSize=24,weight=700,family='Montserrat, Arial, sans-serif'){
-    let size=startSize;do{ctx.font=`${weight} ${size}px ${family}`;if(ctx.measureText(text).width<=maxWidth||size<=minSize)return size;size-=2}while(size>minSize);return minSize
-  }
-
-  function centerText(ctx,text,x,y,maxWidth,startSize,minSize=24,weight=700,color=colors.white){
-    fit(ctx,text,maxWidth,startSize,minSize,weight);ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y)
+  function centered(ctx,text,x,y,maxWidth,startSize,minSize=24,weight=700,family='"Roboto Condensed", Arial, sans-serif',color=colors.white){
+    fit(ctx,text,maxWidth,startSize,minSize,weight,family);ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y);
   }
 
   function dateLabel(value){
     if(!value)return 'Menú de hoy';
-    const date=new Date(`${value}T12:00:00`),raw=new Intl.DateTimeFormat('es-CL',{weekday:'long',day:'numeric',month:'long'}).format(date);
-    return raw.charAt(0).toUpperCase()+raw.slice(1);
+    const date=new Date(`${String(value).slice(0,10)}T12:00:00`),parts=new Intl.DateTimeFormat('es-CL',{weekday:'long',day:'numeric',month:'long'}).formatToParts(date);
+    const part=type=>parts.find(item=>item.type===type)?.value||'';
+    const cap=text=>text.charAt(0).toUpperCase()+text.slice(1);
+    return `${cap(part('weekday'))} ${part('day')} de ${cap(part('month'))}`;
   }
 
-  function priceLabel(value){return new Intl.NumberFormat('es-CL',{maximumFractionDigits:0}).format(Number(value||0))}
+  function menuOptions(menu){return [menu.option_1||menu.main_dish||'Opción 1',menu.option_2||menu.side_dish||'Opción 2',menu.option_3||menu.salad||'Opción 3']}
 
-  function drawLogo(ctx,logo,x,y,size){
-    ctx.save();ctx.beginPath();ctx.arc(x+size/2,y+size/2,size/2,0,Math.PI*2);ctx.clip();ctx.fillStyle=colors.white;ctx.fillRect(x,y,size,size);if(logo)ctx.drawImage(logo,x,y,size,size);ctx.restore();ctx.strokeStyle=colors.gold;ctx.lineWidth=Math.max(3,size*.025);ctx.beginPath();ctx.arc(x+size/2,y+size/2,size/2,0,Math.PI*2);ctx.stroke()
+  function drawFriesIcon(ctx){
+    const x=472,y=815,r=50;ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=colors.wine;ctx.fill();ctx.strokeStyle=colors.white;ctx.lineWidth=4;ctx.stroke();ctx.beginPath();ctx.arc(x,y,r-7,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle=colors.white;ctx.lineWidth=4;ctx.lineCap='round';[[450,785,456,823],[462,779,465,821],[475,783,474,823],[487,777,482,823],[498,785,490,824]].forEach(v=>{ctx.beginPath();ctx.moveTo(v[0],v[1]);ctx.lineTo(v[2],v[3]);ctx.stroke()});ctx.beginPath();ctx.moveTo(447,813);ctx.lineTo(455,845);ctx.lineTo(490,845);ctx.lineTo(499,813);ctx.closePath();ctx.stroke();ctx.restore();
   }
 
-  function drawLandscape(ctx,m,logo){
-    const w=1920,h=1080;cloth(ctx,w,h);ctx.strokeStyle=colors.white;ctx.lineWidth=7;ctx.strokeRect(45,45,w-90,h-90);ctx.lineWidth=2;ctx.strokeRect(60,60,w-120,h-120);
-    drawLogo(ctx,logo,185,85,190);
-    ctx.fillStyle=colors.white;ctx.textAlign='left';ctx.textBaseline='middle';ctx.font='900 132px Montserrat, Arial, sans-serif';ctx.fillText('MENÚ',445,188);ctx.font='700 70px Montserrat, Arial, sans-serif';ctx.fillText('DEL DÍA',1050,200);ctx.fillRect(1048,245,520,3);
-    rounded(ctx,300,285,1320,64,24,'rgba(72,3,13,.72)',colors.white,2);centerText(ctx,'13:00–16:00     •     +56 9 8774 1182     •     COSTANERA NORTE 1012, LAJA',960,317,1240,31,23,600);
-    centerText(ctx,dateLabel(m.menu_date),960,410,1250,64,38,700);
-    const pills=[['SOPA/ENS.',315],['PROTEÍNA',610],['ACOMPAÑAMIENTO',955],['POSTRE',1395]];
-    pills.forEach(([label,x],i)=>{const width=i===2?390:250;rounded(ctx,x,475,width,60,30,'rgba(101,5,17,.88)',colors.white,3);centerText(ctx,label,x+width/2,506,width-25,28,20,800)});
-    const options=[m.option_1||m.main_dish,m.option_2||m.side_dish,m.option_3||m.salad];
-    options.forEach((text,i)=>{const y=570+i*105;rounded(ctx,410,y,1100,78,18,'rgba(67,2,11,.62)','rgba(255,255,255,.34)',2);rounded(ctx,430,y+14,50,50,25,colors.white);ctx.fillStyle=colors.wine;ctx.font='900 26px Montserrat, Arial, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),455,y+39);centerText(ctx,text||`Opción ${i+1}`,990,y+39,970,42,26,700)});
-    rounded(ctx,360,900,1200,92,22,colors.cream,colors.white,4);ctx.fillStyle=colors.wine;ctx.textAlign='center';ctx.textBaseline='middle';fit(ctx,`Cambio de acompañamiento por papas fritas +$${priceLabel(m.accompaniment_change_price)}`,1080,40,25,800);ctx.fillText(`Cambio de acompañamiento por papas fritas +$${priceLabel(m.accompaniment_change_price)}`,960,947);
+  function drawLandscape(ctx,menu,template){
+    const w=1920,h=1080;if(template)ctx.drawImage(template,0,0,w,h);else{ctx.fillStyle=colors.deep;ctx.fillRect(0,0,w,h)}
+    centered(ctx,dateLabel(menu.menu_date),960,449,1060,92,62,400,'Allura, "Brush Script MT", cursive');
+    menuOptions(menu).forEach((text,index)=>centered(ctx,text,960,625+index*50,720,43,29,700));
+    drawFriesIcon(ctx);
+    const price=Math.max(0,Math.round(Number(menu.accompaniment_change_price||0))),label=`Cambio de acompañamiento por papas fritas +$${price}`;
+    centered(ctx,label,1020,815,1040,42,27,700,'"Roboto Condensed", Arial, sans-serif',colors.wine);
   }
 
-  function drawPortrait(ctx,m,logo){
-    const w=1080,h=1920;cloth(ctx,w,h);ctx.strokeStyle=colors.white;ctx.lineWidth=6;ctx.strokeRect(35,35,w-70,h-70);ctx.lineWidth=2;ctx.strokeRect(50,50,w-100,h-100);
-    drawLogo(ctx,logo,405,95,270);centerText(ctx,'MENÚ DEL DÍA',540,445,930,86,50,900);ctx.fillStyle=colors.gold;ctx.fillRect(235,510,610,4);
-    rounded(ctx,115,555,850,120,30,'rgba(72,3,13,.72)',colors.white,2);centerText(ctx,'13:00–16:00  •  +56 9 8774 1182',540,590,780,31,23,700);centerText(ctx,'COSTANERA NORTE 1012, LAJA',540,635,780,27,20,600);
-    centerText(ctx,dateLabel(m.menu_date),540,760,900,58,36,700);
-    centerText(ctx,'SOPA O ENSALADA  +  PLATO  +  POSTRE',540,855,930,31,21,800);
-    const options=[m.option_1||m.main_dish,m.option_2||m.side_dish,m.option_3||m.salad];
-    options.forEach((text,i)=>{const y=925+i*210;rounded(ctx,100,y,880,158,24,'rgba(67,2,11,.68)','rgba(255,255,255,.38)',2);rounded(ctx,140,y+49,60,60,30,colors.white);ctx.fillStyle=colors.wine;ctx.font='900 31px Montserrat, Arial, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),170,y+79);centerText(ctx,text||`Opción ${i+1}`,595,y+79,720,45,27,700)});
-    rounded(ctx,90,1605,900,150,28,colors.cream,colors.white,4);centerText(ctx,'CAMBIA TU ACOMPAÑAMIENTO',540,1655,820,34,24,800,colors.wine);centerText(ctx,`Papas fritas +$${priceLabel(m.accompaniment_change_price)}`,540,1710,780,43,28,900,colors.wine);centerText(ctx,'CM BANQUETERÍA • LAJA, CHILE',540,1820,850,25,20,700);
+  function drawPortrait(ctx,menu,template){
+    const w=1080,h=1920,landscape=document.createElement('canvas');landscape.width=1920;landscape.height=1080;drawLandscape(landscape.getContext('2d'),menu,template);
+    ctx.save();ctx.filter='blur(16px) brightness(.42)';ctx.drawImage(landscape,-1180,0,3413,1920);ctx.restore();ctx.fillStyle='rgba(84,3,15,.52)';ctx.fillRect(0,0,w,h);
+    const imageHeight=608,y=(h-imageHeight)/2;ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=32;ctx.drawImage(landscape,0,y,w,imageHeight);ctx.shadowColor='transparent';ctx.strokeStyle=colors.white;ctx.lineWidth=3;ctx.strokeRect(18,y+18,w-36,imageHeight-36);
   }
 
   async function render(menu,format='landscape'){
-    await document.fonts?.ready;const logo=await loadLogo(),canvas=document.createElement('canvas');
-    canvas.width=format==='portrait'?1080:1920;canvas.height=format==='portrait'?1920:1080;
-    const ctx=canvas.getContext('2d');if(format==='portrait')drawPortrait(ctx,menu,logo);else drawLandscape(ctx,menu,logo);return canvas
+    await Promise.all([document.fonts?.load('400 92px Allura'),document.fonts?.load('700 43px "Roboto Condensed"'),document.fonts?.ready]);
+    const template=await loadTemplate(),canvas=document.createElement('canvas');canvas.width=format==='portrait'?1080:1920;canvas.height=format==='portrait'?1920:1080;
+    const ctx=canvas.getContext('2d');if(format==='portrait')drawPortrait(ctx,menu,template);else drawLandscape(ctx,menu,template);return canvas;
   }
 
   function download(canvas,name){const a=document.createElement('a');a.download=name;a.href=canvas.toDataURL('image/png');a.click()}
 
-  window.CMMenuGraphic={render,download,dateLabel};
+  function recordWebM(source,seconds=30){
+    return new Promise((resolve,reject)=>{
+      if(!source.captureStream||!window.MediaRecorder)return reject(Error('Este navegador no permite crear videos localmente.'));
+      const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const ctx=canvas.getContext('2d'),stream=canvas.captureStream(2);
+      const types=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'],mimeType=types.find(type=>MediaRecorder.isTypeSupported(type));if(!mimeType)return reject(Error('Este navegador no admite exportación de video WebM.'));
+      const parts=[],recorder=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:5000000});recorder.ondataavailable=e=>{if(e.data.size)parts.push(e.data)};recorder.onerror=e=>reject(e.error||Error('No se pudo grabar el video.'));recorder.onstop=()=>{stream.getTracks().forEach(track=>track.stop());resolve(new Blob(parts,{type:mimeType}))};
+      let frame=0;const paint=()=>{ctx.drawImage(source,0,0);ctx.fillStyle=frame++%2?'rgba(255,255,255,.002)':'rgba(255,255,255,.001)';ctx.fillRect(0,0,2,2)};paint();recorder.start(1000);const timer=setInterval(paint,500);setTimeout(()=>{clearInterval(timer);paint();recorder.stop()},seconds*1000);
+    });
+  }
+
+  window.CMMenuGraphic={render,download,recordWebM,dateLabel};
 })();
