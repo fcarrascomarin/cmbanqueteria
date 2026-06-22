@@ -13,7 +13,9 @@ Versión alineada con el plan de trabajo de CM Banquetería: ordenar, medir, reg
 - Generador diario de menús con publicación automática en la web.
 - Descarga para pantalla en video MP4 16:9 de 30 segundos.
 - Descarga para Instagram en imagen PNG 9:16.
-- Minutas semanales.
+- Seguimiento de la consultoría mediante línea de tiempo de seis hitos.
+- Registro de informes y entregables asociados a cada etapa.
+- Resumen del avance de la consultoría en el panel principal.
 - Costeo/raciones.
 - Cotizaciones de eventos.
 - Personal.
