@@ -10,14 +10,16 @@ Versión alineada con el plan de trabajo de CM Banquetería: ordenar, medir, reg
 - Bitácora diaria de observaciones.
 - Gastos.
 - Compras por imagen: carga de pantallazos, revisión humana, proveedor, gasto y stock controlado.
+- Compras manuales dentro del mismo flujo de revisión y confirmación.
 - Fichas de proveedores con historial de ventas y productos detectados.
-- Inventario y stock crítico.
+- Inventario y stock crítico con actualización posterior a la confirmación de compras.
 - Generador diario de menús con publicación automática en la web.
-- Generador de gráfica promocional para dulces con foto cargada por la administradora.
+- Generador de gráfica promocional para dulces con foto cargada por la administradora y trozo estilizado en plato.
 - Minutas de preparación para cocina con cantidades confirmables e ingredientes.
 - Descarga para pantalla en video MP4 16:9 de 30 segundos.
 - Descarga para Instagram en imagen PNG 9:16.
 - Seguimiento de la consultoría mediante línea de tiempo de seis hitos.
+- Línea de tiempo horizontal de consultoría, con apertura de un hito a la vez.
 - Registro de informes y entregables asociados a cada etapa.
 - Resumen del avance de la consultoría en el panel principal.
 - Entregables individuales con estado, documento y observaciones.
