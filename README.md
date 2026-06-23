@@ -16,6 +16,9 @@ Versión alineada con el plan de trabajo de CM Banquetería: ordenar, medir, reg
 - Seguimiento de la consultoría mediante línea de tiempo de seis hitos.
 - Registro de informes y entregables asociados a cada etapa.
 - Resumen del avance de la consultoría en el panel principal.
+- Entregables individuales con estado, documento y observaciones.
+- Actas estandarizadas de terreno con indicadores y versión imprimible.
+- Formulario público de cotización acompañado por video promocional.
 - Costeo/raciones.
 - Cotizaciones de eventos.
 - Personal.
