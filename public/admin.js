@@ -160,7 +160,7 @@ async function weekly(){
       <div class="toolbar"><div><h3>Actas de terreno y avance</h3><p class="admin-help">Registra trámites, visitas, levantamientos y observaciones operacionales.</p></div><button class="btn btn-primary" type="button" onclick="openFieldRecordForm()">Nueva acta</button></div>
       ${table(['Fecha','Hito / entregable','Tipo','Objetivo','Responsable','Acta','Acciones'],records.map(r=>`<tr><td>${fmtDate(r.record_date)}</td><td>Semana ${r.milestone_order}<br><small>${safe(r.milestone_title)}${r.deliverable_title?` · ${safe(r.deliverable_title)}`:''}</small></td><td>${safe(r.action_type)}</td><td>${safe(r.objective)}</td><td>${safe(r.responsible||'')}</td><td class="row-actions"><a class="btn btn-secondary btn-small" href="/acta.html?id=${r.id}" target="_blank">Ver</a><button class="btn btn-secondary btn-small" type="button" onclick="printFieldRecord(${r.id})">PDF</button></td><td><button class="btn btn-danger btn-small" type="button" onclick="removeFieldRecord(${r.id})">Eliminar</button></td></tr>`))}
       <div class="toolbar consultation-docs-head"><div><h3>Informes complementarios</h3><p class="admin-help">Documentos generales que complementan los entregables específicos.</p></div><button class="btn btn-secondary" type="button" onclick="openConsultationDocumentForm()">Agregar informe</button></div>
-      ${table(['Hito','Informe','Tipo','Fecha','Estado','Archivo','Acciones'],documents.map(d=>`<tr><td>Semana ${d.milestone_order}<br><small>${safe(d.milestone_title)}</small></td><td><strong>${safe(d.title)}</strong><br><small>${safe(d.notes||'')}</small></td><td>${safe(d.document_type)}</td><td>${fmtDate(d.report_date)}</td><td><span class="badge ${d.status==='aprobado'?'green':'blue'}">${consultationStatus[d.status]||safe(d.status)}</span></td><td class="row-actions"><a class="btn btn-secondary btn-small" href="${safe(d.file_url)}" target="_blank" rel="noopener">Abrir</a><button class="btn btn-secondary btn-small" type="button" onclick="printConsultationDocument(${d.id})">PDF</button></td><td><button class="btn btn-danger btn-small" type="button" onclick="removeConsultationDocument(${d.id})">Eliminar</button></td></tr>`))}
+      ${table(['Hito','Informe','Tipo','Fecha','Estado','Archivo','Acciones'],documents.map(d=>`<tr><td>Semana ${d.milestone_order}<br><small>${safe(d.milestone_title)}</small></td><td><strong>${safe(d.title)}</strong><br><small>${safe(d.notes||'')}</small></td><td>${safe(d.document_type)}</td><td>${fmtDate(d.report_date)}</td><td><span class="badge ${d.status==='aprobado'?'green':'blue'}">${consultationStatus[d.status]||safe(d.status)}</span></td><td class="row-actions"><a class="btn btn-secondary btn-small" href="${safe(d.file_url)}" target="_blank" rel="noopener">Abrir</a><button class="btn btn-secondary btn-small" type="button" onclick="downloadConsultationDocument(${d.id})">Descargar</button></td><td><button class="btn btn-danger btn-small" type="button" onclick="removeConsultationDocument(${d.id})">Eliminar</button></td></tr>`))}
     </section>`;
   cache.consultationMilestones=milestones;cache.consultationDeliverables=deliverables;cache.consultationDocuments=documents;cache.consultationRecords=records;
   document.querySelectorAll('[data-consult-tab]').forEach(button=>button.onclick=()=>{const timeline=button.dataset.consultTab==='timeline';document.querySelector('#consultTimeline').classList.toggle('hidden',!timeline);document.querySelector('#consultRecords').classList.toggle('hidden',timeline);document.querySelectorAll('[data-consult-tab]').forEach(x=>{x.classList.toggle('btn-primary',x===button);x.classList.toggle('btn-secondary',x!==button)})});
@@ -168,12 +168,42 @@ async function weekly(){
 
 window.toggleMilestone=el=>el?.classList.toggle('open');
 window.printFieldRecord=id=>window.open(`/acta.html?id=${id}&print=1`,'_blank');
-window.printConsultationDocument=id=>{
+function consultationDownloadUrl(fileUrl){
+  try{
+    const url=new URL(fileUrl);
+    const host=url.hostname.replace(/^www\./,'');
+    if(host==='drive.google.com'){
+      const fileId=url.pathname.match(/\/file\/d\/([^/]+)/)?.[1]||url.searchParams.get('id');
+      if(fileId)return `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`;
+    }
+    if(host==='docs.google.com'){
+      const docMatch=url.pathname.match(/^\/(document|spreadsheets|presentation)\/d\/([^/]+)/);
+      if(docMatch){
+        const kind=docMatch[1],id=docMatch[2];
+        return `https://docs.google.com/${kind}/d/${encodeURIComponent(id)}/export?format=pdf`;
+      }
+    }
+    return fileUrl;
+  }catch{
+    return fileUrl;
+  }
+}
+function downloadExternalFile(fileUrl,title='informe-consultoria'){
+  if(!fileUrl)return alert('Este informe no tiene archivo asociado.');
+  const a=document.createElement('a');
+  a.href=consultationDownloadUrl(fileUrl);
+  a.target='_blank';
+  a.rel='noopener';
+  const fileName=String(title||'informe-consultoria').replace(/[^\w.-]+/g,'_').replace(/^_+|_+$/g,'')||'informe-consultoria';
+  a.download=/\.pdf$/i.test(fileName)?fileName:`${fileName}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+window.downloadConsultationDocument=id=>{
   const d=(cache.consultationDocuments||[]).find(x=>Number(x.id)===Number(id));
   if(!d)return;
-  const w=window.open('','_blank');
-  w.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${safe(d.title)}</title><style>body{font-family:Arial,sans-serif;margin:42px;color:#231f20}h1{color:#5a1624}section{border-top:1px solid #ddd;padding:16px 0}.meta{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.btn{display:none}@media print{a{color:#231f20}}</style></head><body><h1>${safe(d.title)}</h1><p><strong>CM Banquetería · Consultoría</strong></p><section class="meta"><div><strong>Hito</strong><br>Semana ${d.milestone_order} · ${safe(d.milestone_title)}</div><div><strong>Tipo</strong><br>${safe(d.document_type)}</div><div><strong>Fecha</strong><br>${fmtDate(d.report_date)}</div><div><strong>Estado</strong><br>${consultationStatus[d.status]||safe(d.status)}</div></section><section><h2>Descripción</h2><p>${safe(d.notes||'Sin descripción adicional.')}</p></section><section><h2>Archivo asociado</h2><p>${safe(d.file_url)}</p></section><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
-  w.document.close();
+  downloadExternalFile(d.file_url,d.title);
 };
 
 window.openDeliverableForm=id=>{const d=(cache.consultationDeliverables||[]).find(x=>Number(x.id)===Number(id));if(!d)return;openForm('Gestionar entregable',`<div class="notice"><strong>${safe(d.title)}</strong><br>El hito avanzará automáticamente cuando sus entregables estén completados.</div><div class="form-line"><label>Estado</label><select name="status"><option value="pendiente" ${d.status==='pendiente'?'selected':''}>Pendiente</option><option value="en_preparacion" ${d.status==='en_preparacion'?'selected':''}>En preparación</option><option value="completado" ${d.status==='completado'?'selected':''}>Completado</option></select></div><div class="two-cols">${field('document_date','Fecha del documento','date',String(d.document_date||'').slice(0,10))}${field('document_url','Enlace al documento','url',safe(d.document_url||''),'placeholder="https://drive.google.com/..."')}</div>${textArea('notes','Avances, pendientes u observaciones',safe(d.notes||''))}`,async e=>{e.preventDefault();await api(`/api/admin/consultation/deliverables/${id}`,{method:'PATCH',body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget).entries()))});modal.close();weekly()})};
