@@ -89,6 +89,19 @@ async function menus(){
         <p class="admin-help">Pantalla: video MP4 horizontal de 30 segundos. Instagram: imagen PNG vertical para crear una historia.</p>
       </section>
     </div>
+    <section class="card sweet-promo-studio">
+      <div class="sweet-promo-form">
+        <div><div class="kicker">Promoción dulces</div><h3>Gráfica café + dulce</h3><p class="admin-help">Carga la foto del pie, kuchen o dulce y ajusta los textos para descargar una pieza vertical lista para redes.</p></div>
+        <div class="two-cols">${field('sweet_headline','Frase principal','text','¿Quieres endulzar tu día?','maxlength="70"')}${field('sweet_price','Precio','number',2500,'min="0" step="100"')}</div>
+        <div class="two-cols">${field('sweet_lead','Frase inferior 1','text','Lleva un café con un','maxlength="60"')}${field('sweet_product','Frase inferior 2','text','trozo de kuchen por','maxlength="60"')}</div>
+        <div class="form-line"><label>Foto del dulce</label><input id="sweetPhotoInput" type="file" accept="image/jpeg,image/png,image/webp"></div>
+        <div class="menu-downloads"><button class="btn btn-primary" type="button" id="downloadSweetPromoBtn">Descargar promoción de dulce</button><span class="menu-publish-status" id="sweetPromoStatus" aria-live="polite"></span></div>
+      </div>
+      <div class="sweet-promo-preview">
+        <div><div class="kicker">Vista previa</div><h3>Promoción vertical</h3></div>
+        <div class="menu-canvas-wrap sweet" id="sweetPromoCanvasWrap"><p class="muted">Generando vista previa...</p></div>
+      </div>
+    </section>
     <section class="menu-history">
       <div class="toolbar"><h3>Menús creados</h3><span class="badge green">Publicación automática</span></div>
       ${table(['Fecha','Opciones','Cambio acompañamiento','Estado','Acciones'],d.items.map(x=>`<tr><td>${fmtDate(x.menu_date)}</td><td>${[x.option_1||x.main_dish,x.option_2||x.side_dish,x.option_3||x.salad].filter(Boolean).map(v=>`<div>${v}</div>`).join('')}</td><td>+$${new Intl.NumberFormat('es-CL').format(x.accompaniment_change_price||0)}</td><td><span class="badge ${x.public_visible?'green':'red'}">${x.public_visible?'Publicado':'Anterior'}</span></td><td class="row-actions"><button class="btn btn-secondary btn-small" type="button" onclick="loadMenuDesign(${x.id})">Usar datos</button><button class="btn btn-danger btn-small" onclick="removeRow('daily_menus',${x.id})">Eliminar</button></td></tr>`))}
@@ -104,6 +117,29 @@ async function menus(){
   document.querySelector('#downloadScreenBtn').onclick=async e=>{const btn=e.currentTarget,original=btn.textContent,canvas=await CMMenuGraphic.render(values(),'landscape');btn.disabled=true;try{btn.textContent='Generando video MP4...';const res=await fetch('/api/admin/daily_menus/video',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:canvas.toDataURL('image/jpeg',.9),menu_date:values().menu_date})});if(!res.ok)throw Error('mp4-unavailable');const blob=await res.blob();downloadVideoBlob(blob,`menu-pantalla-${values().menu_date||today()}.mp4`)}catch(err){try{btn.textContent='Generando video local (30 segundos)...';const blob=await CMMenuGraphic.recordWebM(canvas,30);downloadVideoBlob(blob,`menu-pantalla-${values().menu_date||today()}.webm`);const status=document.querySelector('#menuPublishStatus');status.className='menu-publish-status success';status.textContent='Video descargado en formato WebM compatible con navegadores y televisores modernos.'}catch(localError){alert(localError.message)}}finally{btn.disabled=false;btn.textContent=original}};
   function downloadVideoBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
   window.loadMenuDesign=id=>{const item=cache.menuItems.find(x=>Number(x.id)===Number(id));if(!item)return;form.menu_date.value=String(item.menu_date).slice(0,10);form.option_1.value=item.option_1||item.main_dish||'';form.option_2.value=item.option_2||item.side_dish||'';form.option_3.value=item.option_3||item.salad||'';form.accompaniment_change_price.value=item.accompaniment_change_price||1200;form.scrollIntoView({behavior:'smooth',block:'start'});redraw()};
+  initSweetPromoGenerator();
+}
+
+function loadLocalImage(file){
+  return new Promise((resolve,reject)=>{
+    if(!file)return resolve(null);
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(Error('No se pudo abrir la foto del dulce.'))};
+    img.src=url;
+  });
+}
+
+function initSweetPromoGenerator(){
+  const wrap=document.querySelector('#sweetPromoCanvasWrap'),photoInput=document.querySelector('#sweetPhotoInput'),status=document.querySelector('#sweetPromoStatus');
+  if(!wrap||!photoInput||!window.CMSweetGraphic)return;
+  let photo=null,token=0;
+  const values=()=>({headline:document.querySelector('[name="sweet_headline"]').value,lead:document.querySelector('[name="sweet_lead"]').value,product:document.querySelector('[name="sweet_product"]').value,price:document.querySelector('[name="sweet_price"]').value});
+  const redraw=async()=>{const current=++token;try{const canvas=await CMSweetGraphic.render(values(),photo);if(current!==token)return;wrap.innerHTML='';wrap.appendChild(canvas);status.textContent=''}catch(error){status.className='menu-publish-status error';status.textContent=error.message}};
+  let timer;document.querySelector('.sweet-promo-studio').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(redraw,120)});
+  photoInput.onchange=async()=>{try{photo=await loadLocalImage(photoInput.files[0]);redraw()}catch(error){status.className='menu-publish-status error';status.textContent=error.message}};
+  document.querySelector('#downloadSweetPromoBtn').onclick=async()=>{const canvas=await CMSweetGraphic.render(values(),photo);CMSweetGraphic.download(canvas,`promocion-dulce-${today()}.png`)};
+  redraw();
 }
 
 cfg.weekly=['Consultoría','Avances y entregables'];

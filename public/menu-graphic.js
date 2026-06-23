@@ -9,6 +9,12 @@
     return portrait?portraitTemplatePromise:landscapeTemplatePromise;
   }
 
+  let sweetTemplatePromise;
+  function loadSweetTemplate(){
+    if(!sweetTemplatePromise)sweetTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/sweet-promo-template.png?v=20260623'});
+    return sweetTemplatePromise;
+  }
+
   function fit(ctx,text,maxWidth,startSize,minSize=24,weight=700,family='"Roboto Condensed", Arial, sans-serif'){
     let size=startSize;
     do{ctx.font=`${weight} ${size}px ${family}`;if(ctx.measureText(text).width<=maxWidth||size<=minSize)return size;size-=2}while(size>minSize);
@@ -69,6 +75,53 @@
 
   function download(canvas,name){const a=document.createElement('a');a.download=name;a.href=canvas.toDataURL('image/png');a.click()}
 
+  function drawCover(ctx,img,x,y,w,h){
+    const scale=Math.max(w/img.width,h/img.height),sw=w/scale,sh=h/scale,sx=(img.width-sw)/2,sy=(img.height-sh)/2;
+    ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
+  }
+
+  function clipEllipse(ctx,x,y,w,h){
+    ctx.beginPath();
+    ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);
+    ctx.clip();
+  }
+
+  function sweetLine(ctx,text,x,y,maxWidth,size,minSize=46){
+    fit(ctx,text,maxWidth,size,minSize,400,'"Playfair Display", Georgia, serif');
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=colors.white;ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=7;ctx.shadowOffsetY=3;ctx.fillText(text,x,y);ctx.shadowColor='transparent';
+  }
+
+  function sweetWrapped(ctx,text,x,y,maxWidth,lineHeight,startSize,minSize=54){
+    fit(ctx,text,maxWidth,startSize,minSize,400,'"Playfair Display", Georgia, serif');
+    const words=String(text||'').split(/\s+/).filter(Boolean),lines=[];let line='';
+    words.forEach(word=>{const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width<=maxWidth)line=test;else{if(line)lines.push(line);line=word}});
+    if(line)lines.push(line);
+    const useLines=lines.slice(0,3),startY=y-((useLines.length-1)*lineHeight/2);
+    ctx.fillStyle=colors.white;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=8;ctx.shadowOffsetY=3;
+    useLines.forEach((value,index)=>ctx.fillText(value,x,startY+index*lineHeight));
+    ctx.shadowColor='transparent';
+  }
+
+  async function renderSweetPromo(data={},photo=null){
+    const fonts=document.fonts?Promise.allSettled([document.fonts.load('400 110px "Playfair Display"'),document.fonts.load('400 92px "Playfair Display"')]):Promise.resolve();
+    const templateTimeout=new Promise(resolve=>setTimeout(()=>resolve(null),1800));
+    const [template]=await Promise.all([Promise.race([loadSweetTemplate(),templateTimeout]),Promise.race([fonts,new Promise(resolve=>setTimeout(resolve,650))])]);
+    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1472;const ctx=canvas.getContext('2d');
+    if(template)ctx.drawImage(template,0,0,canvas.width,canvas.height);else{const grd=ctx.createLinearGradient(0,0,0,1472);grd.addColorStop(0,'#780b16');grd.addColorStop(1,'#b10014');ctx.fillStyle=grd;ctx.fillRect(0,0,1080,1472)}
+    if(photo){
+      ctx.save();clipEllipse(ctx,88,318,635,365);drawCover(ctx,photo,88,318,635,365);ctx.restore();
+      ctx.save();clipEllipse(ctx,492,690,420,255);drawCover(ctx,photo,492,690,420,255);ctx.restore();
+      ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(405,500,318,182,0,0,Math.PI*2);ctx.stroke();
+    }
+    sweetWrapped(ctx,data.headline||'¿Quieres endulzar tu día?',660,185,720,94,112,62);
+    sweetLine(ctx,data.lead||'Lleva un café con un',540,1160,820,62,42);
+    sweetLine(ctx,data.product||'trozo de kuchen por',540,1230,850,74,46);
+    const price=String(data.price||'2500').replace(/[^\d]/g,'')||'2500';
+    sweetLine(ctx,`$${new Intl.NumberFormat('es-CL').format(Number(price))}`,540,1335,560,112,70);
+    ctx.strokeStyle='rgba(255,255,255,.72)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(220,1335);ctx.lineTo(360,1335);ctx.moveTo(720,1335);ctx.lineTo(860,1335);ctx.stroke();
+    return canvas;
+  }
+
   function recordWebM(source,seconds=30){
     return new Promise((resolve,reject)=>{
       if(!source.captureStream||!window.MediaRecorder)return reject(Error('Este navegador no permite crear videos localmente.'));
@@ -80,4 +133,5 @@
   }
 
   window.CMMenuGraphic={render,download,recordWebM,dateLabel};
+  window.CMSweetGraphic={render:renderSweetPromo,download};
 })();

@@ -1187,27 +1187,44 @@ th {
 
 /* Cotización pública con video */
 #cotiza {
-  padding: 46px 0 52px;
+  padding: 54px 0 58px;
 }
 
-#cotiza .section-head {
-  grid-template-columns: minmax(280px, .75fr) minmax(320px, 1fr);
+#cotiza .quote-head {
+  grid-template-columns: minmax(360px, .9fr) minmax(360px, 1fr);
   align-items: center;
-  gap: 24px;
-  margin-bottom: 18px;
+  gap: 34px;
+  margin-bottom: 24px;
+  padding: 24px 30px;
+  border: 1px solid rgba(90, 22, 36, .08);
+  border-radius: 8px;
+  background: #fffaf3;
 }
 
-#cotiza .section-head h2 {
-  max-width: 520px;
-  font-size: clamp(2rem, 3.1vw, 2.9rem);
-  line-height: 1.02;
+#cotiza .quote-head-main {
+  min-width: 0;
 }
 
-#cotiza .section-head .muted {
-  max-width: 590px;
+#cotiza .quote-head .kicker {
+  margin-bottom: 8px;
+  font-size: .72rem;
+}
+
+#cotiza .quote-head h2 {
+  max-width: 620px;
+  font-size: clamp(2.25rem, 3.3vw, 3.25rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+#cotiza .quote-head .muted {
+  max-width: 620px;
   margin: 0;
-  font-size: .98rem;
-  line-height: 1.45;
+  padding-left: 24px;
+  border-left: 3px solid rgba(214, 166, 79, .75);
+  color: var(--osc);
+  font-size: 1.02rem;
+  line-height: 1.55;
 }
 
 .quote-media-grid {
@@ -1325,9 +1342,15 @@ th {
     padding: 42px 0;
   }
 
-  #cotiza .section-head {
+  #cotiza .quote-head {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 14px;
+    padding: 20px;
+  }
+
+  #cotiza .quote-head .muted {
+    padding-left: 0;
+    border-left: 0;
   }
 
   .quote-media-grid {
@@ -1414,6 +1437,13 @@ th {
   margin-inline: auto;
 }
 
+.menu-canvas-wrap.sweet {
+  aspect-ratio: 1080 / 1472;
+  width: min(100%, 420px);
+  margin-inline: auto;
+  background: #740913;
+}
+
 .menu-canvas-wrap canvas {
   display: block;
   width: 100%;
@@ -1437,6 +1467,25 @@ th {
 
 .menu-history {
   margin-top: 28px;
+}
+
+.sweet-promo-studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 22px;
+  align-items: start;
+  margin-top: 24px;
+  border-radius: 8px;
+}
+
+.sweet-promo-form,
+.sweet-promo-preview {
+  display: grid;
+  gap: 14px;
+}
+
+.sweet-promo-studio input[type="file"] {
+  padding: 10px;
 }
 
 #todayMenu {
@@ -1463,6 +1512,10 @@ th {
 
 @media (max-width: 1120px) {
   .menu-studio {
+    grid-template-columns: 1fr;
+  }
+
+  .sweet-promo-studio {
     grid-template-columns: 1fr;
   }
 
