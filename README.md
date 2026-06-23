@@ -13,6 +13,7 @@ Versión alineada con el plan de trabajo de CM Banquetería: ordenar, medir, reg
 - Fichas de proveedores con historial de ventas y productos detectados.
 - Inventario y stock crítico.
 - Generador diario de menús con publicación automática en la web.
+- Generador de gráfica promocional para dulces con foto cargada por la administradora.
 - Minutas de preparación para cocina con cantidades confirmables e ingredientes.
 - Descarga para pantalla en video MP4 16:9 de 30 segundos.
 - Descarga para Instagram en imagen PNG 9:16.
