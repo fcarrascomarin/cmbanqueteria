@@ -123,6 +123,7 @@
           <div><div class="kicker">Cotiza tu evento</div><h2>Cuéntanos qué necesitas.</h2></div>
           <p class="muted">Servicio de banquetería adaptado a las necesidades de tu celebración</p>
         </div>
+        <div class="quote-media-grid">
         <form class="card form-grid" id="quoteForm">
           <div class="two-cols"><div class="form-line"><label>Nombre</label><input name="clientName" required /></div><div class="form-line"><label>Teléfono</label><input name="phone" required /></div></div>
           <div class="two-cols"><div class="form-line"><label>Correo</label><input name="email" type="email" /></div><div class="form-line"><label>Fecha del evento</label><input name="eventDate" type="date" /></div></div>
@@ -132,6 +133,12 @@
           <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Cuéntanos detalles relevantes del evento."></textarea></div>
           <button class="btn btn-primary" type="submit">Enviar solicitud</button>
         </form>
+        <aside class="promo-video-card" aria-label="Video promocional de CM Banquetería">
+          <video id="promoVideo" muted loop playsinline controls poster="/assets/hero.png"></video>
+          <iframe id="promoInstagram" class="hidden" title="Video promocional de Instagram" loading="lazy" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          <div class="promo-video-caption"><span>CM Banquetería</span><strong>Momentos preparados con dedicación</strong></div>
+        </aside>
+        </div>
       </div>
     </section>
   </main>
@@ -169,7 +176,7 @@
     </div>
   </div>
 </footer>
-  <script src="/menu-graphic.js?v=20260623-consultoria"></script>
-  <script src="/public.js?v=20260623-consultoria"></script>
+  <script src="/menu-graphic.js?v=20260623-entregables"></script>
+  <script src="/public.js?v=20260623-entregables"></script>
 </body>
 </html>

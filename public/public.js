@@ -22,3 +22,6 @@ document.querySelector('#quoteForm')?.addEventListener('submit',async e=>{
 });
 
 loadTodayMenu();
+
+async function loadPromoVideo(){try{const res=await fetch('/api/public/promo-video'),data=await res.json(),video=document.querySelector('#promoVideo'),instagram=document.querySelector('#promoInstagram');if(data.video?.url){if(/instagram\.com\/(reel|p)\//i.test(data.video.url)){instagram.src=data.video.url.replace(/\?.*$/,'').replace(/\/$/,'')+'/embed';instagram.classList.remove('hidden');video.classList.add('hidden')}else{video.src=data.video.url;video.setAttribute('aria-label',data.video.title||'Video promocional de CM Banquetería');video.play().catch(()=>{})}}}catch{}}
+loadPromoVideo();
