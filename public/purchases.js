@@ -66,11 +66,37 @@ window.openPurchaseReview=openPurchaseReview;
 window.removePurchaseDocument=async id=>{if(!confirm('¿Eliminar este documento pendiente?'))return;await api(`/api/admin/purchase-documents/${id}`,{method:'DELETE'});purchases()};
 
 async function suppliers(){
+  addAction('Agregar proveedor',()=>openSupplierForm());
   const data=await api('/api/admin/suppliers');
-  content.innerHTML=`<div class="notice"><strong>Proveedores normalizados por RUT.</strong> Se crean al confirmar una compra y acumulan su historial sin duplicar registros.</div>${table(['Proveedor','RUT','Contacto','Compras confirmadas','Total registrado','Acciones'],data.items.map(s=>`<tr><td><strong>${safe(s.name)}</strong><br><small>${safe(s.contact_name||'')}</small></td><td>${safe(s.rut||'')}</td><td>${safe(s.phone||'')}<br><small>${safe(s.email||'')}</small></td><td>${s.purchase_count}</td><td>${money(s.purchase_total)}</td><td><button class="btn btn-secondary btn-small" type="button" onclick="editSupplier(${s.id})">Editar</button></td></tr>`))}`;
+  content.innerHTML=`<div class="notice"><strong>Ficha e historial por proveedor.</strong> Puedes crear proveedores manualmente. Al confirmar boletas y facturas, el historial alimenta las sugerencias de productos para futuras imágenes.</div>${table(['Proveedor','RUT','Rubro','Productos habituales','Compras','Total','Última compra','Acciones'],data.items.map(s=>`<tr><td><strong>${safe(s.name)}</strong><br><small>${safe(s.contact_name||'')}</small></td><td>${safe(s.rut||'')}</td><td>${safe(s.business_type||'')}</td><td>${safe(s.usual_products||'')}</td><td>${s.purchase_count||0}</td><td>${money(s.purchase_total)}</td><td>${fmtDate(s.last_purchase_date)}</td><td class="row-actions"><button class="btn btn-secondary btn-small" type="button" onclick="openSupplierDetail(${s.id})">Ficha</button><button class="btn btn-secondary btn-small" type="button" onclick="editSupplier(${s.id})">Editar</button></td></tr>`))}`;
   cache.suppliers=data.items;
 }
 
-window.editSupplier=id=>{const s=(cache.suppliers||[]).find(x=>Number(x.id)===Number(id));if(!s)return;openForm('Editar proveedor',`<div class="two-cols">${field('name','Nombre','text',safe(s.name),'required')}${field('rut','RUT','text',safe(s.rut||''))}</div><div class="two-cols">${field('contact_name','Persona de contacto','text',safe(s.contact_name||''))}${field('phone','Teléfono','text',safe(s.phone||''))}</div>${field('email','Correo','email',safe(s.email||''))}${textArea('notes','Observaciones',safe(s.notes||''))}`,async e=>{e.preventDefault();await api(`/api/admin/suppliers/${id}`,{method:'PATCH',body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget).entries()))});modal.close();suppliers()})};
+function supplierFormHtml(s={}){
+  return `<div class="two-cols">${field('name','Nombre proveedor','text',safe(s.name||''),'required')}${field('rut','RUT','text',safe(s.rut||''))}</div><div class="two-cols">${field('business_type','Rubro / tipo de venta','text',safe(s.business_type||''))}${field('usual_products','Productos habituales','text',safe(s.usual_products||''))}</div><div class="two-cols">${field('contact_name','Persona de contacto','text',safe(s.contact_name||''))}${field('phone','Teléfono','text',safe(s.phone||''))}</div>${field('email','Correo','email',safe(s.email||''))}${textArea('notes','Observaciones',safe(s.notes||''))}`;
+}
+
+function openSupplierForm(s=null){
+  const isEdit=Boolean(s?.id);
+  openForm(isEdit?'Editar proveedor':'Agregar proveedor',supplierFormHtml(s||{}),async e=>{
+    e.preventDefault();
+    const payload=Object.fromEntries(new FormData(e.currentTarget).entries());
+    await api(isEdit?`/api/admin/suppliers/${s.id}`:'/api/admin/suppliers',{method:isEdit?'PATCH':'POST',body:JSON.stringify(payload)});
+    modal.close();
+    suppliers();
+  });
+}
+
+window.editSupplier=id=>{const s=(cache.suppliers||[]).find(x=>Number(x.id)===Number(id));if(s)openSupplierForm(s)};
+
+window.openSupplierDetail=async id=>{
+  const detail=await api(`/api/admin/suppliers/${id}`),s=detail.item;
+  modal.classList.add('purchase-modal-wide');
+  modalForm.classList.remove('purchase-review-form','purchase-upload-form');
+  modalForm.innerHTML=`<div class="supplier-profile-head"><div><div class="kicker">Ficha proveedor</div><h2>${safe(s.name)}</h2><p class="muted">${safe(s.rut||'Sin RUT registrado')}</p></div><div class="row-actions"><button class="btn btn-secondary btn-small" type="button" id="editSupplierFromDetail">Editar ficha</button><button class="btn btn-secondary btn-small" type="button" id="closeSupplierDetail">Cerrar</button></div></div><div class="supplier-summary"><article><span>Rubro</span><strong>${safe(s.business_type||'Sin clasificar')}</strong></article><article><span>Productos habituales</span><strong>${safe(s.usual_products||'Sin registro')}</strong></article><article><span>Contacto</span><strong>${safe(s.contact_name||s.phone||s.email||'Sin contacto')}</strong></article></div><section class="supplier-history-grid"><div><h3>Historial de ventas</h3>${table(['Fecha','Documento','Total','Pago','Stock'],detail.documents.map(d=>`<tr><td>${fmtDate(d.purchase_date)}</td><td>${purchaseTypes[d.document_type]||safe(d.document_type)}<br><small>${safe(d.document_number||'')}</small></td><td>${money(d.total)}</td><td>${safe(d.payment_status||'')}<br><small>${safe(d.payment_method||'')}</small></td><td>${safe(d.stock_status||'')}</td></tr>`))}</div><div><h3>Productos detectados</h3><div class="supplier-products-list">${detail.products.map(p=>`<article><strong>${safe(p.inventory_name||p.description)}</strong><span>${safe(p.description)} · ${p.times} compra(s)</span><small>${Number(p.total_quantity||0)} ${safe(p.unit||'')} · ${money(p.total_amount)}</small></article>`).join('')||'<p class="muted">Sin productos confirmados todavía.</p>'}</div></div></section>`;
+  modalForm.querySelector('#closeSupplierDetail').onclick=()=>modal.close();
+  modalForm.querySelector('#editSupplierFromDetail').onclick=()=>{modal.close();setTimeout(()=>openSupplierForm(s),0)};
+  modal.showModal();
+};
 
 modal.addEventListener('close',()=>{modal.classList.remove('purchase-modal-wide');modalForm.classList.remove('purchase-review-form','purchase-upload-form')});

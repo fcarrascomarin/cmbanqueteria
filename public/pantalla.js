@@ -10,8 +10,8 @@ function tick(){
 
 async function load(){
   try{
-    const res=await fetch('/api/public/screen',{cache:'no-store'}),data=await res.json();
-    const orders=data.orders||[],messages=data.messages||[],menu=data.menu;
+    const [screenRes,minutaRes]=await Promise.all([fetch('/api/public/screen',{cache:'no-store'}),fetch('/api/public/kitchen-minutas/today',{cache:'no-store'})]),data=await screenRes.json(),minutaData=await minutaRes.json();
+    const orders=data.orders||[],messages=data.messages||[],menu=data.menu,minuta=minutaData.item;
     const active=orders.filter(x=>!['entregado','cancelado'].includes(x.status));
     const prep=active.filter(x=>['confirmado','en_preparacion'].includes(x.status));
     const ready=orders.filter(x=>['listo','entregado'].includes(x.status)).slice(0,16);
@@ -24,7 +24,7 @@ async function load(){
     prepBox.innerHTML=prep.map(orderCard).join('')||'<p class="kds-empty">Sin pedidos pendientes.</p>';
     readyBox.innerHTML=ready.map(orderCard).join('')||'<p class="kds-empty">Sin pedidos listos.</p>';
     messageBox.innerHTML=messages.map(messageCard).join('')||'<p class="kds-empty">Sin mensajes activos.</p>';
-    menuBox.innerHTML=menu?`<h3>${safe(menu.title||'Menú del día')}</h3><p>${[menu.option_1||menu.main_dish,menu.option_2||menu.side_dish,menu.option_3||menu.salad,menu.dessert].filter(Boolean).map(safe).join('<br>')}</p><div class="screen-price">${menu.price?money(menu.price):''}</div><strong>Raciones disponibles: ${menu.available_portions||0}</strong>`:'<p class="kds-empty">No hay menú publicado para hoy.</p>';
+    menuBox.innerHTML=`${menu?`<h3>${safe(menu.title||'Menú del día')}</h3><p>${[menu.option_1||menu.main_dish,menu.option_2||menu.side_dish,menu.option_3||menu.salad,menu.dessert].filter(Boolean).map(safe).join('<br>')}</p><div class="screen-price">${menu.price?money(menu.price):''}</div><strong>Raciones disponibles: ${menu.available_portions||0}</strong>`:'<p class="kds-empty">No hay menú publicado para hoy.</p>'}${minuta?minutaCard(minuta):'<div class="kds-minuta-empty">Sin minuta de preparación confirmada para hoy.</div>'}`;
   }catch(error){
     prepBox.innerHTML='<p class="kds-empty">No se pudo actualizar la pantalla.</p>';
   }
@@ -43,6 +43,10 @@ function orderCard(order){
 
 function messageCard(message){
   return `<article class="kds-message ${safe(message.priority)}"><span>${safe(message.audience)}</span><strong>${safe(message.title)}</strong><p>${safe(message.body)}</p></article>`;
+}
+
+function minutaCard(minuta){
+  return `<section class="kds-minuta"><div class="kds-minuta-head"><span>Minuta cocina</span><strong>${safe(minuta.title)}</strong><small>${minuta.planned_portions||0} raciones</small></div>${(minuta.preparations||[]).map(prep=>`<article class="kds-preparation"><h3>${safe(prep.name)}${prep.servings?` · ${prep.servings} rac.`:''}</h3>${prep.notes?`<p>${safe(prep.notes)}</p>`:''}<ul>${(prep.ingredients||[]).map(item=>`<li class="${item.confirmed?'confirmed':''}"><strong>${safe(item.ingredient_name)}</strong><span>${item.quantity??''} ${safe(item.unit||item.inventory_unit||'')}</span></li>`).join('')||'<li>Sin ingredientes registrados</li>'}</ul></article>`).join('')}</section>`;
 }
 
 tick();

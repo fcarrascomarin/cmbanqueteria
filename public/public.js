@@ -27,6 +27,7 @@ function loadPromoVideo(){
   const video=document.querySelector('#promoVideo');
   if(!video)return;
   video.setAttribute('aria-label','Video promocional de CM Banquetería');
+  video.addEventListener('error',()=>video.closest('.promo-video-card')?.classList.add('video-unavailable'),{once:true});
   video.play().catch(()=>{});
 }
 loadPromoVideo();
