@@ -124,14 +124,18 @@
           <p class="muted">Servicio de banquetería adaptado a las necesidades de tu celebración</p>
         </div>
         <div class="quote-media-grid">
-        <form class="card form-grid" id="quoteForm">
-          <div class="two-cols"><div class="form-line"><label>Nombre</label><input name="clientName" required /></div><div class="form-line"><label>Teléfono</label><input name="phone" required /></div></div>
-          <div class="two-cols"><div class="form-line"><label>Correo</label><input name="email" type="email" /></div><div class="form-line"><label>Fecha del evento</label><input name="eventDate" type="date" /></div></div>
-          <div class="two-cols"><div class="form-line"><label>Tipo de evento</label><input name="eventType" /></div><div class="form-line"><label>Número de personas</label><input name="guests" type="number" min="1" /></div></div>
-          <div class="two-cols"><div class="form-line"><label>Lugar / comuna</label><input name="location" /></div><div class="form-line"><label>Presupuesto estimado</label><input name="estimatedBudget" type="number" min="0" /></div></div>
-          <div class="form-line"><label>Servicio requerido</label><input name="requestedService" placeholder="Coffee break, almuerzo, cóctel, cena, duración esperada del evento, preferencias o requerimientos especiales" /></div>
-          <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Cuéntanos detalles relevantes del evento."></textarea></div>
-          <button class="btn btn-primary" type="submit">Enviar solicitud</button>
+        <form class="card form-grid quote-form" id="quoteForm">
+          <div class="form-line"><label>Nombre</label><input name="clientName" required /></div>
+          <div class="form-line"><label>Teléfono</label><input name="phone" required /></div>
+          <div class="form-line"><label>Correo</label><input name="email" type="email" /></div>
+          <div class="form-line"><label>Fecha del evento</label><input name="eventDate" type="date" /></div>
+          <div class="form-line"><label>Tipo de evento</label><input name="eventType" /></div>
+          <div class="form-line"><label>Número de personas</label><input name="guests" type="number" min="1" /></div>
+          <div class="form-line"><label>Lugar / comuna</label><input name="location" /></div>
+          <div class="form-line"><label>Presupuesto estimado</label><input name="estimatedBudget" type="number" min="0" /></div>
+          <div class="form-line"><label>Servicio requerido</label><input name="requestedService" placeholder="Coffee break, almuerzo, cóctel o cena" /></div>
+          <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Detalles relevantes del evento."></textarea></div>
+          <button class="btn btn-primary quote-submit" type="submit">Enviar solicitud</button>
         </form>
         <aside class="promo-video-card" aria-label="Video promocional de CM Banquetería">
           <video id="promoVideo" muted loop playsinline controls preload="metadata" poster="/assets/promo-cm-banqueteria-poster.jpg">
