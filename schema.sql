@@ -11,6 +11,55 @@ CREATE INDEX IF NOT EXISTS idx_screen_messages_active ON screen_messages(active,
 CREATE TABLE IF NOT EXISTS expenses (id BIGSERIAL PRIMARY KEY, expense_date DATE NOT NULL DEFAULT CURRENT_DATE, category TEXT NOT NULL, supplier TEXT, description TEXT NOT NULL, amount INTEGER NOT NULL CHECK (amount>=0), payment_method TEXT, document_url TEXT, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS inventory_items (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, category TEXT, unit TEXT NOT NULL DEFAULT 'unidad', current_stock NUMERIC(12,2) NOT NULL DEFAULT 0, min_stock NUMERIC(12,2) NOT NULL DEFAULT 0, unit_cost INTEGER NOT NULL DEFAULT 0, supplier TEXT, notes TEXT, active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS inventory_movements (id BIGSERIAL PRIMARY KEY, item_id BIGINT NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE, movement_date DATE NOT NULL DEFAULT CURRENT_DATE, type TEXT NOT NULL CHECK (type IN ('entrada','salida','ajuste')), quantity NUMERIC(12,2) NOT NULL, reason TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS suppliers (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, rut TEXT, rut_normalized TEXT, phone TEXT, email TEXT, contact_name TEXT, notes TEXT, active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE UNIQUE INDEX IF NOT EXISTS idx_suppliers_rut_unique ON suppliers(rut_normalized) WHERE rut_normalized IS NOT NULL;
+CREATE TABLE IF NOT EXISTS purchase_documents (
+  id BIGSERIAL PRIMARY KEY,
+  document_type TEXT NOT NULL DEFAULT 'otro' CHECK(document_type IN ('factura','boleta','comprobante_manual','comprobante_pago','conteo_stock','otro')),
+  status TEXT NOT NULL DEFAULT 'requiere_revision' CHECK(status IN ('requiere_revision','confirmado','posible_duplicado')),
+  supplier_id BIGINT REFERENCES suppliers(id) ON DELETE SET NULL,
+  supplier_name TEXT,
+  supplier_rut TEXT,
+  document_number TEXT,
+  purchase_date DATE,
+  subtotal INTEGER,
+  tax INTEGER,
+  total INTEGER NOT NULL DEFAULT 0 CHECK(total>=0),
+  payment_method TEXT,
+  payment_status TEXT NOT NULL DEFAULT 'pagado' CHECK(payment_status IN ('pagado','pendiente')),
+  category TEXT NOT NULL DEFAULT 'Otros',
+  stock_status TEXT NOT NULL DEFAULT 'pendiente' CHECK(stock_status IN ('pendiente','confirmado','no_aplica')),
+  linked_document_id BIGINT REFERENCES purchase_documents(id) ON DELETE SET NULL,
+  image_mime TEXT NOT NULL,
+  image_data BYTEA NOT NULL,
+  image_hash TEXT NOT NULL,
+  extraction_confidence NUMERIC(4,3),
+  extraction_warnings JSONB NOT NULL DEFAULT '[]'::jsonb,
+  raw_extraction JSONB,
+  notes TEXT,
+  confirmed_by TEXT,
+  confirmed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_purchase_documents_image_hash ON purchase_documents(image_hash);
+CREATE INDEX IF NOT EXISTS idx_purchase_documents_date ON purchase_documents(purchase_date DESC,created_at DESC);
+CREATE TABLE IF NOT EXISTS purchase_document_items (
+  id BIGSERIAL PRIMARY KEY,
+  document_id BIGINT NOT NULL REFERENCES purchase_documents(id) ON DELETE CASCADE,
+  inventory_item_id BIGINT REFERENCES inventory_items(id) ON DELETE SET NULL,
+  description TEXT NOT NULL,
+  quantity NUMERIC(12,3),
+  unit TEXT,
+  unit_price INTEGER,
+  line_total INTEGER,
+  affects_stock BOOLEAN NOT NULL DEFAULT FALSE,
+  confidence NUMERIC(4,3),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE expenses ADD COLUMN IF NOT EXISTS purchase_document_id BIGINT REFERENCES purchase_documents(id) ON DELETE SET NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_expenses_purchase_document ON expenses(purchase_document_id) WHERE purchase_document_id IS NOT NULL;
+ALTER TABLE inventory_movements ADD COLUMN IF NOT EXISTS purchase_document_id BIGINT REFERENCES purchase_documents(id) ON DELETE SET NULL;
 CREATE TABLE IF NOT EXISTS daily_menus (id BIGSERIAL PRIMARY KEY, menu_date DATE NOT NULL, title TEXT NOT NULL, main_dish TEXT, side_dish TEXT, salad TEXT, dessert TEXT, price INTEGER NOT NULL DEFAULT 0, planned_portions INTEGER NOT NULL DEFAULT 0, available_portions INTEGER NOT NULL DEFAULT 0, cost_per_portion INTEGER NOT NULL DEFAULT 0, notes TEXT, public_visible BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 ALTER TABLE daily_menus ADD COLUMN IF NOT EXISTS option_1 TEXT;
 ALTER TABLE daily_menus ADD COLUMN IF NOT EXISTS option_2 TEXT;

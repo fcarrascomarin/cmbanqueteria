@@ -9,6 +9,7 @@ Versión alineada con el plan de trabajo de CM Banquetería: ordenar, medir, reg
 - Panel interno privado en `/admin.html`.
 - Bitácora diaria de observaciones.
 - Gastos.
+- Compras por imagen: carga de pantallazos, revisión humana, proveedor, gasto y stock controlado.
 - Inventario y stock crítico.
 - Generador diario de menús con publicación automática en la web.
 - Descarga para pantalla en video MP4 16:9 de 30 segundos.
@@ -35,6 +36,9 @@ SITE_URL=https://cmbanqueteria.cl
 ADMIN_USER=admin@cmbanqueteria.cl
 ADMIN_PASS=una_clave_segura
 SESSION_SECRET=un_secreto_largo
+
+OPENAI_API_KEY=sk-...
+OPENAI_VISION_MODEL=gpt-5.5
 
 SMTP_HOST=smtp.zoho.com
 SMTP_PORT=465
@@ -70,5 +74,11 @@ npm run dev
 ## Notas
 
 - No subir `.env` a GitHub.
+- El módulo de compras por imagen queda disponible en el panel interno como `Compras por imagen` y `Proveedores`.
+- La imagen se guarda privada en la base de datos y solo se muestra por rutas autenticadas del panel.
+- El análisis automático es opcional: si `OPENAI_API_KEY` no está configurada, el documento se crea para completarlo manualmente.
+- Ninguna compra modifica gastos ni stock hasta que el administrador revise y confirme el documento.
+- Facturas, boletas y comprobantes manuscritos pueden crear gasto; solo las líneas marcadas y asociadas a productos existentes actualizan stock.
+- Los comprobantes de pago se vinculan a una compra ya confirmada y no duplican el gasto.
 - Los documentos se guardan como enlaces externos, idealmente a Google Drive u otra carpeta documental.
 - Para mostrar videos en pantallas, usar links directos o archivos accesibles públicamente.
