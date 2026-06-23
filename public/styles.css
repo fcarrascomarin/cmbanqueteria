@@ -1469,6 +1469,42 @@ th {
   margin-top: 28px;
 }
 
+.finance-tabs,
+.finance-summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.finance-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.finance-summary article {
+  padding: 16px;
+  border: 1px solid rgba(90, 22, 36, .1);
+  border-radius: 8px;
+  background: #fffaf0;
+}
+
+.finance-summary span,
+.finance-summary strong {
+  display: block;
+}
+
+.finance-summary span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.finance-summary strong {
+  margin-top: 6px;
+  color: var(--vino);
+  font-size: 1.8rem;
+}
+
 .sweet-promo-studio {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
@@ -2073,6 +2109,78 @@ th {
   font-weight: 700;
 }
 
+.consultation-timeline.horizontal {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.consultation-timeline.horizontal .milestone {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding-bottom: 0;
+}
+
+.consultation-timeline.horizontal .milestone::before {
+  display: none;
+}
+
+.consultation-timeline.horizontal .milestone-marker {
+  width: 38px;
+  height: 38px;
+  margin: 0 auto -6px;
+}
+
+.consultation-timeline.horizontal .milestone-body {
+  min-height: 132px;
+  padding: 13px;
+}
+
+.consultation-timeline.horizontal .milestone-heading {
+  display: grid;
+  gap: 8px;
+}
+
+.consultation-timeline.horizontal .milestone-heading h3 {
+  margin: 5px 0 0;
+  font-size: 1rem;
+}
+
+.consultation-timeline.horizontal .milestone-heading strong {
+  display: block;
+  color: var(--vino);
+  font-size: .88rem;
+  line-height: 1.25;
+}
+
+.consultation-timeline.horizontal .milestone-doc-count {
+  white-space: normal;
+}
+
+.consultation-timeline.horizontal .milestone.open {
+  grid-column: 1 / -1;
+}
+
+.consultation-timeline.horizontal .milestone.open .milestone-body {
+  min-height: 0;
+}
+
+.consultation-timeline.horizontal .milestone.open .milestone-details {
+  display: block;
+}
+
+.consultation-timeline.horizontal .deliverable-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.consultation-timeline.horizontal .deliverable-item {
+  min-height: 0;
+}
+
 @media (max-width: 760px) {
   .consultation-summary,
   .consultation-hero {
@@ -2112,5 +2220,9 @@ th {
   .milestone-doc-count {
     display: block;
     margin-top: 8px;
+  }
+
+  .finance-summary {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,5 +1,5 @@
-cfg.purchases=['Compras','Ingreso por imagen'];
-cfg.suppliers=['Compras','Proveedores'];
+cfg.purchases=['Compras y finanzas','Compras por imagen / manual'];
+cfg.suppliers=['Compras y finanzas','Proveedores e historial'];
 const baseRenderView=renderView;
 renderView=async function(view){
   if(view==='purchases'){setHeader(view);return purchases()}
@@ -13,8 +13,18 @@ const purchaseCategories=['Alimentos','Verduras','Carnes','Abarrotes','Bebidas',
 
 async function purchases(){
   addAction('Ingresar documento',openPurchaseUpload);
+  addAction('Compra manual',openManualPurchase);
   const data=await api('/api/admin/purchase-documents');
   content.innerHTML=`<div class="notice purchase-intro"><strong>Primero se revisa, después se registra.</strong> La imagen propone datos, pero ningún gasto ni movimiento de stock se genera hasta que confirmes el documento.</div>${table(['Fecha','Documento','Proveedor','Total','Stock','Estado','Acciones'],data.items.map(d=>`<tr><td>${fmtDate(d.purchase_date||d.created_at)}</td><td><strong>${purchaseTypes[d.document_type]||safe(d.document_type)}</strong><br><small>${d.document_number?`Folio ${safe(d.document_number)}`:`Registro N° ${d.id}`}</small></td><td>${safe(d.supplier_name||'Sin identificar')}<br><small>${safe(d.supplier_rut||'')}</small></td><td>${money(d.total)}</td><td><span class="badge ${d.stock_status==='confirmado'?'green':d.stock_status==='pendiente'?'red':''}">${d.stock_status==='no_aplica'?'No aplica':d.stock_status==='confirmado'?'Actualizado':'Pendiente'}</span></td><td><span class="badge ${d.status==='confirmado'?'green':d.status==='posible_duplicado'?'red':'blue'}">${purchaseStatuses[d.status]||safe(d.status)}</span></td><td class="row-actions"><button class="btn btn-secondary btn-small" type="button" onclick="openPurchaseReview(${d.id})">${d.status==='confirmado'?'Ver':'Revisar'}</button>${d.status!=='confirmado'?`<button class="btn btn-danger btn-small" type="button" onclick="removePurchaseDocument(${d.id})">Eliminar</button>`:''}</td></tr>`))}`;
+}
+
+async function openManualPurchase(){
+  try{
+    const result=await api('/api/admin/purchase-documents/manual',{method:'POST',body:JSON.stringify({purchase_date:today(),document_type:'factura',category:'Alimentos',total:0})});
+    await openPurchaseReview(result.id);
+  }catch(error){
+    alert(error.message);
+  }
 }
 
 function openPurchaseUpload(){

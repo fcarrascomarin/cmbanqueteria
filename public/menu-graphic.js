@@ -102,6 +102,25 @@
     ctx.shadowColor='transparent';
   }
 
+  function drawSweetSlice(ctx,data={}){
+    ctx.save();
+    ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=18;ctx.shadowOffsetY=10;
+    ctx.beginPath();ctx.ellipse(686,828,245,92,-0.08,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.92)';ctx.fill();
+    ctx.shadowColor='transparent';
+    ctx.beginPath();ctx.moveTo(505,780);ctx.bezierCurveTo(650,700,795,720,865,804);ctx.lineTo(596,880);ctx.closePath();
+    ctx.fillStyle='#f3d6a4';ctx.fill();ctx.lineWidth=6;ctx.strokeStyle='#b56a28';ctx.stroke();
+    ctx.beginPath();ctx.moveTo(525,782);ctx.bezierCurveTo(653,726,773,740,842,805);ctx.lineTo(600,862);ctx.closePath();
+    ctx.fillStyle=/lim[oó]n|pie/i.test(data.product||data.headline||'')?'#fff3d2':'#f7ead9';ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle=/lim[oó]n|pie/i.test(data.product||'')?'#f7f0d5':'#fff8ef';
+    for(let i=0;i<42;i++){const x=560+((i*37)%230),y=750+((i*19)%78),r=5+((i*7)%8);ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+    ctx.fillStyle='#9a1030';
+    if(/kuchen|frambuesa|berry|arándano|arandano/i.test(`${data.product||''} ${data.headline||''}`)){
+      [[640,770,10],[700,780,8],[748,800,9],[610,818,7],[790,825,8]].forEach(([x,y,r])=>{ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()});
+    }
+    ctx.restore();
+  }
+
   async function renderSweetPromo(data={},photo=null){
     const fonts=document.fonts?Promise.allSettled([document.fonts.load('400 110px "Playfair Display"'),document.fonts.load('400 92px "Playfair Display"')]):Promise.resolve();
     const templateTimeout=new Promise(resolve=>setTimeout(()=>resolve(null),1800));
@@ -109,10 +128,10 @@
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1472;const ctx=canvas.getContext('2d');
     if(template)ctx.drawImage(template,0,0,canvas.width,canvas.height);else{const grd=ctx.createLinearGradient(0,0,0,1472);grd.addColorStop(0,'#780b16');grd.addColorStop(1,'#b10014');ctx.fillStyle=grd;ctx.fillRect(0,0,1080,1472)}
     if(photo){
-      ctx.save();clipEllipse(ctx,88,318,635,365);drawCover(ctx,photo,88,318,635,365);ctx.restore();
-      ctx.save();clipEllipse(ctx,492,690,420,255);drawCover(ctx,photo,492,690,420,255);ctx.restore();
-      ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(405,500,318,182,0,0,Math.PI*2);ctx.stroke();
+      ctx.save();clipEllipse(ctx,78,390,598,315);drawCover(ctx,photo,78,390,598,315);ctx.restore();
+      ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(377,548,300,157,0,0,Math.PI*2);ctx.stroke();
     }
+    drawSweetSlice(ctx,data);
     sweetWrapped(ctx,data.headline||'¿Quieres endulzar tu día?',660,185,720,94,112,62);
     sweetLine(ctx,data.lead||'Lleva un café con un',540,1160,820,62,42);
     sweetLine(ctx,data.product||'trozo de kuchen por',540,1230,850,74,46);
