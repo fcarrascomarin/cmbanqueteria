@@ -1,7 +1,11 @@
 
 CREATE TABLE IF NOT EXISTS observations (id BIGSERIAL PRIMARY KEY, obs_date DATE NOT NULL DEFAULT CURRENT_DATE, area TEXT NOT NULL, title TEXT NOT NULL, description TEXT, priority TEXT NOT NULL DEFAULT 'media', status TEXT NOT NULL DEFAULT 'abierta', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS screen_media (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, media_type TEXT NOT NULL DEFAULT 'video', url TEXT NOT NULL, active BOOLEAN NOT NULL DEFAULT TRUE, sort_order INTEGER NOT NULL DEFAULT 0, duration_seconds INTEGER NOT NULL DEFAULT 10, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS restaurant_orders (id BIGSERIAL PRIMARY KEY, order_date DATE NOT NULL DEFAULT CURRENT_DATE, order_time TIME, service_type TEXT NOT NULL DEFAULT 'retiro' CHECK(service_type IN ('mesa','retiro','delivery')), customer_name TEXT NOT NULL, customer_phone TEXT, party_size INTEGER, table_name TEXT, menu_summary TEXT, quantity INTEGER NOT NULL DEFAULT 1, status TEXT NOT NULL DEFAULT 'confirmado' CHECK(status IN ('confirmado','en_preparacion','listo','entregado','cancelado')), assigned_to TEXT, notes TEXT, dispatched_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS screen_messages (id BIGSERIAL PRIMARY KEY, message_date DATE NOT NULL DEFAULT CURRENT_DATE, audience TEXT NOT NULL DEFAULT 'Cocina', title TEXT NOT NULL, body TEXT NOT NULL, priority TEXT NOT NULL DEFAULT 'normal' CHECK(priority IN ('normal','importante','urgente')), active BOOLEAN NOT NULL DEFAULT TRUE, expires_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE INDEX IF NOT EXISTS idx_observations_date ON observations(obs_date);
+CREATE INDEX IF NOT EXISTS idx_restaurant_orders_date ON restaurant_orders(order_date,status);
+CREATE INDEX IF NOT EXISTS idx_screen_messages_active ON screen_messages(active,message_date);
 
 
 CREATE TABLE IF NOT EXISTS expenses (id BIGSERIAL PRIMARY KEY, expense_date DATE NOT NULL DEFAULT CURRENT_DATE, category TEXT NOT NULL, supplier TEXT, description TEXT NOT NULL, amount INTEGER NOT NULL CHECK (amount>=0), payment_method TEXT, document_url TEXT, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
