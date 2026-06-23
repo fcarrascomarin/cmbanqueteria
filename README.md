@@ -10,8 +10,10 @@ Versión alineada con el plan de trabajo de CM Banquetería: ordenar, medir, reg
 - Bitácora diaria de observaciones.
 - Gastos.
 - Compras por imagen: carga de pantallazos, revisión humana, proveedor, gasto y stock controlado.
+- Fichas de proveedores con historial de ventas y productos detectados.
 - Inventario y stock crítico.
 - Generador diario de menús con publicación automática en la web.
+- Minutas de preparación para cocina con cantidades confirmables e ingredientes.
 - Descarga para pantalla en video MP4 16:9 de 30 segundos.
 - Descarga para Instagram en imagen PNG 9:16.
 - Seguimiento de la consultoría mediante línea de tiempo de seis hitos.
@@ -75,10 +77,12 @@ npm run dev
 
 - No subir `.env` a GitHub.
 - El módulo de compras por imagen queda disponible en el panel interno como `Compras por imagen` y `Proveedores`.
+- El módulo `Minutas cocina` publica la minuta confirmada del día en `/pantalla.html`.
 - La imagen se guarda privada en la base de datos y solo se muestra por rutas autenticadas del panel.
 - El análisis automático es opcional: si `OPENAI_API_KEY` no está configurada, el documento se crea para completarlo manualmente.
 - Ninguna compra modifica gastos ni stock hasta que el administrador revise y confirme el documento.
 - Facturas, boletas y comprobantes manuscritos pueden crear gasto; solo las líneas marcadas y asociadas a productos existentes actualizan stock.
 - Los comprobantes de pago se vinculan a una compra ya confirmada y no duplican el gasto.
 - Los documentos se guardan como enlaces externos, idealmente a Google Drive u otra carpeta documental.
+- Para que el video promocional se vea en la web pública, subir también `public/assets/promo-cm-banqueteria-web.mp4` y `public/assets/promo-cm-banqueteria-poster.jpg`.
 - Para mostrar videos en pantallas, usar links directos o archivos accesibles públicamente.
