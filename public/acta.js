@@ -11,6 +11,7 @@ async function loadActa(){
   const indicatorData=[['Menús vendidos',a.menus_sold],['Venta diaria',a.daily_sales?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(a.daily_sales):null],['Espera promedio',a.average_wait_minutes?`${a.average_wait_minutes} minutos`:null],['Horas registradas',a.staff_hours],['Mermas observadas',a.waste_notes]].filter(x=>x[1]);
   if(indicatorData.length){const box=document.querySelector('#indicators');indicatorData.forEach(([label,value])=>{const item=document.createElement('div'),caption=document.createElement('span'),detail=document.createElement('strong');caption.textContent=label;detail.textContent=value;item.append(caption,detail);box.appendChild(item)})}else document.querySelector('#indicatorSection').remove();
   if(a.evidence_url){const link=document.querySelector('#evidence');link.href=a.evidence_url}else document.querySelector('#evidenceSection').remove();
+  if(new URLSearchParams(location.search).get('print')==='1')setTimeout(()=>window.print(),350);
 }
 
 loadActa().catch(error=>{const page=document.querySelector('#actaPage');page.textContent='';const title=document.createElement('h1'),text=document.createElement('p');title.textContent=error.message;text.textContent='Inicia sesión nuevamente en el panel administrativo.';page.append(title,text)});

@@ -757,6 +757,231 @@ th {
   font-weight: 950;
 }
 
+.operations-screen {
+  background: #12060a;
+  height: 100vh;
+  overflow: auto;
+}
+
+.kds-shell {
+  min-height: 100vh;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.kds-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--vino), var(--osc));
+}
+
+.kds-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.kds-header img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, .92);
+  border-radius: 50%;
+}
+
+.kds-header span,
+.kds-header strong {
+  display: block;
+}
+
+.kds-header span {
+  color: rgba(255, 255, 255, .72);
+  font-weight: 700;
+}
+
+.kds-header strong {
+  color: #fff;
+  font-size: 1.6rem;
+}
+
+.kds-clock {
+  color: var(--dorado);
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  font-weight: 950;
+}
+
+.kds-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.kds-summary article,
+.kds-column,
+.kds-card {
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.kds-summary article {
+  padding: 16px;
+}
+
+.kds-summary span {
+  color: rgba(255, 255, 255, .7);
+  font-weight: 800;
+}
+
+.kds-summary strong {
+  display: block;
+  color: #fff;
+  font-size: 2.4rem;
+}
+
+.kds-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 360px;
+  gap: 14px;
+  align-items: start;
+}
+
+.kds-column,
+.kds-card {
+  padding: 14px;
+}
+
+.kds-column h2,
+.kds-card h2 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 1.35rem;
+}
+
+.kds-side {
+  display: grid;
+  gap: 14px;
+}
+
+.kds-list {
+  display: grid;
+  gap: 10px;
+}
+
+.kds-order,
+.kds-message {
+  padding: 14px;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--texto);
+  border-left: 8px solid var(--dorado);
+}
+
+.kds-order.ready {
+  border-left-color: var(--azul);
+}
+
+.kds-order.done {
+  opacity: .74;
+  border-left-color: var(--verde);
+}
+
+.kds-order-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--vino);
+  font-weight: 900;
+}
+
+.kds-order h3 {
+  margin: 8px 0 4px;
+  font-size: 1.5rem;
+}
+
+.kds-order p,
+.kds-message p {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.kds-order small,
+.kds-order em {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.kds-message.urgente {
+  border-left-color: var(--rojo);
+}
+
+.kds-message.importante {
+  border-left-color: var(--azul);
+}
+
+.kds-message span {
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.kds-message strong {
+  display: block;
+  color: var(--vino);
+  margin: 4px 0;
+}
+
+.kds-empty {
+  color: rgba(255, 255, 255, .68);
+  margin: 0;
+}
+
+.operation-board-admin,
+.operation-messages-admin {
+  display: grid;
+  gap: 14px;
+}
+
+.operation-cards {
+  display: grid;
+  gap: 12px;
+}
+
+.operation-admin-card {
+  display: grid;
+  grid-template-columns: minmax(220px, .7fr) minmax(260px, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid rgba(90, 22, 36, .1);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.operation-admin-card.listo {
+  border-color: rgba(44, 82, 130, .35);
+  background: #f4f9ff;
+}
+
+.operation-admin-card.entregado {
+  opacity: .72;
+}
+
+.operation-admin-details {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
 /* =========================
    RESPONSIVE
 ========================= */
@@ -773,7 +998,10 @@ th {
   .admin-shell,
   .stat-grid,
   .hero-grid,
-  .screen-wrap {
+  .screen-wrap,
+  .kds-summary,
+  .kds-grid,
+  .operation-admin-card {
     grid-template-columns: 1fr;
   }
 
@@ -822,6 +1050,22 @@ th {
 
   .screen-panel {
     display: none;
+  }
+
+  .operations-screen {
+    overflow: auto;
+  }
+
+  .kds-header {
+    align-items: flex-start;
+  }
+
+  .kds-header strong {
+    font-size: 1.25rem;
+  }
+
+  .kds-clock {
+    font-size: 2rem;
   }
 }
 
@@ -1280,6 +1524,24 @@ th {
   border: 1px solid rgba(90, 22, 36, .09);
   border-radius: 8px;
   background: #fff;
+}
+
+.milestone-summary {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.milestone-details {
+  display: none;
+  margin-top: 12px;
+}
+
+.milestone.open .milestone-details {
+  display: block;
 }
 
 .milestone.en_curso .milestone-body {

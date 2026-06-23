@@ -1,10 +1,12 @@
 (function(){
   const colors={wine:'#780b16',deep:'#41030a',cream:'#fbf7f2',white:'#fffdf9'};
-  let templatePromise;
+  let landscapeTemplatePromise,portraitTemplatePromise;
 
-  function loadTemplate(){
-    if(!templatePromise)templatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-template.png?v=20260623-consultoria'});
-    return templatePromise;
+  function loadTemplate(format){
+    const portrait=format==='portrait';
+    if(portrait&&!portraitTemplatePromise)portraitTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-instagram-template.png?v=20260622-final'});
+    if(!portrait&&!landscapeTemplatePromise)landscapeTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-template.png?v=20260623-consultoria'});
+    return portrait?portraitTemplatePromise:landscapeTemplatePromise;
   }
 
   function fit(ctx,text,maxWidth,startSize,minSize=24,weight=700,family='"Roboto Condensed", Arial, sans-serif'){
@@ -15,6 +17,17 @@
 
   function centered(ctx,text,x,y,maxWidth,startSize,minSize=24,weight=700,family='"Roboto Condensed", Arial, sans-serif',color=colors.white){
     fit(ctx,text,maxWidth,startSize,minSize,weight,family);ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y);
+  }
+
+  function wrappedCentered(ctx,text,x,y,maxWidth,lineHeight,startSize,minSize=26){
+    fit(ctx,text,maxWidth,startSize,minSize,800,'"Montserrat", Arial, sans-serif');
+    const words=String(text).split(/\s+/),lines=[];
+    let line='';
+    words.forEach(word=>{const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width<=maxWidth)line=test;else{if(line)lines.push(line);line=word}});
+    if(line)lines.push(line);
+    const useLines=lines.slice(0,2),startY=y-((useLines.length-1)*lineHeight/2);
+    ctx.fillStyle=colors.white;ctx.textAlign='center';ctx.textBaseline='middle';
+    useLines.forEach((value,index)=>ctx.fillText(value,x,startY+index*lineHeight));
   }
 
   function dateLabel(value){
@@ -42,16 +55,15 @@
   }
 
   function drawPortrait(ctx,menu,template){
-    const w=1080,h=1920,landscape=document.createElement('canvas');landscape.width=1920;landscape.height=1080;drawLandscape(landscape.getContext('2d'),menu,template);
-    ctx.save();ctx.filter='blur(16px) brightness(.42)';ctx.drawImage(landscape,-1180,0,3413,1920);ctx.restore();ctx.fillStyle='rgba(84,3,15,.52)';ctx.fillRect(0,0,w,h);
-    const imageHeight=608,y=(h-imageHeight)/2;ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=32;ctx.drawImage(landscape,0,y,w,imageHeight);ctx.shadowColor='transparent';ctx.strokeStyle=colors.white;ctx.lineWidth=3;ctx.strokeRect(18,y+18,w-36,imageHeight-36);
+    const w=1080,h=1920;if(template)ctx.drawImage(template,0,0,w,h);else{ctx.fillStyle=colors.deep;ctx.fillRect(0,0,w,h)}
+    menuOptions(menu).forEach((text,index)=>wrappedCentered(ctx,text,558,779+137*index,570,34,34,23));
   }
 
   async function render(menu,format='landscape'){
     const fonts=document.fonts?Promise.allSettled([document.fonts.load('400 92px Allura'),document.fonts.load('700 43px "Roboto Condensed"')]):Promise.resolve();
     const fontTimeout=new Promise(resolve=>setTimeout(resolve,650));
     const templateTimeout=new Promise(resolve=>setTimeout(()=>resolve(null),1800));
-    const [template]=await Promise.all([Promise.race([loadTemplate(),templateTimeout]),Promise.race([fonts,fontTimeout])]),canvas=document.createElement('canvas');canvas.width=format==='portrait'?1080:1920;canvas.height=format==='portrait'?1920:1080;
+    const [template]=await Promise.all([Promise.race([loadTemplate(format),templateTimeout]),Promise.race([fonts,fontTimeout])]),canvas=document.createElement('canvas');canvas.width=format==='portrait'?1080:1920;canvas.height=format==='portrait'?1920:1080;
     const ctx=canvas.getContext('2d');if(format==='portrait')drawPortrait(ctx,menu,template);else drawLandscape(ctx,menu,template);return canvas;
   }
 
