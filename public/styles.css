@@ -2110,71 +2110,142 @@ th {
 }
 
 .consultation-timeline.horizontal {
+  --active-x: 8.33%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+  overflow-x: auto;
+  padding: 6px 2px 2px;
+}
+
+.consultation-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--milestone-count, 6), minmax(145px, 1fr));
   gap: 12px;
-  align-items: start;
+  min-width: 880px;
+  padding-top: 8px;
 }
 
-.consultation-timeline.horizontal .milestone {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  padding-bottom: 0;
+.consultation-track::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: calc(100% / (var(--milestone-count, 6) * 2));
+  right: calc(100% / (var(--milestone-count, 6) * 2));
+  height: 4px;
+  border-radius: 999px;
+  background: #ded6ca;
 }
 
-.consultation-timeline.horizontal .milestone::before {
-  display: none;
-}
-
-.consultation-timeline.horizontal .milestone-marker {
-  width: 38px;
-  height: 38px;
-  margin: 0 auto -6px;
-}
-
-.consultation-timeline.horizontal .milestone-body {
-  min-height: 132px;
-  padding: 13px;
-}
-
-.consultation-timeline.horizontal .milestone-heading {
+.milestone-tile {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 8px;
+  align-content: start;
 }
 
-.consultation-timeline.horizontal .milestone-heading h3 {
-  margin: 5px 0 0;
+.milestone-tile .milestone-marker {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto -5px;
+  cursor: pointer;
+}
+
+.milestone-tile .milestone-summary {
+  min-height: 154px;
+  padding: 14px 16px;
+  border: 1px solid rgba(90, 22, 36, .09);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.milestone-tile.en_curso .milestone-marker {
+  border-color: var(--dorado);
+  background: var(--dorado);
+  color: var(--osc);
+  box-shadow: 0 0 0 7px rgba(214, 166, 79, .17);
+}
+
+.milestone-tile.completado .milestone-marker {
+  border-color: var(--verde);
+  background: var(--verde);
+  color: #fff;
+}
+
+.milestone-tile.active .milestone-summary {
+  border-color: rgba(214, 166, 79, .9);
+  background: #fffaf0;
+  transform: translateY(-2px);
+}
+
+.milestone-tile .milestone-summary h3 {
+  margin: 10px 0 3px;
   font-size: 1rem;
 }
 
-.consultation-timeline.horizontal .milestone-heading strong {
+.milestone-tile .milestone-summary strong {
   display: block;
   color: var(--vino);
-  font-size: .88rem;
-  line-height: 1.25;
+  font-size: .9rem;
+  line-height: 1.18;
 }
 
-.consultation-timeline.horizontal .milestone-doc-count {
+.milestone-tile .milestone-doc-count {
+  display: block;
+  margin-top: 12px;
   white-space: normal;
 }
 
-.consultation-timeline.horizontal .milestone.open {
-  grid-column: 1 / -1;
+.milestone-detail-panels {
+  position: relative;
+  min-width: 880px;
+  padding-top: 18px;
 }
 
-.consultation-timeline.horizontal .milestone.open .milestone-body {
-  min-height: 0;
+.milestone-detail-panels::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: clamp(22px, var(--active-x), calc(100% - 22px));
+  width: 22px;
+  height: 22px;
+  border-left: 1px solid rgba(214, 166, 79, .85);
+  border-top: 1px solid rgba(214, 166, 79, .85);
+  background: #fffaf0;
+  transform: translateX(-50%) rotate(45deg);
 }
 
-.consultation-timeline.horizontal .milestone.open .milestone-details {
+.milestone-detail-panel {
+  display: none;
+  padding: 20px 18px 18px;
+  border: 1px solid rgba(214, 166, 79, .85);
+  border-radius: 8px;
+  background: #fffaf0;
+}
+
+.milestone-detail-panel.active {
   display: block;
+}
+
+.milestone-detail-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.milestone-detail-head h3 {
+  margin: 10px 0 0;
 }
 
 .consultation-timeline.horizontal .deliverable-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 10px;
+  margin-top: 14px;
 }
 
 .consultation-timeline.horizontal .deliverable-item {
