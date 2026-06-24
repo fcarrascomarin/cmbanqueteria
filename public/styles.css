@@ -1094,9 +1094,9 @@ th {
 
 .deliverable-item {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr);
   gap: 10px;
-  align-items: center;
+  align-items: start;
   padding: 11px;
   border: 1px solid #e1d8cc;
   border-radius: 7px;
@@ -1148,6 +1148,9 @@ th {
 .deliverable-actions {
   display: flex;
   gap: 6px;
+  grid-column: 2;
+  flex-wrap: wrap;
+  align-self: start;
 }
 
 .deliverable-actions button,
@@ -1159,6 +1162,7 @@ th {
   color: var(--vino);
   font: 700 .75rem "Montserrat", sans-serif;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .consultation-docs-head {
@@ -2243,7 +2247,7 @@ th {
 
 .consultation-timeline.horizontal .deliverable-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
   gap: 10px;
   margin-top: 14px;
 }

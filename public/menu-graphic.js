@@ -145,11 +145,11 @@
     const [template]=await Promise.all([Promise.race([loadSweetTemplate(),templateTimeout]),Promise.race([fonts,new Promise(resolve=>setTimeout(resolve,650))])]);
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1920;const ctx=canvas.getContext('2d');
     if(template)ctx.drawImage(template,0,0,canvas.width,canvas.height);else{ctx.fillStyle='#8b2020';ctx.fillRect(0,0,1080,1920)}
-    sweetBlockText(ctx,data.headline||'Endulza tu tarde',665,210,650,116,116,70);
+    sweetBlockText(ctx,data.headline||'Endulza tu tarde',660,205,630,106,104,64);
     const price=String(data.price||'2500').replace(/[^\d]/g,'')||'2500';
-    ctx.save();ctx.translate(705,522);ctx.rotate(-6*Math.PI/180);sweetPillText(ctx,new Intl.NumberFormat('es-CL').format(Number(price)),0,0,360,124,70);ctx.restore();
-    sweetPillText(ctx,data.lead||'Café / Té',540,823,650,62,38);
-    sweetPillText(ctx,data.product||'Trozo de kuchen',540,1102,650,62,38);
+    ctx.save();ctx.translate(706,512);ctx.rotate(-6*Math.PI/180);sweetPillText(ctx,price,0,0,300,106,68);ctx.restore();
+    sweetPillText(ctx,data.lead||'Café / Té',540,766,640,58,36);
+    sweetPillText(ctx,data.product||'Trozo de kuchen',540,1042,640,58,36);
     return canvas;
   }
 
