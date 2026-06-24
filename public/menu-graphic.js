@@ -11,7 +11,7 @@
 
   let sweetTemplatePromise;
   function loadSweetTemplate(){
-    if(!sweetTemplatePromise)sweetTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/sweet-promo-template.png?v=20260623'});
+    if(!sweetTemplatePromise)sweetTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/sweet-promo-template.png?v=20260624'});
     return sweetTemplatePromise;
   }
 
@@ -102,6 +102,24 @@
     ctx.shadowColor='transparent';
   }
 
+  function sweetBlockText(ctx,text,x,y,maxWidth,lineHeight,startSize,minSize=54){
+    const value=String(text||'').toUpperCase().trim();
+    fit(ctx,value,maxWidth,startSize,minSize,900,'"Montserrat", Arial, sans-serif');
+    const words=value.split(/\s+/).filter(Boolean),lines=[];let line='';
+    words.forEach(word=>{const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width<=maxWidth)line=test;else{if(line)lines.push(line);line=word}});
+    if(line)lines.push(line);
+    const useLines=lines.slice(0,2),startY=y-((useLines.length-1)*lineHeight/2);
+    ctx.fillStyle=colors.white;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.22)';ctx.shadowBlur=3;ctx.shadowOffsetY=2;
+    useLines.forEach((lineText,index)=>ctx.fillText(lineText,x,startY+index*lineHeight));
+    ctx.shadowColor='transparent';
+  }
+
+  function sweetPillText(ctx,text,x,y,maxWidth,size,minSize=42){
+    const value=String(text||'').trim();
+    fit(ctx,value,maxWidth,size,minSize,800,'"Montserrat", Arial, sans-serif');
+    ctx.fillStyle=colors.white;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.18)';ctx.shadowBlur=2;ctx.shadowOffsetY=2;ctx.fillText(value,x,y);ctx.shadowColor='transparent';
+  }
+
   function drawSweetSlice(ctx,data={}){
     ctx.save();
     ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=18;ctx.shadowOffsetY=10;
@@ -122,22 +140,16 @@
   }
 
   async function renderSweetPromo(data={},photo=null){
-    const fonts=document.fonts?Promise.allSettled([document.fonts.load('400 110px "Playfair Display"'),document.fonts.load('400 92px "Playfair Display"')]):Promise.resolve();
+    const fonts=document.fonts?Promise.allSettled([document.fonts.load('900 112px "Montserrat"'),document.fonts.load('800 70px "Montserrat"')]):Promise.resolve();
     const templateTimeout=new Promise(resolve=>setTimeout(()=>resolve(null),1800));
     const [template]=await Promise.all([Promise.race([loadSweetTemplate(),templateTimeout]),Promise.race([fonts,new Promise(resolve=>setTimeout(resolve,650))])]);
-    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1472;const ctx=canvas.getContext('2d');
-    if(template)ctx.drawImage(template,0,0,canvas.width,canvas.height);else{const grd=ctx.createLinearGradient(0,0,0,1472);grd.addColorStop(0,'#780b16');grd.addColorStop(1,'#b10014');ctx.fillStyle=grd;ctx.fillRect(0,0,1080,1472)}
-    if(photo){
-      ctx.save();clipEllipse(ctx,78,390,598,315);drawCover(ctx,photo,78,390,598,315);ctx.restore();
-      ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(377,548,300,157,0,0,Math.PI*2);ctx.stroke();
-    }
-    drawSweetSlice(ctx,data);
-    sweetWrapped(ctx,data.headline||'¿Quieres endulzar tu día?',660,185,720,94,112,62);
-    sweetLine(ctx,data.lead||'Lleva un café con un',540,1160,820,62,42);
-    sweetLine(ctx,data.product||'trozo de kuchen por',540,1230,850,74,46);
+    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1920;const ctx=canvas.getContext('2d');
+    if(template)ctx.drawImage(template,0,0,canvas.width,canvas.height);else{ctx.fillStyle='#8b2020';ctx.fillRect(0,0,1080,1920)}
+    sweetBlockText(ctx,data.headline||'Endulza tu tarde',665,210,650,116,116,70);
     const price=String(data.price||'2500').replace(/[^\d]/g,'')||'2500';
-    sweetLine(ctx,`$${new Intl.NumberFormat('es-CL').format(Number(price))}`,540,1335,560,112,70);
-    ctx.strokeStyle='rgba(255,255,255,.72)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(220,1335);ctx.lineTo(360,1335);ctx.moveTo(720,1335);ctx.lineTo(860,1335);ctx.stroke();
+    ctx.save();ctx.translate(705,522);ctx.rotate(-6*Math.PI/180);sweetPillText(ctx,new Intl.NumberFormat('es-CL').format(Number(price)),0,0,360,124,70);ctx.restore();
+    sweetPillText(ctx,data.lead||'Café / Té',540,823,650,62,38);
+    sweetPillText(ctx,data.product||'Trozo de kuchen',540,1102,650,62,38);
     return canvas;
   }
 

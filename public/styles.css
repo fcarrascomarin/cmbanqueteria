@@ -1438,7 +1438,7 @@ th {
 }
 
 .menu-canvas-wrap.sweet {
-  aspect-ratio: 1080 / 1472;
+  aspect-ratio: 9 / 16;
   width: min(100%, 420px);
   margin-inline: auto;
   background: #740913;

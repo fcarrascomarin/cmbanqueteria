@@ -97,10 +97,9 @@ async function menus(){
     </div>
     <section class="card sweet-promo-studio">
       <div class="sweet-promo-form">
-        <div><div class="kicker">Promoción dulces</div><h3>Gráfica café + dulce</h3><p class="admin-help">Carga la foto del pie, kuchen o dulce y ajusta los textos para descargar una pieza vertical lista para redes.</p></div>
-        <div class="two-cols">${field('sweet_headline','Frase principal','text','¿Quieres endulzar tu día?','maxlength="70"')}${field('sweet_price','Precio','number',2500,'min="0" step="100"')}</div>
-        <div class="two-cols">${field('sweet_lead','Frase inferior 1','text','Lleva un café con un','maxlength="60"')}${field('sweet_product','Frase inferior 2','text','trozo de kuchen por','maxlength="60"')}</div>
-        <div class="form-line"><label>Foto del dulce</label><input id="sweetPhotoInput" type="file" accept="image/jpeg,image/png,image/webp"></div>
+        <div><div class="kicker">Promoción dulces</div><h3>Gráfica café + dulce</h3><p class="admin-help">Ajusta los textos de la plantilla vertical para descargar una historia lista para redes.</p></div>
+        <div class="two-cols">${field('sweet_headline','Frase principal','text','Endulza tu tarde','maxlength="42"')}${field('sweet_price','Precio','number',2500,'min="0" step="100"')}</div>
+        <div class="two-cols">${field('sweet_lead','Producto 1','text','Café / Té','maxlength="32"')}${field('sweet_product','Producto 2','text','Trozo de kuchen','maxlength="36"')}</div>
         <div class="menu-downloads"><button class="btn btn-primary" type="button" id="downloadSweetPromoBtn">Descargar promoción de dulce</button><span class="menu-publish-status" id="sweetPromoStatus" aria-live="polite"></span></div>
       </div>
       <div class="sweet-promo-preview">
@@ -137,14 +136,13 @@ function loadLocalImage(file){
 }
 
 function initSweetPromoGenerator(){
-  const wrap=document.querySelector('#sweetPromoCanvasWrap'),photoInput=document.querySelector('#sweetPhotoInput'),status=document.querySelector('#sweetPromoStatus');
-  if(!wrap||!photoInput||!window.CMSweetGraphic)return;
-  let photo=null,token=0;
+  const wrap=document.querySelector('#sweetPromoCanvasWrap'),status=document.querySelector('#sweetPromoStatus');
+  if(!wrap||!window.CMSweetGraphic)return;
+  let token=0;
   const values=()=>({headline:document.querySelector('[name="sweet_headline"]').value,lead:document.querySelector('[name="sweet_lead"]').value,product:document.querySelector('[name="sweet_product"]').value,price:document.querySelector('[name="sweet_price"]').value});
-  const redraw=async()=>{const current=++token;try{const canvas=await CMSweetGraphic.render(values(),photo);if(current!==token)return;wrap.innerHTML='';wrap.appendChild(canvas);status.textContent=''}catch(error){status.className='menu-publish-status error';status.textContent=error.message}};
+  const redraw=async()=>{const current=++token;try{const canvas=await CMSweetGraphic.render(values());if(current!==token)return;wrap.innerHTML='';wrap.appendChild(canvas);status.textContent=''}catch(error){status.className='menu-publish-status error';status.textContent=error.message}};
   let timer;document.querySelector('.sweet-promo-studio').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(redraw,120)});
-  photoInput.onchange=async()=>{try{photo=await loadLocalImage(photoInput.files[0]);redraw()}catch(error){status.className='menu-publish-status error';status.textContent=error.message}};
-  document.querySelector('#downloadSweetPromoBtn').onclick=async()=>{const canvas=await CMSweetGraphic.render(values(),photo);CMSweetGraphic.download(canvas,`promocion-dulce-${today()}.png`)};
+  document.querySelector('#downloadSweetPromoBtn').onclick=async()=>{const canvas=await CMSweetGraphic.render(values());CMSweetGraphic.download(canvas,`promocion-dulce-${today()}.png`)};
   redraw();
 }
 
