@@ -75,10 +75,17 @@ function collectPurchaseReview(form){
 window.openPurchaseReview=openPurchaseReview;
 window.removePurchaseDocument=async id=>{if(!confirm('¿Eliminar este documento pendiente?'))return;await api(`/api/admin/purchase-documents/${id}`,{method:'DELETE'});purchases()};
 
+function supplierContactSummary(s={}){
+  const bits=[s.contact_name,s.phone,s.email].filter(Boolean).map(safe);
+  if(!bits.length)return '<span class="muted">Sin contacto</span>';
+  const [first,...rest]=bits;
+  return `${first}${rest.length?`<br><small>${rest.join('<br>')}</small>`:''}`;
+}
+
 async function suppliers(){
   addAction('Agregar proveedor',()=>openSupplierForm());
   const data=await api('/api/admin/suppliers');
-  content.innerHTML=`<div class="notice"><strong>Ficha e historial por proveedor.</strong> Puedes crear proveedores manualmente. Al confirmar boletas y facturas, el historial alimenta las sugerencias de productos para futuras imágenes.</div>${table(['Proveedor','RUT','Rubro','Productos habituales','Compras','Total','Última compra','Acciones'],data.items.map(s=>`<tr><td><strong>${safe(s.name)}</strong><br><small>${safe(s.contact_name||'')}</small></td><td>${safe(s.rut||'')}</td><td>${safe(s.business_type||'')}</td><td>${safe(s.usual_products||'')}</td><td>${s.purchase_count||0}</td><td>${money(s.purchase_total)}</td><td>${fmtDate(s.last_purchase_date)}</td><td class="row-actions"><button class="btn btn-secondary btn-small" type="button" onclick="openSupplierDetail(${s.id})">Ficha</button><button class="btn btn-secondary btn-small" type="button" onclick="editSupplier(${s.id})">Editar</button></td></tr>`))}`;
+  content.innerHTML=`<div class="notice"><strong>Ficha e historial por proveedor.</strong> La tabla muestra solo datos operativos. Los productos habituales y documentos quedan dentro de la ficha descargable de cada proveedor.</div>${table(['Proveedor','RUT','Rubro','Contacto','Compras','Total','Última compra','Acciones'],data.items.map(s=>`<tr><td><strong>${safe(s.name)}</strong></td><td>${safe(s.rut||'')}</td><td>${safe(s.business_type||'')}</td><td>${supplierContactSummary(s)}</td><td>${s.purchase_count||0}</td><td>${money(s.purchase_total)}</td><td>${fmtDate(s.last_purchase_date)}</td><td class="row-actions"><button class="btn btn-secondary btn-small" type="button" onclick="openSupplierDetail(${s.id})">Ficha</button><button class="btn btn-secondary btn-small" type="button" onclick="editSupplier(${s.id})">Editar</button></td></tr>`))}`;
   cache.suppliers=data.items;
 }
 
@@ -99,12 +106,28 @@ function openSupplierForm(s=null){
 
 window.editSupplier=id=>{const s=(cache.suppliers||[]).find(x=>Number(x.id)===Number(id));if(s)openSupplierForm(s)};
 
+function supplierProfileHtml(detail){
+  const s=detail.item||{};
+  const docs=detail.documents||[],products=detail.products||[];
+  const rows=docs.map(d=>`<tr><td>${fmtDate(d.purchase_date)}</td><td>${purchaseTypes[d.document_type]||safe(d.document_type)} ${safe(d.document_number||'')}</td><td>${money(d.total)}</td><td>${safe(d.payment_status||'')}</td><td>${safe(d.stock_status||'')}</td></tr>`).join('')||'<tr><td colspan="5">Sin documentos confirmados.</td></tr>';
+  const productRows=products.map(p=>`<tr><td>${safe(p.inventory_name||p.description)}</td><td>${safe(p.description)}</td><td>${p.times||0}</td><td>${Number(p.total_quantity||0)} ${safe(p.unit||'')}</td><td>${money(p.total_amount)}</td></tr>`).join('')||'<tr><td colspan="5">Sin productos confirmados.</td></tr>';
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Ficha proveedor - ${safe(s.name)}</title><style>body{font-family:Arial,sans-serif;margin:32px;color:#2b1116}h1,h2{color:#5b0f1d}table{width:100%;border-collapse:collapse;margin:12px 0 24px}td,th{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top}th{background:#f2e8dc}.meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:20px}.box{border:1px solid #eadcc8;padding:12px;border-radius:10px}.muted{color:#666}</style></head><body><h1>Ficha de proveedor</h1><div class="meta"><div class="box"><strong>Proveedor</strong><br>${safe(s.name||'')}</div><div class="box"><strong>RUT</strong><br>${safe(s.rut||'Sin RUT')}</div><div class="box"><strong>Rubro</strong><br>${safe(s.business_type||'Sin clasificar')}</div><div class="box"><strong>Contacto</strong><br>${safe(s.contact_name||'')}<br>${safe(s.phone||'')}<br>${safe(s.email||'')}</div><div class="box"><strong>Dirección</strong><br>${safe(s.address||'Sin dirección registrada')}</div><div class="box"><strong>Productos habituales</strong><br>${safe(s.usual_products||'Sin registro')}</div></div><h2>Historial de ventas</h2><table><thead><tr><th>Fecha</th><th>Documento</th><th>Total</th><th>Pago</th><th>Stock</th></tr></thead><tbody>${rows}</tbody></table><h2>Productos detectados</h2><table><thead><tr><th>Producto asociado</th><th>Descripción leída</th><th>Veces</th><th>Cantidad total</th><th>Monto total</th></tr></thead><tbody>${productRows}</tbody></table><p class="muted">Ficha generada desde el panel interno de CM Banquetería.</p></body></html>`;
+}
+
+function downloadSupplierProfile(detail){
+  const name=(detail.item?.name||'proveedor').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'proveedor';
+  const blob=new Blob([supplierProfileHtml(detail)],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=`ficha-proveedor-${name}.html`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+
 window.openSupplierDetail=async id=>{
   const detail=await api(`/api/admin/suppliers/${id}`),s=detail.item;
   modal.classList.add('purchase-modal-wide');
   modalForm.classList.remove('purchase-review-form','purchase-upload-form');
-  modalForm.innerHTML=`<div class="supplier-profile-head"><div><div class="kicker">Ficha proveedor</div><h2>${safe(s.name)}</h2><p class="muted">${safe(s.rut||'Sin RUT registrado')}</p></div><div class="row-actions"><button class="btn btn-secondary btn-small" type="button" id="editSupplierFromDetail">Editar ficha</button><button class="btn btn-secondary btn-small" type="button" id="closeSupplierDetail">Cerrar</button></div></div><div class="supplier-summary"><article><span>Rubro</span><strong>${safe(s.business_type||'Sin clasificar')}</strong></article><article><span>Productos habituales</span><strong>${safe(s.usual_products||'Sin registro')}</strong></article><article><span>Contacto</span><strong>${safe(s.contact_name||s.phone||s.email||'Sin contacto')}</strong></article></div><section class="supplier-history-grid"><div><h3>Historial de ventas</h3>${table(['Fecha','Documento','Total','Pago','Stock'],detail.documents.map(d=>`<tr><td>${fmtDate(d.purchase_date)}</td><td>${purchaseTypes[d.document_type]||safe(d.document_type)}<br><small>${safe(d.document_number||'')}</small></td><td>${money(d.total)}</td><td>${safe(d.payment_status||'')}<br><small>${safe(d.payment_method||'')}</small></td><td>${safe(d.stock_status||'')}</td></tr>`))}</div><div><h3>Productos detectados</h3><div class="supplier-products-list">${detail.products.map(p=>`<article><strong>${safe(p.inventory_name||p.description)}</strong><span>${safe(p.description)} · ${p.times} compra(s)</span><small>${Number(p.total_quantity||0)} ${safe(p.unit||'')} · ${money(p.total_amount)}</small></article>`).join('')||'<p class="muted">Sin productos confirmados todavía.</p>'}</div></div></section>`;
+  modalForm.innerHTML=`<div class="supplier-profile-head"><div><div class="kicker">Ficha proveedor</div><h2>${safe(s.name)}</h2><p class="muted">${safe(s.rut||'Sin RUT registrado')}</p></div><div class="row-actions"><button class="btn btn-secondary btn-small" type="button" id="downloadSupplierDetail">Descargar ficha</button><button class="btn btn-secondary btn-small" type="button" id="editSupplierFromDetail">Editar ficha</button><button class="btn btn-secondary btn-small" type="button" id="closeSupplierDetail">Cerrar</button></div></div><div class="supplier-summary"><article><span>Rubro</span><strong>${safe(s.business_type||'Sin clasificar')}</strong></article><article><span>Productos habituales</span><strong>${safe(s.usual_products||'Sin registro')}</strong></article><article><span>Contacto</span><strong>${safe(s.contact_name||s.phone||s.email||'Sin contacto')}</strong></article></div><section class="supplier-history-grid"><div><h3>Historial de ventas</h3>${table(['Fecha','Documento','Total','Pago','Stock'],detail.documents.map(d=>`<tr><td>${fmtDate(d.purchase_date)}</td><td>${purchaseTypes[d.document_type]||safe(d.document_type)}<br><small>${safe(d.document_number||'')}</small></td><td>${money(d.total)}</td><td>${safe(d.payment_status||'')}<br><small>${safe(d.payment_method||'')}</small></td><td>${safe(d.stock_status||'')}</td></tr>`))}</div><div><h3>Productos detectados</h3><div class="supplier-products-list">${detail.products.map(p=>`<article><strong>${safe(p.inventory_name||p.description)}</strong><span>${safe(p.description)} · ${p.times} compra(s)</span><small>${Number(p.total_quantity||0)} ${safe(p.unit||'')} · ${money(p.total_amount)}</small></article>`).join('')||'<p class="muted">Sin productos confirmados todavía.</p>'}</div></div></section>`;
   modalForm.querySelector('#closeSupplierDetail').onclick=()=>modal.close();
+  modalForm.querySelector('#downloadSupplierDetail').onclick=()=>downloadSupplierProfile(detail);
   modalForm.querySelector('#editSupplierFromDetail').onclick=()=>{modal.close();setTimeout(()=>openSupplierForm(s),0)};
   modal.showModal();
 };

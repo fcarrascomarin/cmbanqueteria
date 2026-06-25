@@ -98,7 +98,7 @@ async function menus(){
     <section class="card sweet-promo-studio">
       <div class="sweet-promo-form">
         <div><div class="kicker">Promoción dulces</div><h3>Gráfica café + dulce</h3><p class="admin-help">Ajusta los textos de la plantilla vertical para descargar una historia lista para redes.</p></div>
-        <div class="two-cols">${field('sweet_headline','Frase principal','text','Endulza tu tarde','maxlength="42"')}${field('sweet_price','Precio','number',2500,'min="0" step="100"')}</div>
+        <div class="two-cols">${field('sweet_headline','Título principal','text','Endulza tu tarde','maxlength="32"')}${field('sweet_price','Precio','number',2500,'min="0" step="100"')}</div>
         <div class="two-cols">${field('sweet_lead','Producto 1','text','Café / Té','maxlength="32"')}${field('sweet_product','Producto 2','text','Trozo de kuchen','maxlength="36"')}</div>
         <div class="menu-downloads"><button class="btn btn-primary" type="button" id="downloadSweetPromoBtn">Descargar promoción de dulce</button><span class="menu-publish-status" id="sweetPromoStatus" aria-live="polite"></span></div>
       </div>

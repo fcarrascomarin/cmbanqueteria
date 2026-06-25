@@ -26,8 +26,22 @@ loadTodayMenu();
 function loadPromoVideo(){
   const video=document.querySelector('#promoVideo');
   if(!video)return;
+  const card=video.closest('.promo-video-card');
   video.setAttribute('aria-label','Video promocional de CM Banquetería');
-  video.addEventListener('error',()=>video.closest('.promo-video-card')?.classList.add('video-unavailable'),{once:true});
-  video.play().catch(()=>{});
+  video.poster='/assets/prom.png';
+  card?.classList.add('is-loading');
+  const markReady=()=>{
+    card?.classList.remove('is-loading');
+    video.play().catch(()=>{});
+  };
+  if(video.readyState>=2)markReady();
+  else{
+    video.addEventListener('loadeddata',markReady,{once:true});
+    video.addEventListener('canplay',markReady,{once:true});
+  }
+  video.addEventListener('error',()=>{
+    card?.classList.remove('is-loading');
+    card?.classList.add('video-unavailable');
+  },{once:true});
 }
 loadPromoVideo();

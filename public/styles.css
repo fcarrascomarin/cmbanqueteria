@@ -519,8 +519,13 @@ label {
   font-weight: 600;
 }
 
+.footer-contact a[href^="mailto:"] {
+  cursor: pointer;
+}
+
 .footer-contact a:hover {
   color: var(--dorado);
+  text-decoration: underline;
 }
 
 /* =========================
@@ -1281,7 +1286,7 @@ th {
   aspect-ratio: 9 / 13;
   overflow: hidden;
   border-radius: 8px;
-  background: var(--vino-profundo);
+  background: var(--vino-profundo) url('/assets/prom.png') center / cover no-repeat;
 }
 
 .promo-video-card video {
@@ -1289,10 +1294,16 @@ th {
   height: 100%;
   display: block;
   object-fit: cover;
+  opacity: 1;
+  transition: opacity .24s ease;
+}
+
+.promo-video-card.is-loading video {
+  opacity: 0;
 }
 
 .promo-video-card.video-unavailable video {
-  opacity: .72;
+  opacity: 0;
 }
 
 .promo-video-card.video-unavailable::after {

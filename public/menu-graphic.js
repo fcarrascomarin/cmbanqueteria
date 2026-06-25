@@ -11,7 +11,7 @@
 
   let sweetTemplatePromise;
   function loadSweetTemplate(){
-    if(!sweetTemplatePromise)sweetTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/sweet-promo-template.png?v=20260624'});
+    if(!sweetTemplatePromise)sweetTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/sweet-promo-template.png?v=20260625-final'});
     return sweetTemplatePromise;
   }
 
@@ -102,16 +102,28 @@
     ctx.shadowColor='transparent';
   }
 
-  function sweetBlockText(ctx,text,x,y,maxWidth,lineHeight,startSize,minSize=54){
-    const value=String(text||'').toUpperCase().trim();
-    fit(ctx,value,maxWidth,startSize,minSize,900,'"Montserrat", Arial, sans-serif');
-    const words=value.split(/\s+/).filter(Boolean),lines=[];let line='';
-    words.forEach(word=>{const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width<=maxWidth)line=test;else{if(line)lines.push(line);line=word}});
-    if(line)lines.push(line);
-    const useLines=lines.slice(0,2),startY=y-((useLines.length-1)*lineHeight/2);
-    ctx.fillStyle=colors.white;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.22)';ctx.shadowBlur=3;ctx.shadowOffsetY=2;
-    useLines.forEach((lineText,index)=>ctx.fillText(lineText,x,startY+index*lineHeight));
-    ctx.shadowColor='transparent';
+  function normalizeSweetHeadline(text){
+    let value=String(text||'Endulza tu tarde').replace(/[¿?¡!]/g,' ').replace(/\s+/g,' ').trim().toUpperCase();
+    if(!value)value='ENDULZA TU TARDE';
+    if(value.includes('ENDULZAR'))value=value.replace('ENDULZAR','ENDULZA');
+    if(value.startsWith('QUIERES ENDULZA'))value=value.replace(/^QUIERES\s+/, '');
+    const words=value.split(/\s+/).filter(Boolean);
+    if(words[0]==='ENDULZA'){
+      const rest=words.slice(1).join(' ')||'TU TARDE';
+      return ['ENDULZA',rest];
+    }
+    if(words.length<=2)return [words.join(' '),''];
+    const split=Math.ceil(words.length/2);
+    return [words.slice(0,split).join(' '),words.slice(split).join(' ')];
+  }
+
+  function sweetTitle(ctx,text){
+    const [line1,line2]=normalizeSweetHeadline(text);
+    ctx.save();
+    ctx.fillStyle=colors.white;ctx.textAlign='left';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.18)';ctx.shadowBlur=3;ctx.shadowOffsetY=2;
+    fit(ctx,line1,640,112,72,900,'"Montserrat", Arial, sans-serif');ctx.fillText(line1,328,150);
+    if(line2){fit(ctx,line2,560,84,52,900,'"Montserrat", Arial, sans-serif');ctx.fillText(line2,328,275)}
+    ctx.restore();
   }
 
   function sweetPillText(ctx,text,x,y,maxWidth,size,minSize=42){
@@ -145,11 +157,11 @@
     const [template]=await Promise.all([Promise.race([loadSweetTemplate(),templateTimeout]),Promise.race([fonts,new Promise(resolve=>setTimeout(resolve,650))])]);
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1920;const ctx=canvas.getContext('2d');
     if(template)ctx.drawImage(template,0,0,canvas.width,canvas.height);else{ctx.fillStyle='#8b2020';ctx.fillRect(0,0,1080,1920)}
-    sweetBlockText(ctx,data.headline||'Endulza tu tarde',660,205,630,106,104,64);
+    sweetTitle(ctx,data.headline||'Endulza tu tarde');
     const price=String(data.price||'2500').replace(/[^\d]/g,'')||'2500';
-    ctx.save();ctx.translate(706,512);ctx.rotate(-6*Math.PI/180);sweetPillText(ctx,price,0,0,300,106,68);ctx.restore();
-    sweetPillText(ctx,data.lead||'Café / Té',540,766,640,58,36);
-    sweetPillText(ctx,data.product||'Trozo de kuchen',540,1042,640,58,36);
+    ctx.save();ctx.translate(708,506);ctx.rotate(-6*Math.PI/180);sweetPillText(ctx,price,0,0,330,118,74);ctx.restore();
+    sweetPillText(ctx,data.lead||'Café / Té',540,766,650,58,36);
+    sweetPillText(ctx,data.product||'Trozo de kuchen',540,1039,650,58,36);
     return canvas;
   }
 
