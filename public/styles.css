@@ -4,7 +4,7 @@
   --vino: #5a1624;
   --osc: #381018;
   --vino-profundo: #21020a;
-  --crema: #0a0a0a;
+  --crema: #e6e3e3;
   --gris: #f4f1ed;
   --dorado: #d6a64f;
   --texto: #231f20;
@@ -26,7 +26,7 @@ html {
 
 body {
   margin: 0;
-  font-family: "Sue Ellen Francisco", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Poetsen One", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--texto);
   background: var(--crema);
 }
@@ -57,7 +57,7 @@ h2,
 h3,
 .footer-brand h3,
 .screen-panel h1 {
-  font-family: "Cinzel", Georgia, serif;
+  font-family: "Montserrat", Georgia, serif;
   font-weight: 800;
 }
 
