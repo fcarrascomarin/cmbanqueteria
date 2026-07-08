@@ -2,9 +2,9 @@
 
 Versión pública actualizada para explicar con claridad las tres líneas de CM:
 
-1. **CM Banquetería | Desde 2013**: eventos familiares, empresas, celebraciones, coffee break, almuerzos, cenas y servicios a medida.
-2. **CM Restaurant | Desde 2026**: menú del día, almuerzos caseros y atención diurna en el local.
-3. **CM Experiencias | Próximamente**: encuentros gastronómicos, actividades temáticas y propuestas frente a Laguna La Señoraza.
+1. **CM Restaurant | Desde 2026**: menú del día, almuerzos caseros y atención diurna de lunes a viernes, 12:00 a 15:00 hrs.
+2. **CM Banquetería | Desde 2013**: eventos familiares, empresas, celebraciones, coffee break, almuerzos, cenas y servicios a medida.
+3. **CM Experiencias | Cartelera**: funciones con reserva, partiendo por “Mitos y Verdades de Laja” frente a Laguna La Señoraza.
 
 La web pública prioriza conversión por WhatsApp, cotización ordenada, menú del día ligado al Restaurant, ubicación con mapa y una galería real del local funcionando como restaurant y banquetería. La plataforma interna se mantiene en `/admin.html`.
 
@@ -15,10 +15,10 @@ La web pública prioriza conversión por WhatsApp, cotización ordenada, menú d
 - Botón de acceso interno más discreto.
 - Sección Restaurant con menú del día dinámico desde el panel interno.
 - Sección Banquetería con galería real de montajes y preparaciones.
-- Sección CM Experiencias marcada como “Próximamente”, sin venderla como servicio activo permanente.
+- Sección CM Experiencias actualizada como cartelera, con información pública de “Mitos y Verdades de Laja”, sin exponer costos internos ni gobernanza del proyecto.
 - Formulario de cotización que abre WhatsApp con los datos preparados y también intenta registrar la solicitud en el panel interno.
 - Sección “Cómo llegar” con dirección, botones de contacto y mapa embebido.
-- Imágenes optimizadas en `public/assets/web/`, nombradas con códigos R y B para mantener orden visual.
+- Imágenes optimizadas en `public/assets/web/`, incluyendo hero de portada comprimido y selección curada para Restaurant, Banquetería, Experiencias, Contacto y Cómo llegar.
 
 ## Rutas principales
 
@@ -67,5 +67,5 @@ npm run dev
 
 - No subir `.env` a GitHub.
 - La web pública no expone costos, diagnóstico, trámites, hoja de ruta ni información interna de la consultoría.
-- La línea CM Experiencias aparece como próxima línea y debe actualizarse cuando exista cartelera pública real.
+- CM Experiencias aparece como cartelera con reserva; los detalles internos del dossier no deben exponerse en la web pública.
 - El menú del día depende del panel interno y de `/api/public/menu/today`.
