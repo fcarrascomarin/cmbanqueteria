@@ -26,12 +26,51 @@
     <div class="admin-shell">
       <aside class="sidebar">
         <h3>Módulos</h3>
-        <div class="side-group"><span>Inicio</span><button class="side-btn active" data-view="dashboard">Panel ejecutivo</button></div>
-        <div class="side-group"><span>Proceso</span><button class="side-btn consulting" data-view="weekly">Proceso CM by Metamorfosis</button><button class="side-btn" data-view="documents">Biblioteca documental</button></div>
-        <div class="side-group"><span>Restaurant</span><button class="side-btn" data-view="operations">Reservas / Cocina</button><button class="side-btn" data-view="menus">Gráficas menú</button><button class="side-btn" data-view="kitchenMinutas">Minutas cocina</button><button class="side-btn" data-view="rations">Costeo / Raciones</button><button class="side-btn" data-view="screenMedia">Pantallas / videos</button></div>
-        <div class="side-group"><span>Compras y stock</span><button class="side-btn" data-view="expenses">Gastos / compras</button><button class="side-btn" data-view="purchases">Compras imagen/manual</button><button class="side-btn" data-view="suppliers">Proveedores</button><button class="side-btn" data-view="inventory">Stock e insumos</button></div>
-        <div class="side-group"><span>Comercial</span><button class="side-btn" data-view="quotes">Cotizaciones</button></div>
-        <div class="side-group"><span>Gestión interna</span><button class="side-btn" data-view="observations">Bitácora diaria</button><button class="side-btn" data-view="staff">Personal</button></div>
+        <div class="side-group open" data-group="inicio">
+          <button class="side-group-toggle" type="button" aria-expanded="true">Inicio</button>
+          <div class="side-submenu">
+            <button class="side-btn active" data-view="dashboard">Panel ejecutivo</button>
+          </div>
+        </div>
+        <div class="side-group" data-group="proceso">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Proceso</button>
+          <div class="side-submenu">
+            <button class="side-btn consulting" data-view="weekly">Proceso CM by Metamorfosis</button>
+            <button class="side-btn" data-view="documents">Biblioteca documental</button>
+          </div>
+        </div>
+        <div class="side-group" data-group="restaurant">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Restaurant</button>
+          <div class="side-submenu">
+            <button class="side-btn" data-view="operations">Reservas / Cocina</button>
+            <button class="side-btn" data-view="menus">Gráficas menú</button>
+            <button class="side-btn" data-view="kitchenMinutas">Minutas cocina</button>
+            <button class="side-btn" data-view="rations">Costeo / Raciones</button>
+            <button class="side-btn" data-view="screenMedia">Pantallas / videos</button>
+          </div>
+        </div>
+        <div class="side-group" data-group="compras-stock">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Compras y stock</button>
+          <div class="side-submenu">
+            <button class="side-btn" data-view="expenses">Gastos / compras</button>
+            <button class="side-btn" data-view="purchases">Compras imagen/manual</button>
+            <button class="side-btn" data-view="suppliers">Proveedores</button>
+            <button class="side-btn" data-view="inventory">Stock e insumos</button>
+          </div>
+        </div>
+        <div class="side-group" data-group="comercial">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Comercial</button>
+          <div class="side-submenu">
+            <button class="side-btn" data-view="quotes">Cotizaciones</button>
+          </div>
+        </div>
+        <div class="side-group" data-group="gestion-interna">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Gestión interna</button>
+          <div class="side-submenu">
+            <button class="side-btn" data-view="observations">Bitácora diaria</button>
+            <button class="side-btn" data-view="staff">Personal</button>
+          </div>
+        </div>
       </aside>
       <main class="admin-main"><div class="toolbar"><div><div class="kicker" id="viewKicker">Panel</div><h2 id="viewTitle">Resumen operativo</h2></div><div id="viewActions"></div></div><section id="content"></section></main>
     </div>

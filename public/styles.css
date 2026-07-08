@@ -4097,3 +4097,208 @@ body.public-v2 {
 .drive-tree span{display:block;padding-left:18px;color:var(--muted);font-weight:700;font-size:.88rem}
 .drive-tree span::before{content:'↳ ';color:var(--dorado)}
 @media(max-width:900px){.process-alerts{grid-template-columns:1fr}.quick-actions .btn{width:100%;justify-content:center}.process-timeline .consultation-track,.process-timeline .milestone-detail-panels{min-width:1180px}.admin-shell{grid-template-columns:1fr}.sidebar{position:relative;top:0;height:auto}.admin-main{padding:18px}}
+
+/* ===== 2026-07-08 ajustes panel interno y web pública ===== */
+.sidebar{
+  overflow-y:auto;
+}
+.side-group{
+  border-top:1px solid rgba(237,226,213,.18);
+  padding:14px 0 0;
+  margin-top:14px;
+}
+.side-group:first-of-type{
+  margin-top:4px;
+}
+.side-group-toggle{
+  width:100%;
+  background:transparent;
+  border:0;
+  color:#f4ece4;
+  font:800 1rem/1.2 'Montserrat',sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  text-align:left;
+  padding:0 6px 10px;
+  cursor:pointer;
+}
+.side-group-toggle::after{
+  content:'+';
+  float:right;
+  font-size:1.15rem;
+  opacity:.7;
+}
+.side-group.open .side-group-toggle::after{
+  content:'–';
+}
+.side-submenu{
+  display:none;
+  padding:2px 0 8px;
+  gap:8px;
+  flex-direction:column;
+}
+.side-group.open .side-submenu{
+  display:flex;
+}
+.sidebar .side-btn{
+  margin:0;
+  background:rgba(255,255,255,.04);
+}
+.sidebar .side-btn.active{
+  background:#e2b354;
+  color:#4d0918;
+}
+.library-split{
+  display:grid;
+  gap:22px;
+}
+.library-card{
+  background:#fffdf9;
+  border:1px solid rgba(117,18,40,.12);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 18px 40px rgba(77,9,24,.06);
+}
+.library-card-head{
+  margin-bottom:16px;
+}
+.library-card-head h3{
+  margin-bottom:6px;
+}
+.notice-soft{
+  background:#f8f3ea;
+  border:1px solid rgba(117,18,40,.12);
+}
+.link-muted{
+  font-size:.92rem;
+  color:#7a6b64;
+}
+.deliverable-item.has-document{
+  border-color:rgba(46,125,83,.25);
+  background:#fbfffc;
+}
+.deliverable-item .btn[disabled]{
+  opacity:.78;
+  cursor:not-allowed;
+}
+.deliverable-actions{
+  align-items:flex-start;
+}
+.deliverable-actions a,
+.deliverable-actions .btn,
+.deliverable-actions button{
+  white-space:nowrap;
+}
+
+.overview-section{
+  padding-top:18px;
+}
+.overview-head{
+  align-items:end;
+  gap:24px;
+  margin-bottom:28px;
+}
+.cm-overview-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px;
+}
+.cm-overview-card{
+  background:#fffdf9;
+  border:1px solid rgba(117,18,40,.12);
+  border-radius:28px;
+  padding:28px;
+  box-shadow:0 20px 48px rgba(77,9,24,.08);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.cm-overview-card span{
+  width:52px;
+  height:52px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  background:#f1e0b6;
+  color:#5c0c1f;
+  font-weight:800;
+}
+.cm-overview-card h3{
+  margin:0;
+  font-size:1.55rem;
+}
+.cm-overview-card p{
+  margin:0;
+  color:#5f5350;
+}
+.cm-overview-card a{
+  margin-top:auto;
+  font-weight:700;
+  color:#751228;
+}
+.public-v2 .hero-service-panel{
+  margin-top:26px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.public-v2 .hero-service-panel article{
+  min-height:240px;
+  padding:24px;
+  border-radius:28px;
+}
+.public-v2 .hero-service-panel h2{
+  font-size:1.6rem;
+}
+.public-v2 .service-section .container.service-layout{
+  align-items:start;
+}
+.public-v2 #banqueteria .service-layout{
+  grid-template-columns:minmax(360px,.95fr) minmax(0,1.05fr);
+  gap:34px;
+}
+.public-v2 #banqueteria .service-copy{
+  max-width:none;
+  padding-right:0;
+}
+.public-v2 #banqueteria .service-copy h2{
+  font-size:clamp(2.4rem,4vw,4.2rem);
+  line-height:.98;
+}
+.public-v2 #banqueteria .service-media img,
+.public-v2 #banqueteria .service-media{
+  min-height:360px;
+  max-height:430px;
+}
+.public-v2 #banqueteria .feature-list.compact div{
+  padding:14px 16px;
+}
+.public-v2 #banqueteria .gallery-block{
+  margin-top:22px;
+  padding-top:16px;
+}
+.public-v2 #banqueteria .curated-gallery{
+  grid-auto-rows:220px;
+}
+.public-v2 #banqueteria .section-head.compact-head{
+  margin-bottom:16px;
+}
+@media (max-width: 1080px){
+  .cm-overview-grid,
+  .public-v2 .hero-service-panel,
+  .public-v2 #banqueteria .service-layout{
+    grid-template-columns:1fr;
+  }
+  .public-v2 .hero-service-panel article,
+  .cm-overview-card{
+    min-height:auto;
+  }
+}
+@media (max-width: 720px){
+  .library-card{
+    padding:18px;
+    border-radius:20px;
+  }
+  .side-group-toggle{
+    font-size:.92rem;
+  }
+}
