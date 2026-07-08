@@ -109,5 +109,16 @@ INSERT INTO consultation_deliverables(milestone_id,title,sort_order)
 SELECT m.id,TRIM(item.title),item.ord::int FROM consultation_milestones m CROSS JOIN LATERAL unnest(string_to_array(m.deliverables,'|')) WITH ORDINALITY AS item(title,ord)
 ON CONFLICT(milestone_id,title) DO NOTHING;
 UPDATE consultation_deliverables d SET sort_order=s.ord::int FROM consultation_milestones m CROSS JOIN LATERAL unnest(string_to_array(m.deliverables,'|')) WITH ORDINALITY AS s(title,ord) WHERE d.milestone_id=m.id AND d.title=TRIM(s.title);
+WITH known_process_docs(stage_key,deliverable_title,title,document_type,file_url,report_date,status,notes) AS (VALUES
+  ('preactivacion','Plan preliminar presentado','Plan de trabajo preliminar CM Banquetería','PDF','/docs/cm/CM-DOC-000-Plan-trabajo-preliminar.pdf','2026-06-16'::date,'entregado','Documento base del inicio formal del proceso.'),
+  ('sanitaria','Manual sanitario base entregado','Manual sanitario base para actualización de resolución sanitaria','Manual','/docs/cm/CM-SAN-001-Manual-sanitario-base.pdf','2026-06-26'::date,'entregado','Documento sanitario base entregado a CM.'),
+  ('sanitaria','Checklist sanitario operativo entregado','Checklist sanitario operativo por zonas','Checklist','/docs/cm/CM-SAN-002-Checklist-sanitario-operativo.pdf','2026-06-26'::date,'entregado','Instrumento para aplicación en terreno y matriz sanitaria.')
+)
+INSERT INTO consultation_documents(milestone_id,deliverable_id,title,document_type,file_url,report_date,status,notes)
+SELECT m.id,d.id,k.title,k.document_type,k.file_url,k.report_date,k.status,k.notes
+FROM known_process_docs k
+JOIN consultation_milestones m ON m.stage_key=k.stage_key
+LEFT JOIN consultation_deliverables d ON d.milestone_id=m.id AND d.title=k.deliverable_title
+WHERE NOT EXISTS (SELECT 1 FROM consultation_documents cd WHERE cd.file_url=k.file_url);
 DELETE FROM consultation_deliverables d USING consultation_milestones m WHERE d.milestone_id=m.id AND d.status='pendiente' AND d.document_url IS NULL AND d.notes IS NULL AND NOT EXISTS (SELECT 1 FROM unnest(string_to_array(m.deliverables,'|')) AS x(title) WHERE TRIM(x.title)=d.title);
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(expense_date); CREATE INDEX IF NOT EXISTS idx_daily_menus_date ON daily_menus(menu_date); CREATE INDEX IF NOT EXISTS idx_quotes_status ON event_quotes(status); CREATE INDEX IF NOT EXISTS idx_documents_expiration ON documents(expiration_date);
