@@ -5077,3 +5077,189 @@ html{
   .staff-hero{flex-direction:column;align-items:flex-start}
   .staff-metrics{width:100%}
 }
+
+
+/* ===== Ajustes visuales v10: hero equilibrado, secciones compactas y trayectoria armónica ===== */
+.public-v2 .public-hero,
+.public-v2 .service-section,
+.public-v2 .founder-section,
+.public-v2 .quote-section,
+.public-v2 .visit-section{
+  min-height:calc(100vh - 96px);
+  display:flex;
+  align-items:center;
+}
+.public-v2 .public-hero{
+  padding:28px 0 34px;
+}
+.public-v2 .service-section,
+.public-v2 .founder-section,
+.public-v2 .quote-section,
+.public-v2 .visit-section{
+  padding:28px 0;
+}
+.public-v2 .hero-editorial-grid{
+  grid-template-columns:minmax(0,1.02fr) minmax(320px,.84fr);
+  gap:44px;
+  min-height:auto;
+}
+.public-v2 .hero-copy h1{
+  max-width:10.2ch;
+  font-size:clamp(3.8rem,6vw,6rem);
+  line-height:.92;
+}
+.public-v2 .hero-copy .lead{
+  max-width:560px;
+  font-size:1rem;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal{
+  grid-template-columns:1fr;
+  grid-template-rows:repeat(3,1fr);
+  gap:14px;
+  min-height:0;
+  height:min(58vh,500px);
+  padding:16px;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-main{
+  grid-row:auto;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card{
+  min-height:0;
+  border-radius:24px;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card span{
+  font-size:.95rem;
+}
+.public-v2 .service-layout-montage{
+  grid-template-columns:minmax(0,.94fr) minmax(340px,.98fr);
+  gap:42px;
+  min-height:auto;
+}
+.public-v2 .service-layout-montage .service-copy h2{
+  font-size:clamp(3.2rem,5vw,5rem);
+  line-height:.94;
+  max-width:10.5ch;
+  text-wrap:balance;
+}
+.public-v2 #banqueteria .service-layout-montage .service-copy h2{
+  max-width:11.5ch;
+}
+.public-v2 .service-layout-montage .service-lead{
+  font-size:.98rem;
+  max-width:580px;
+}
+.public-v2 .feature-list.compact{
+  margin-top:16px;
+}
+.public-v2 .feature-list.compact div{
+  padding:11px 0;
+}
+.public-v2 .service-actions{
+  margin-top:14px;
+}
+.public-v2 .service-montage{
+  height:min(46vh,390px);
+  min-height:340px;
+  gap:14px;
+}
+.public-v2 .service-montage figure,
+.public-v2 .service-montage .compact-menu-card{
+  border-radius:24px;
+}
+.public-v2 .compact-menu-card{
+  padding:16px;
+}
+.public-v2 .compact-menu-card h3{
+  font-size:1.18rem;
+}
+.public-v2 .compact-menu-card p{
+  font-size:.84rem;
+}
+.public-v2 .founder-layout{
+  grid-template-columns:minmax(300px,360px) minmax(0,1fr);
+  gap:34px;
+}
+.public-v2 .founder-media,
+.public-v2 .founder-media img{
+  min-height:360px;
+  max-height:52vh;
+}
+.public-v2 .founder-copy h2{
+  max-width:13ch;
+  font-size:clamp(3rem,4.9vw,4.6rem);
+  line-height:.97;
+  text-wrap:balance;
+  margin-bottom:14px;
+}
+.public-v2 .founder-copy > p:not(.service-lead){
+  font-size:.96rem;
+  line-height:1.5;
+  margin-bottom:14px;
+}
+.public-v2 .founder-timeline{
+  gap:10px;
+  margin:18px 0 18px;
+}
+.public-v2 .founder-timeline article{
+  padding:14px;
+}
+.public-v2 .founder-timeline p{
+  font-size:.88rem;
+  line-height:1.38;
+}
+.public-v2 .experiencias-section .service-layout,
+.public-v2 .quote-section .quote-layout,
+.public-v2 .visit-section .visit-layout{
+  min-height:auto;
+}
+.public-v2 .quote-photo-card,
+.public-v2 .quote-photo-card img,
+.public-v2 .visit-map,
+.public-v2 .visit-map iframe{
+  min-height:320px;
+  max-height:42vh;
+}
+@media(max-width:1120px){
+  .public-v2 .public-hero,
+  .public-v2 .service-section,
+  .public-v2 .founder-section,
+  .public-v2 .quote-section,
+  .public-v2 .visit-section{
+    min-height:auto;
+  }
+  .public-v2 .hero-editorial-grid,
+  .public-v2 .service-layout-montage,
+  .public-v2 .founder-layout{
+    grid-template-columns:1fr;
+    gap:26px;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal{
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:1fr;
+    height:260px;
+  }
+  .public-v2 .service-montage{
+    height:auto;
+    min-height:0;
+    grid-template-rows:250px 190px;
+  }
+  .public-v2 .service-montage .montage-main{
+    grid-column:1 / span 2;
+    grid-row:auto;
+  }
+}
+@media(max-width:760px){
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal{
+    grid-template-columns:1fr;
+    grid-template-rows:repeat(3,200px);
+    height:auto;
+  }
+  .public-v2 .service-montage{
+    grid-template-columns:1fr;
+    grid-template-rows:auto;
+  }
+  .public-v2 .service-montage figure,
+  .public-v2 .service-montage .compact-menu-card{
+    min-height:220px;
+  }
+}
