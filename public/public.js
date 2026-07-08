@@ -5,7 +5,7 @@ function cmWhatsappUrl(message){
 }
 
 async function loadTodayMenu(){
-  const box=document.querySelector('#todayMenu');
+  const box=document.querySelector('#todayMenu, #menu-del-dia');
   if(!box)return;
   try{
     const res=await fetch('/api/public/menu/today'),data=await res.json();
