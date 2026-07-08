@@ -200,6 +200,21 @@ async function seedKnownSuppliers(db=pool){
     }
   }
 }
+
+async function seedInitialStaff(db=pool){
+  const staffBase=[
+    ['Claudia Mendez','Administradora'],
+    ['Silvia','Maestra de cocina'],
+    ['Jenny','Ayudante de cocina'],
+    ['Marlen','Aseo comedor y apoyo en cocina'],
+    ['Sofia','Mesera part-time']
+  ];
+  for(const [fullName,role] of staffBase){
+    await db.query(`INSERT INTO staff(full_name,role,status,notes)
+      SELECT $1,$2,'activo','Registro inicial de equipo CM cargado desde levantamiento Metamorfosis. Completar RUT, teléfono, jornada, contrato y documentación asociada.'
+      WHERE NOT EXISTS (SELECT 1 FROM staff WHERE LOWER(full_name)=LOWER($1) AND LOWER(COALESCE(role,''))=LOWER($2))`,[fullName,role]);
+  }
+}
 function parseImageData(value){
   const match=String(value||'').match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
   if(!match)throw Error('Selecciona una imagen JPG, PNG o WebP válida.');
@@ -454,4 +469,4 @@ app.delete('/api/admin/consultation/records/:id',auth,async(req,res)=>{const c=a
 app.post('/api/admin/weekly_menus',auth,async(req,res)=>{const c=await pool.connect();try{const {week_start,week_end,notes,days}=req.body;if(!week_start||!week_end)return res.status(400).json({error:'Faltan fechas.'}); await c.query('BEGIN'); const w=await c.query('INSERT INTO weekly_menus(week_start,week_end,notes) VALUES($1,$2,$3) RETURNING *',[week_start,week_end,notes||null]); for(const d of days||[]) await c.query('INSERT INTO weekly_menu_days(weekly_menu_id,day_name,menu_date,title,planned_portions,notes) VALUES($1,$2,$3,$4,$5,$6)',[w.rows[0].id,d.day_name,d.menu_date||null,d.title||null,Number(d.planned_portions||0),d.notes||null]); await c.query('COMMIT'); res.status(201).json({item:w.rows[0]})}catch(e){await c.query('ROLLBACK');console.error(e);res.status(500).json({error:'No se pudo guardar minuta.'})}finally{c.release()}});
 app.get('/api/admin/weekly_menus',auth,async(req,res)=>{const w=await pool.query('SELECT * FROM weekly_menus ORDER BY week_start DESC LIMIT 50');const full=[];for(const x of w.rows){const d=await pool.query('SELECT * FROM weekly_menu_days WHERE weekly_menu_id=$1 ORDER BY id',[x.id]);full.push({...x,days:d.rows})}res.json({items:full})}); app.delete('/api/admin/weekly_menus/:id',auth,async(req,res)=>{await pool.query('DELETE FROM weekly_menus WHERE id=$1',[req.params.id]);res.json({ok:true})});
 app.post('/api/admin/rations',auth,async(req,res)=>{const b=req.body, portions=Number(b.planned_portions||0), total=int(b.estimated_total_cost), price=int(b.sale_price), cpp=portions>0?Math.round(total/portions):0;const r=await pool.query('INSERT INTO rations(ration_date,title,planned_portions,estimated_total_cost,estimated_cost_per_portion,sale_price,estimated_margin,notes) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',[b.ration_date||new Date().toISOString().slice(0,10),b.title,portions,total,cpp,price,price-cpp,b.notes||null]);res.status(201).json({item:r.rows[0]})}); app.get('/api/admin/rations',auth,async(req,res)=>{const r=await pool.query('SELECT * FROM rations ORDER BY ration_date DESC,id DESC LIMIT 100');res.json({items:r.rows})}); app.delete('/api/admin/rations/:id',auth,async(req,res)=>{await pool.query('DELETE FROM rations WHERE id=$1',[req.params.id]);res.json({ok:true})});
-pool.query(schema).then(()=>seedKnownSuppliers()).then(()=>refreshConsultationProgress()).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});
+pool.query(schema).then(()=>seedKnownSuppliers()).then(()=>seedInitialStaff()).then(()=>refreshConsultationProgress()).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});

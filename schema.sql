@@ -77,6 +77,24 @@ CREATE TABLE IF NOT EXISTS rations (id BIGSERIAL PRIMARY KEY, ration_date DATE N
 CREATE TABLE IF NOT EXISTS event_quotes (id BIGSERIAL PRIMARY KEY, client_name TEXT NOT NULL, phone TEXT NOT NULL, email TEXT, event_date DATE, event_type TEXT, guests INTEGER, location TEXT, requested_service TEXT, estimated_budget INTEGER, status TEXT NOT NULL DEFAULT 'recibida', quoted_total INTEGER NOT NULL DEFAULT 0, internal_notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS staff (id BIGSERIAL PRIMARY KEY, full_name TEXT NOT NULL, rut TEXT, role TEXT, phone TEXT, start_date DATE, contract_type TEXT, schedule TEXT, status TEXT NOT NULL DEFAULT 'activo', notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS documents (id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, document_type TEXT NOT NULL, owner_type TEXT NOT NULL DEFAULT 'empresa', staff_id BIGINT REFERENCES staff(id) ON DELETE SET NULL, document_date DATE, expiration_date DATE, file_url TEXT, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+
+-- Equipo inicial CM registrado para el módulo Personal.
+INSERT INTO staff(full_name,role,status,notes)
+SELECT 'Claudia Mendez','Administradora','activo','Registro inicial de equipo CM cargado desde levantamiento Metamorfosis. Completar RUT, teléfono, jornada, contrato y documentación asociada.'
+WHERE NOT EXISTS (SELECT 1 FROM staff WHERE LOWER(full_name)=LOWER('Claudia Mendez') AND LOWER(COALESCE(role,''))=LOWER('Administradora'));
+INSERT INTO staff(full_name,role,status,notes)
+SELECT 'Silvia','Maestra de cocina','activo','Registro inicial de equipo CM cargado desde levantamiento Metamorfosis. Completar RUT, teléfono, jornada, contrato y documentación asociada.'
+WHERE NOT EXISTS (SELECT 1 FROM staff WHERE LOWER(full_name)=LOWER('Silvia') AND LOWER(COALESCE(role,''))=LOWER('Maestra de cocina'));
+INSERT INTO staff(full_name,role,status,notes)
+SELECT 'Jenny','Ayudante de cocina','activo','Registro inicial de equipo CM cargado desde levantamiento Metamorfosis. Completar RUT, teléfono, jornada, contrato y documentación asociada.'
+WHERE NOT EXISTS (SELECT 1 FROM staff WHERE LOWER(full_name)=LOWER('Jenny') AND LOWER(COALESCE(role,''))=LOWER('Ayudante de cocina'));
+INSERT INTO staff(full_name,role,status,notes)
+SELECT 'Marlen','Aseo comedor y apoyo en cocina','activo','Registro inicial de equipo CM cargado desde levantamiento Metamorfosis. Completar RUT, teléfono, jornada, contrato y documentación asociada.'
+WHERE NOT EXISTS (SELECT 1 FROM staff WHERE LOWER(full_name)=LOWER('Marlen') AND LOWER(COALESCE(role,''))=LOWER('Aseo comedor y apoyo en cocina'));
+INSERT INTO staff(full_name,role,status,notes)
+SELECT 'Sofia','Mesera part-time','activo','Registro inicial de equipo CM cargado desde levantamiento Metamorfosis. Completar RUT, teléfono, jornada, contrato y documentación asociada.'
+WHERE NOT EXISTS (SELECT 1 FROM staff WHERE LOWER(full_name)=LOWER('Sofia') AND LOWER(COALESCE(role,''))=LOWER('Mesera part-time'));
+
 CREATE TABLE IF NOT EXISTS consultation_milestones (id BIGSERIAL PRIMARY KEY, stage_key TEXT NOT NULL UNIQUE, week_number INTEGER NOT NULL, title TEXT NOT NULL, objective TEXT NOT NULL, deliverables TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pendiente' CHECK(status IN ('pendiente','en_curso','completado','realizado','pendiente_inmediato','pendiente_posterior','bloqueado','en_revision')), sort_order INTEGER NOT NULL, notes TEXT, completed_at TIMESTAMPTZ, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 ALTER TABLE consultation_milestones DROP CONSTRAINT IF EXISTS consultation_milestones_sort_order_key;
 ALTER TABLE consultation_milestones DROP CONSTRAINT IF EXISTS consultation_milestones_status_check;
