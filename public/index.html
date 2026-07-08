@@ -11,7 +11,7 @@
   <link rel="preload" href="/assets/web/H1_home_cm_banqueteria_evento_brand.jpg" as="image" type="image/jpeg">
   <link rel="preload" href="/assets/web/R5_restaurant_salon_calido_hero.jpg" as="image" type="image/jpeg">
   <link rel="preload" href="/assets/web/B15_banqueteria_salon_completo_evento_hero.jpg" as="image" type="image/jpeg">
-  <link rel="stylesheet" href="/styles.css?v=20260708-hitos-v7" />
+  <link rel="stylesheet" href="/styles.css?v=20260708-personal-v9" />
 </head>
 <body class="public-site public-v2">
   <header class="topbar public-topbar">
@@ -46,31 +46,25 @@
           </div>
         </div>
 
-        <div class="hero-service-panel" id="servicios" aria-label="Líneas de servicio de CM">
-          <article>
-            <span>01</span>
-            <h2>Restaurant</h2>
-            <p>Menú del día y almuerzos caseros.</p>
-            <a href="#restaurant">Ver servicio</a>
-          </article>
-          <article>
-            <span>02</span>
-            <h2>Banquetería</h2>
-            <p>Eventos familiares, empresas y celebraciones.</p>
-            <a href="#banqueteria">Ver servicio</a>
-          </article>
-          <article>
-            <span>03</span>
-            <h2>Reservas especiales</h2>
-            <p>Consultas por fechas, reuniones y uso del espacio.</p>
-            <a href="#experiencias">Consultar</a>
-          </article>
+        <div class="hero-photo-collage" id="servicios" aria-label="Imágenes destacadas de CM">
+          <a class="hero-collage-card hero-collage-main" href="#banqueteria">
+            <img src="/assets/web/B15_banqueteria_salon_completo_evento_hero.jpg" alt="Salón de CM montado para evento de banquetería">
+            <span>Banquetería</span>
+          </a>
+          <a class="hero-collage-card" href="#restaurant">
+            <img src="/assets/web/R5_restaurant_salon_calido_hero.jpg" alt="Salón de CM Restaurant para almuerzos diarios">
+            <span>Restaurant</span>
+          </a>
+          <a class="hero-collage-card" href="#experiencias">
+            <img src="/assets/web/R8_restaurant_terraza_laguna_web.jpg" alt="Terraza y entorno de CM frente a Laguna La Señoraza">
+            <span>Reservas especiales</span>
+          </a>
         </div>
       </div>
     </section>
 
     <section class="section service-section restaurant-section" id="restaurant">
-      <div class="container service-layout">
+      <div class="container service-layout service-layout-montage restaurant-layout-v8">
         <div class="service-copy">
           <div class="kicker">CM Restaurant</div>
           <h2>Almuerzos caseros y menú del día.</h2>
@@ -85,56 +79,36 @@
             <a class="btn btn-secondary" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20por%20el%20men%C3%BA%20del%20d%C3%ADa%20del%20Restaurant." target="_blank" rel="noopener">Consultar por WhatsApp</a>
           </div>
         </div>
-        <div class="service-media photo-card">
-          <img src="/assets/web/R5_restaurant_salon_calido_hero.jpg" alt="Salón de CM Restaurant preparado para atención diaria">
+        <div class="service-montage restaurant-montage" aria-label="Montaje visual de CM Restaurant">
+          <figure class="montage-main"><img src="/assets/web/R5_restaurant_salon_calido_hero.jpg" alt="Salón de CM Restaurant preparado para atención diaria"><figcaption>Salón interior</figcaption></figure>
+          <figure><img src="/assets/web/R7_restaurant_menu_del_dia_pantalla.jpg" alt="Pantallas de menú del día en CM Restaurant"><figcaption>Menú del día</figcaption></figure>
+          <figure><img src="/assets/web/R11_restaurant_recurso_lineal_interior.jpg" alt="Detalle interior de CM Restaurant"><figcaption>Atención diaria</figcaption></figure>
+          <div class="menu-card-public compact-menu-card" id="todayMenu"><p class="muted">Cargando menú...</p></div>
         </div>
-      </div>
-
-      <div class="container restaurant-menu-layout" id="menu-del-dia">
-        <div class="card menu-card-public" id="todayMenu"><p class="muted">Cargando menú...</p></div>
-        <aside class="restaurant-side-card">
-          <img src="/assets/almuerzo.png" alt="Espacio interior de CM Restaurant cuando el menú del día aún no está publicado">
-          <div>
-            <strong>Consulta de menú</strong>
-            <span>Si el menú del día aún no está publicado en la web, puedes consultarlo directamente por WhatsApp antes de asistir.</span>
-          </div>
-        </aside>
       </div>
     </section>
 
     <section class="section section-alt service-section" id="banqueteria">
-      <div class="container service-layout">
-        <div class="service-media photo-card banqueteria-hero-photo">
-          <img src="/assets/web/B15_banqueteria_salon_completo_evento_hero.jpg" alt="Salón de CM montado para evento de banquetería">
-        </div>
+      <div class="container service-layout service-layout-montage banqueteria-layout-v8">
         <div class="service-copy">
           <div class="kicker">CM Banquetería</div>
           <h2>Eventos familiares, empresas y fechas especiales.</h2>
           <p class="service-lead">La línea histórica de CM: preparación, montaje y atención para celebraciones, reuniones y servicios a medida.</p>
           <div class="feature-list compact">
-            <div><strong>Eventos</strong><span>Bautizos, cumpleaños, matrimonios pequeños/medianos, reuniones, empresas y fechas especiales.</span></div>
+            <div><strong>Eventos</strong><span>Bautizos, cumpleaños, reuniones, empresas y fechas especiales.</span></div>
             <div><strong>Formato</strong><span>En local o servicio externo, sujeto a fecha, número de personas y requerimientos.</span></div>
-            <div><strong>Reserva</strong><span>Idealmente con anticipación para diseñar menú, montaje y logística.</span></div>
+            <div><strong>Reserva</strong><span>Con anticipación para diseñar menú, montaje y logística.</span></div>
           </div>
           <div class="service-actions">
             <a class="btn btn-primary" href="#cotiza">Cotizar evento</a>
             <a class="btn btn-secondary" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20cotizar%20un%20evento.%20Fecha%3A%20%2F%20Personas%3A%20%2F%20Tipo%20de%20evento%3A%20%2F%20Lugar%3A" target="_blank" rel="noopener">WhatsApp directo</a>
           </div>
         </div>
-      </div>
-
-      <div class="container gallery-block">
-        <div class="section-head compact-head">
-          <div>
-            <div class="kicker">Montajes reales</div>
-            <h2>Una muestra del servicio.</h2>
-          </div>
-          <p class="muted">Imágenes seleccionadas para mostrar el local funcionando como banquetería, sin alterar la realidad del espacio.</p>
-        </div>
-        <div class="web-gallery curated-gallery">
-          <figure class="wide"><img src="/assets/web/B1_banqueteria_mesa_larga_campanas.jpg" alt="Mesa larga montada con campanas para evento"><figcaption>Mesa larga y servicio preparado.</figcaption></figure>
-          <figure><img src="/assets/web/B3_banqueteria_mesa_servida_comida.jpg" alt="Mesa servida con entradas y copas"><figcaption>Comida y montaje listos.</figcaption></figure>
-          <figure><img src="/assets/web/B6_banqueteria_mesa_redonda_elegante.jpg" alt="Mesa redonda montada para celebración"><figcaption>Celebraciones en el local.</figcaption></figure>
+        <div class="service-montage banqueteria-montage" aria-label="Montajes reales de CM Banquetería">
+          <figure class="montage-main"><img src="/assets/web/B15_banqueteria_salon_completo_evento_hero.jpg" alt="Salón de CM montado para evento de banquetería"><figcaption>Montaje completo</figcaption></figure>
+          <figure><img src="/assets/web/B1_banqueteria_mesa_larga_campanas.jpg" alt="Mesa larga montada con campanas para evento"><figcaption>Mesa larga</figcaption></figure>
+          <figure><img src="/assets/web/B3_banqueteria_mesa_servida_comida.jpg" alt="Mesa servida con entradas y copas"><figcaption>Servicio listo</figcaption></figure>
+          <figure><img src="/assets/web/B6_banqueteria_mesa_redonda_elegante.jpg" alt="Mesa redonda montada para celebración"><figcaption>Celebraciones</figcaption></figure>
         </div>
       </div>
     </section>
@@ -299,7 +273,7 @@
       </div>
     </div>
   </footer>
-  <script src="/menu-graphic.js?v=20260708-hitos-v7"></script>
-  <script src="/public.js?v=20260708-hitos-v7"></script>
+  <script src="/menu-graphic.js?v=20260708-personal-v9"></script>
+  <script src="/public.js?v=20260708-personal-v9"></script>
 </body>
 </html>
