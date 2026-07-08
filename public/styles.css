@@ -2312,3 +2312,952 @@ th {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   WEB PÚBLICA EDITORIAL 20260708
+   Mantiene paleta original: vino, osc, dorado, crema, gris.
+========================================================= */
+
+.public-site {
+  font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--crema);
+  color: var(--texto);
+}
+
+.public-site h1,
+.public-site h2 {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+.public-site h3,
+.public-site .brand,
+.public-site .btn,
+.public-site label,
+.public-site .kicker {
+  font-family: "Montserrat", system-ui, sans-serif;
+}
+
+.public-topbar {
+  background: rgba(230, 227, 227, 0.94);
+}
+
+.public-topbar .brand small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.nav-admin {
+  white-space: nowrap;
+}
+
+.editorial-hero {
+  min-height: 760px;
+  padding: 86px 0;
+  background-image:
+    linear-gradient(90deg, rgba(33, 2, 10, .94) 0%, rgba(56, 16, 24, .85) 38%, rgba(56, 16, 24, .34) 68%, rgba(33, 2, 10, .14) 100%),
+    url("/assets/hero.png");
+}
+
+.hero-editorial-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(340px, .55fr);
+  gap: 44px;
+  align-items: end;
+}
+
+.editorial-hero .hero-copy {
+  max-width: 760px;
+  padding: 34px 0 0;
+}
+
+.editorial-hero h1 {
+  max-width: 780px;
+  font-size: clamp(3.2rem, 6.8vw, 6.2rem);
+  line-height: .92;
+  letter-spacing: -.065em;
+}
+
+.editorial-hero .lead {
+  max-width: 660px;
+  font-size: clamp(1.05rem, 1.7vw, 1.28rem);
+  margin-top: 22px;
+}
+
+.hero-service-panel {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 30px;
+  background: rgba(230, 227, 227, .13);
+  border: 1px solid rgba(255, 255, 255, .22);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, .28);
+}
+
+.hero-service-panel article {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 4px 14px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .93);
+  color: var(--osc);
+}
+
+.hero-service-panel article span {
+  grid-row: 1 / 4;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--vino);
+  color: #fff;
+  font-weight: 900;
+  font-size: .82rem;
+}
+
+.hero-service-panel h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.58rem;
+  letter-spacing: -.035em;
+  color: var(--vino);
+}
+
+.hero-service-panel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .94rem;
+  line-height: 1.48;
+}
+
+.hero-service-panel a {
+  margin-top: 4px;
+  color: var(--vino);
+  font-weight: 900;
+  text-decoration: underline;
+  text-decoration-color: rgba(214, 166, 79, .8);
+  text-underline-offset: 4px;
+}
+
+.intro-strip {
+  padding: 56px 0;
+  background: var(--crema);
+  border-bottom: 1px solid rgba(90, 22, 36, .08);
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, .8fr) minmax(320px, 1fr);
+  gap: 42px;
+  align-items: end;
+}
+
+.intro-grid h2 {
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+}
+
+.intro-grid p {
+  font-size: 1.06rem;
+  margin: 0;
+}
+
+.service-section {
+  overflow: hidden;
+}
+
+.service-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, .92fr) minmax(340px, 1fr);
+  gap: clamp(28px, 5vw, 68px);
+  align-items: center;
+}
+
+.service-layout.reverse {
+  grid-template-columns: minmax(340px, 1fr) minmax(280px, .92fr);
+}
+
+.service-media {
+  position: relative;
+  min-height: 520px;
+  border-radius: 34px;
+  overflow: hidden;
+  box-shadow: var(--sombra);
+  background: var(--osc);
+}
+
+.service-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 48%, rgba(33, 2, 10, .42));
+  pointer-events: none;
+}
+
+.service-media img {
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  display: block;
+  object-fit: cover;
+}
+
+.service-media-experience img {
+  object-position: center;
+}
+
+.service-copy {
+  max-width: 720px;
+}
+
+.service-copy h2 {
+  color: var(--osc);
+  font-size: clamp(2.65rem, 5.2vw, 5.1rem);
+  line-height: .96;
+  letter-spacing: -.055em;
+  margin-bottom: 22px;
+}
+
+.service-lead {
+  color: var(--texto);
+  font-size: 1.14rem;
+  line-height: 1.72;
+  margin: 0 0 26px;
+}
+
+.feature-list {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.feature-list div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 14px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-top: 1px solid rgba(90, 22, 36, .13);
+}
+
+.feature-list div:last-child {
+  border-bottom: 1px solid rgba(90, 22, 36, .13);
+}
+
+.feature-list strong {
+  color: var(--vino);
+  font-weight: 900;
+}
+
+.feature-list span {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.feature-list.compact div {
+  grid-template-columns: 110px 1fr;
+}
+
+.price-note {
+  display: inline-block;
+  margin: 0 0 22px;
+  padding: 12px 15px;
+  border-radius: 999px;
+  background: rgba(214, 166, 79, .18);
+  color: var(--osc);
+  font-weight: 800;
+  border: 1px solid rgba(214, 166, 79, .34);
+}
+
+.service-actions,
+.visit-actions,
+.form-actions-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.menu-public .section-head,
+.quote-section .section-head {
+  align-items: center;
+}
+
+.menu-card-public {
+  padding: clamp(16px, 3vw, 28px);
+  background: #fff;
+}
+
+.public-menu-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+  margin-top: 14px;
+}
+
+.visit-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(280px, 410px);
+  gap: 30px;
+  align-items: stretch;
+}
+
+.visit-grid h2 {
+  font-size: clamp(2.45rem, 5vw, 4.5rem);
+  letter-spacing: -.055em;
+}
+
+.info-card {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  padding: 28px;
+  border-radius: 28px;
+  background: var(--osc);
+  color: #fff;
+  box-shadow: var(--sombra);
+}
+
+.info-card strong {
+  color: var(--dorado);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: .84rem;
+}
+
+.info-card span {
+  display: block;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, .14);
+  line-height: 1.45;
+}
+
+.editorial-quote-grid {
+  align-items: stretch;
+}
+
+.quote-form {
+  padding: clamp(20px, 3vw, 32px);
+}
+
+.quote-form select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--vino) 50%), linear-gradient(135deg, var(--vino) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1em + 5px), calc(100% - 13px) calc(1em + 5px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.promo-video-card {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+  border-radius: 30px;
+  background: var(--vino-profundo);
+  box-shadow: var(--sombra);
+  border: 1px solid rgba(90, 22, 36, .08);
+}
+
+.promo-video-card video {
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  display: block;
+  object-fit: cover;
+}
+
+.promo-video-caption {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(33, 2, 10, .72);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.promo-video-caption span {
+  display: block;
+  color: var(--dorado);
+  font-size: .78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  margin-bottom: 4px;
+}
+
+.promo-video-caption strong {
+  display: block;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.45rem;
+  line-height: 1.05;
+}
+
+.menu-empty h3 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 2rem;
+  color: var(--vino);
+}
+
+@media (max-width: 1080px) {
+  .hero-editorial-grid,
+  .service-layout,
+  .service-layout.reverse,
+  .intro-grid,
+  .visit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-service-panel {
+    max-width: 760px;
+  }
+
+  .service-layout.reverse .service-media {
+    order: -1;
+  }
+}
+
+@media (max-width: 940px) {
+  .editorial-hero {
+    min-height: auto;
+    padding: 60px 0;
+    background-image:
+      linear-gradient(180deg, rgba(33, 2, 10, .92) 0%, rgba(56, 16, 24, .76) 54%, rgba(33, 2, 10, .38) 100%),
+      url("/assets/hero.png");
+  }
+
+  .nav-admin {
+    padding: 9px 12px;
+    font-size: .82rem;
+  }
+
+  .service-media,
+  .service-media img,
+  .promo-video-card video {
+    min-height: 390px;
+  }
+
+  .section {
+    padding: 62px 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .container {
+    width: min(100% - 24px, 1160px);
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .brand-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .editorial-hero h1 {
+    font-size: clamp(2.75rem, 15vw, 4.2rem);
+  }
+
+  .hero-service-panel article,
+  .feature-list div,
+  .feature-list.compact div,
+  .two-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-service-panel article span {
+    grid-row: auto;
+  }
+
+  .service-copy h2,
+  .visit-grid h2 {
+    font-size: clamp(2.35rem, 13vw, 3.6rem);
+  }
+
+  .service-media,
+  .service-media img,
+  .promo-video-card video {
+    min-height: 310px;
+    border-radius: 24px;
+  }
+
+  .price-note {
+    border-radius: 18px;
+  }
+
+  .service-actions .btn,
+  .visit-actions .btn,
+  .form-actions-row .btn {
+    width: 100%;
+  }
+}
+
+/* =========================
+   WEB PÚBLICA CM · V2
+   Banquetería · Restaurant · Experiencias
+========================= */
+
+.public-v2 {
+  background: #e6e3e3;
+}
+
+.public-v2 .public-topbar {
+  background: rgba(246, 242, 237, .94);
+}
+
+.public-v2 .public-nav {
+  gap: 16px;
+}
+
+.public-v2 .nav-links {
+  align-items: center;
+}
+
+.public-v2 .nav-links a {
+  font-size: .92rem;
+}
+
+.public-v2 .nav-admin {
+  font-size: .86rem;
+  padding-inline: 14px;
+  opacity: .82;
+}
+
+.public-v2 .public-hero {
+  min-height: 770px;
+  padding: 96px 0 82px;
+  background-image:
+    linear-gradient(90deg, rgba(33, 2, 10, .94) 0%, rgba(56, 16, 24, .82) 42%, rgba(56, 16, 24, .32) 70%, rgba(33, 2, 10, .18) 100%),
+    url("/assets/web/R5_restaurant_salon_calido_hero.jpg");
+  background-position: center center;
+}
+
+.public-v2 .public-hero h1 {
+  max-width: 860px;
+  font-size: clamp(3.2rem, 7vw, 6.5rem);
+}
+
+.public-v2 .hero-actions .btn-primary {
+  border: 1px solid rgba(255,255,255,.22);
+}
+
+.public-v2 .hero-service-panel article:first-child {
+  border: 1px solid rgba(214, 166, 79, .45);
+}
+
+.public-v2 .hero-service-panel article:nth-child(2) span {
+  background: var(--dorado);
+  color: var(--osc);
+}
+
+.public-v2 .hero-service-panel article:nth-child(3) {
+  background: rgba(255, 255, 255, .82);
+}
+
+.public-v2 .hero-service-panel article:nth-child(3) span {
+  background: #7a6a64;
+}
+
+.public-v2 .intro-strip {
+  background: linear-gradient(180deg, #e6e3e3 0%, #f4f1ed 100%);
+}
+
+.public-v2 .restaurant-section {
+  background: #f6f2ed;
+}
+
+.public-v2 .photo-card,
+.public-v2 .quote-photo-card,
+.public-v2 .map-stack img,
+.public-v2 .experience-photo,
+.public-v2 .experience-line,
+.public-v2 .web-gallery figure {
+  border: 1px solid rgba(90, 22, 36, .10);
+}
+
+.public-v2 .photo-card img {
+  object-position: center;
+}
+
+.public-v2 .banqueteria-hero-photo img {
+  object-position: center center;
+}
+
+.restaurant-menu-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 42px;
+}
+
+.restaurant-side-card {
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--osc);
+  color: #fff;
+  box-shadow: var(--sombra);
+  display: grid;
+  grid-template-rows: minmax(220px, 1fr) auto;
+}
+
+.restaurant-side-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.restaurant-side-card div {
+  padding: 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.restaurant-side-card strong {
+  color: var(--dorado);
+  text-transform: uppercase;
+  letter-spacing: .11em;
+  font-size: .78rem;
+}
+
+.restaurant-side-card span {
+  line-height: 1.52;
+  color: rgba(255,255,255,.86);
+}
+
+.public-v2 .menu-card-public {
+  min-height: 260px;
+  display: grid;
+  align-content: center;
+}
+
+.public-v2 .menu-empty {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.public-v2 .menu-empty h3 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+}
+
+.public-v2 .menu-empty p {
+  margin: 0 0 4px;
+  max-width: 700px;
+}
+
+.gallery-block {
+  margin-top: 68px;
+}
+
+.compact-head {
+  margin-bottom: 22px;
+}
+
+.compact-head h2 {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+}
+
+.web-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 240px;
+  gap: 16px;
+}
+
+.web-gallery figure {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  margin: 0;
+  background: var(--osc);
+  box-shadow: 0 16px 38px rgba(56, 16, 24, .13);
+}
+
+.web-gallery figure.wide {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.web-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.01);
+}
+
+.web-gallery figcaption {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(33, 2, 10, .72);
+  color: #fff;
+  font-weight: 800;
+  font-size: .86rem;
+  backdrop-filter: blur(8px);
+}
+
+.experiencias-section {
+  background:
+    radial-gradient(circle at 12% 20%, rgba(214, 166, 79, .18), transparent 32%),
+    linear-gradient(180deg, #e6e3e3 0%, #f4f1ed 100%);
+}
+
+.experience-media-stack {
+  position: relative;
+  min-height: 570px;
+}
+
+.experience-photo,
+.experience-line {
+  position: absolute;
+  display: block;
+  width: 78%;
+  height: 430px;
+  object-fit: cover;
+  border-radius: 32px;
+  box-shadow: var(--sombra);
+}
+
+.experience-photo {
+  right: 0;
+  top: 0;
+}
+
+.experience-line {
+  left: 0;
+  bottom: 0;
+  width: 58%;
+  height: 300px;
+}
+
+.quote-photo-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 560px;
+  border-radius: 30px;
+  background: var(--osc);
+  box-shadow: var(--sombra);
+}
+
+.quote-photo-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 560px;
+  object-fit: cover;
+  display: block;
+}
+
+.quote-photo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 46%, rgba(33, 2, 10, .76));
+}
+
+.quote-photo-card div {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(33, 2, 10, .70);
+  color: #fff;
+  backdrop-filter: blur(9px);
+}
+
+.quote-photo-card span {
+  display: block;
+  color: var(--dorado);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-weight: 900;
+  font-size: .78rem;
+  margin-bottom: 4px;
+}
+
+.quote-photo-card strong {
+  display: block;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.65rem;
+  line-height: 1.02;
+}
+
+.form-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.location-layout {
+  align-items: start;
+}
+
+.location-info {
+  margin-top: 24px;
+}
+
+.map-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.map-stack img,
+.map-stack iframe {
+  width: 100%;
+  border: 0;
+  border-radius: 30px;
+  box-shadow: var(--sombra);
+  display: block;
+}
+
+.map-stack img {
+  height: 310px;
+  object-fit: cover;
+}
+
+.map-stack iframe {
+  min-height: 360px;
+  background: #fff;
+}
+
+.floating-whatsapp {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: var(--dorado);
+  color: var(--osc);
+  font-weight: 900;
+  box-shadow: 0 16px 38px rgba(33, 2, 10, .24);
+  border: 1px solid rgba(255, 255, 255, .42);
+}
+
+.public-footer .footer-credit {
+  font-size: .9rem;
+}
+
+@media (max-width: 1080px) {
+  .restaurant-menu-layout,
+  .web-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .restaurant-menu-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .experience-media-stack {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 940px) {
+  .public-v2 .public-hero {
+    min-height: auto;
+    padding: 70px 0;
+    background-image:
+      linear-gradient(180deg, rgba(33, 2, 10, .94) 0%, rgba(56, 16, 24, .78) 56%, rgba(33, 2, 10, .38) 100%),
+      url("/assets/web/R5_restaurant_salon_calido_hero.jpg");
+  }
+
+  .public-v2 .nav-admin {
+    margin-left: auto;
+  }
+
+  .web-gallery {
+    grid-auto-rows: 220px;
+  }
+}
+
+@media (max-width: 760px) {
+  .public-v2 .brand span {
+    display: block;
+    font-size: .86rem;
+    line-height: 1.05;
+  }
+
+  .public-v2 .brand small {
+    display: none;
+  }
+
+  .public-v2 .nav-admin {
+    font-size: .78rem;
+    padding: 8px 10px;
+  }
+
+  .web-gallery {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 260px;
+  }
+
+  .web-gallery figure.wide {
+    grid-column: auto;
+    grid-row: span 1;
+  }
+
+  .experience-media-stack {
+    min-height: auto;
+    display: grid;
+    gap: 16px;
+  }
+
+  .experience-photo,
+  .experience-line {
+    position: static;
+    width: 100%;
+    height: auto;
+    min-height: 260px;
+  }
+
+  .quote-photo-card,
+  .quote-photo-card img {
+    min-height: 360px;
+  }
+
+  .map-stack iframe {
+    min-height: 300px;
+  }
+
+  .floating-whatsapp {
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .public-v2 .public-hero h1 {
+    font-size: clamp(2.65rem, 15vw, 4rem);
+  }
+
+  .public-v2 .hero-actions .btn {
+    width: 100%;
+  }
+
+  .public-v2 .brand-logo {
+    width: 46px;
+    height: 46px;
+  }
+}

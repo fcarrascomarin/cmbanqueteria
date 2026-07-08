@@ -3,185 +3,276 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CM Banquetería & Restaurant</title>
+  <title>CM Banquetería, Restaurant y Experiencias en Laja</title>
+  <meta name="description" content="CM Banquetería en Laja: banquetería desde 2013, restaurant desde 2026, menú del día, cotización de eventos y próximas experiencias frente a la Laguna La Señoraza." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Caveat:wght@400..700&family=Cinzel:wght@400..900&family=Indie+Flower&family=Luckiest+Guy&family=Lugrasimo&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Permanent+Marker&family=Poetsen+One&family=Rubik+Storm&family=Sue+Ellen+Francisco&display=swap" rel="stylesheet">
-
-  <link rel="preload" href="/assets/menu-template.png?v=20260623-consultoria" as="image" type="image/png">
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preload" href="/assets/web/R5_restaurant_salon_calido_hero.jpg" as="image" type="image/jpeg">
+  <link rel="preload" href="/assets/web/B15_banqueteria_salon_completo_evento_hero.jpg" as="image" type="image/jpeg">
+  <link rel="stylesheet" href="/styles.css?v=20260708-web-publica-v2" />
 </head>
-<body>
-  <header class="topbar">
-    <div class="container nav">
-      <a class="brand" href="/">
-        <img class="brand-logo" src="/assets/logo-cm.png" alt="CM Banquetería & Restaurant" />
-        <span>CM Banquetería<br><small>& Restaurant</small></span>
+<body class="public-site public-v2">
+  <header class="topbar public-topbar">
+    <div class="container nav public-nav">
+      <a class="brand" href="/" aria-label="Inicio CM Banquetería">
+        <img class="brand-logo" src="/assets/logo-cm.png" alt="CM Banquetería" />
+        <span>CM Banquetería<br><small>Restaurant · Experiencias</small></span>
       </a>
-      <nav class="nav-links">
-        <a href="#orden">Servicios</a>
-        <a href="#menu">Menú</a>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="#restaurant">Restaurant</a>
         <a href="#banqueteria">Banquetería</a>
+        <a href="#experiencias">Experiencias</a>
         <a href="#cotiza">Cotiza</a>
+        <a href="#como-llegar">Cómo llegar</a>
       </nav>
-      <a class="btn btn-secondary" href="/admin.html">Plataforma Corporativa CM</a>
+      <a class="btn btn-secondary nav-admin" href="/admin.html">Acceso interno</a>
     </div>
   </header>
 
   <main>
-    <section class="hero hero-photo">
-  <div class="container hero-content">
-    <div class="hero-copy">
-      <div class="kicker">Desde 2013 · Costanera Norte 1012 · Laja</div>
+    <section class="hero hero-photo editorial-hero public-hero" id="inicio">
+      <div class="container hero-content hero-editorial-grid">
+        <div class="hero-copy">
+          <div class="kicker">Desde 2013 · Costanera Norte 1012 · Laja</div>
+          <h1>CM Banquetería, Restaurant y Experiencias.</h1>
+          <p class="lead">Lo casero de siempre, con atención preparada para almuerzos, eventos y nuevos encuentros frente a la Laguna La Señoraza.</p>
+          <div class="hero-actions">
+            <a class="btn btn-gold" href="#restaurant">Ver menú de hoy</a>
+            <a class="btn btn-primary" href="#cotiza">Cotizar evento</a>
+            <a class="btn btn-secondary hero-secondary" href="#como-llegar">Cómo llegar</a>
+          </div>
+        </div>
 
-      <h1>CM Banquetería & Restaurant</h1>
-
-      <p class="lead">Lo casero de siempre, con un toque gourmet</p>
-
-      <div class="hero-actions">
-        <a class="btn btn-gold" href="#menu">Ver menú del día</a>
-        <a class="btn btn-secondary hero-secondary" href="#cotiza">Cotizar evento</a>
+        <div class="hero-service-panel" id="servicios" aria-label="Líneas de servicio de CM">
+          <article>
+            <span>01</span>
+            <h2>CM Banquetería</h2>
+            <p>Activa desde 2013. Eventos familiares, empresas, celebraciones, coffee break, almuerzos y cenas.</p>
+            <a href="#banqueteria">Ver banquetería</a>
+          </article>
+          <article>
+            <span>02</span>
+            <h2>CM Restaurant</h2>
+            <p>Activa desde 2026. Menú del día, almuerzos caseros y atención diurna en el local.</p>
+            <a href="#restaurant">Ver restaurant</a>
+          </article>
+          <article>
+            <span>03</span>
+            <h2>CM Experiencias</h2>
+            <p>Próximamente. Encuentros gastronómicos, actividades temáticas y propuestas frente a la laguna.</p>
+            <a href="#experiencias">Ver próxima línea</a>
+          </article>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-    <section class="section" id="orden">
-  <div class="container">
-     <div class="kicker">CM </div>
-        <h2>Servicios</h2>
+    <section class="section intro-strip">
+      <div class="container intro-grid">
+        <div>
+          <div class="kicker">El mismo lugar, tres formas de vivir CM</div>
+          <h2>Almorzar, celebrar o reservar una experiencia.</h2>
+        </div>
+        <p class="muted">La web pública queda ordenada para que cada persona llegue rápido a lo que necesita: consultar el menú del Restaurant, cotizar un evento de Banquetería o conocer la próxima línea CM Experiencias.</p>
       </div>
-      <p class="muted"> Te invitamos a disfrutar de un servicio cercano, de calidad y una vista privilegiada de la Laguna La Señoraza y Consulta mediante formulario para más información.</p>
-      <aside class="promo-video-card is-loading" aria-label="Video promocional de CM Banquetería">
-          <video id="promoVideo" muted loop playsinline controls preload="auto" poster="/assets/prom.png">
-            <source src="/assets/prom.mp4" type="video/mp4">
-            Tu navegador no puede reproducir este video.
-          </video>
+    </section>
+
+    <section class="section service-section restaurant-section" id="restaurant">
+      <div class="container service-layout reverse">
+        <div class="service-copy">
+          <div class="kicker">CM Restaurant · Desde 2026</div>
+          <h2>Menú del día y almuerzos caseros.</h2>
+          <p class="service-lead">Restaurant diurno familiar, pensado para almorzar en un espacio cálido, cercano y con vista al entorno de Laguna La Señoraza.</p>
+          <div class="feature-list compact">
+            <div><strong>Horario</strong><span>Lunes a viernes, 12:00 a 15:30 hrs.</span></div>
+            <div><strong>Menú</strong><span>Opciones diarias según producción. Consulta disponibilidad antes de asistir.</span></div>
+            <div><strong>Ubicación</strong><span>Costanera Norte 1012, Laja.</span></div>
+          </div>
+          <div class="service-actions">
+            <a class="btn btn-gold" href="#menu-del-dia">Ver menú publicado</a>
+            <a class="btn btn-secondary" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20por%20el%20men%C3%BA%20del%20d%C3%ADa%20del%20Restaurant." target="_blank" rel="noopener">Consultar por WhatsApp</a>
+          </div>
+        </div>
+        <div class="service-media photo-card">
+          <img src="/assets/web/R5_restaurant_salon_calido_hero.jpg" alt="Salón de CM Restaurant preparado para atención diaria">
+        </div>
+      </div>
+
+      <div class="container restaurant-menu-layout" id="menu-del-dia">
+        <div class="card menu-card-public" id="todayMenu"><p class="muted">Cargando menú...</p></div>
+        <aside class="restaurant-side-card">
+          <img src="/assets/web/R7_restaurant_menu_del_dia_pantalla.jpg" alt="Pantalla de menú del día de CM Restaurant">
+          <div>
+            <strong>Menú del día</strong>
+            <span>Cuando el menú no esté publicado en la web, el camino más rápido es consultar directamente por WhatsApp.</span>
+          </div>
         </aside>
-    </div>
-
-    <div class="grid-3 restaurant-cards">
-      <article class="card restaurant-card">
-        <img src="/assets/almuerzo.png" alt="Almuerzo CM Banquetería">
-        <div class="restaurant-card-content">
-          <h3>CM Restaurant</h3>
-          <p class="muted">
-            Almuerzos de lunes a viernes desde las 13:00 a 15:30 horas. Servicio rápido y de calidad, basado en 3 opciones
-            de menú diario a un valor de $7.000.
-          </p>
-        </div>
-      </article>
-
-      <article class="card restaurant-card">
-        <img src="/assets/eventos.png" alt="Eventos especiales CM Banquetería">
-        <div class="restaurant-card-content">
-          <h3>CM Banqueteria</h3>
-          <p class="muted">
-            Ofrecemos espacios para celebraciones empresariales o familiares. Consulta por
-            espacio quincho/piscina en temporada primavera-verano.</p> 
-          <p class="muted">Reservas con 7 días de anticipación mínimo.</p>
-        </div>
-      </article>
-
-      <article class="card restaurant-card">
-        <img src="/assets/logo-cm.png" alt="Eventos autoconvocados CM Banquetería">
-        <div class="restaurant-card-content">
-          <h3>CM Experiencias</h3>
-          <p class="muted">
-            Próximamente.
-          </p>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-    <section class="section section-alt" id="menu">
-      <div class="container">
-        <div class="section-head">
-          <div><div class="kicker">Menú público</div><h2>Menú del día</h2></div>
-          <p class="muted">Revisa nuestras opciones diarias</p>
-        </div>
-        <div class="card" id="todayMenu"><p class="muted">Cargando menú...</p></div>
       </div>
     </section>
 
-    <section class="section" id="banqueteria">
-      <div class="container">
-        <div class="section-head">
-          <div><div class="kicker">Banquetería</div><h2>Eventos familiares, empresas y fechas especiales.</h2></div>
-          <p class="muted">Coffee break, cócteles, almuerzos, cenas, celebraciones y actividades controladas con reserva previa. Las solicitudes quedan ordenadas en el panel interno.</p>
+    <section class="section section-alt service-section" id="banqueteria">
+      <div class="container service-layout">
+        <div class="service-media photo-card banqueteria-hero-photo">
+          <img src="/assets/web/B15_banqueteria_salon_completo_evento_hero.jpg" alt="Salón de CM montado para evento de banquetería">
         </div>
-        <div class="notice">Hemos participado en distintos eventos especiales, conversemos sobre tu próxima festividad.</div>
+        <div class="service-copy">
+          <div class="kicker">CM Banquetería · Desde 2013</div>
+          <h2>Eventos familiares, empresas y fechas especiales.</h2>
+          <p class="service-lead">La línea histórica de CM: preparación, montaje y atención para celebraciones, reuniones familiares, actividades de empresa, coffee break, almuerzos, cenas y servicios a medida.</p>
+          <div class="feature-list compact">
+            <div><strong>Eventos</strong><span>Bautizos, cumpleaños, matrimonios pequeños/medianos, reuniones, empresas y fechas especiales.</span></div>
+            <div><strong>Formato</strong><span>En local o servicio externo, sujeto a fecha, número de personas y requerimientos.</span></div>
+            <div><strong>Reserva</strong><span>Idealmente con anticipación para diseñar menú, montaje y logística.</span></div>
+          </div>
+          <div class="service-actions">
+            <a class="btn btn-primary" href="#cotiza">Cotizar evento</a>
+            <a class="btn btn-secondary" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20cotizar%20un%20evento.%20Fecha%3A%20%2F%20Personas%3A%20%2F%20Tipo%20de%20evento%3A%20%2F%20Lugar%3A" target="_blank" rel="noopener">WhatsApp directo</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="container gallery-block">
+        <div class="section-head compact-head">
+          <div>
+            <div class="kicker">Montajes reales</div>
+            <h2>Una muestra del servicio.</h2>
+          </div>
+          <p class="muted">Imágenes seleccionadas para mostrar el local funcionando como banquetería, sin alterar la realidad del espacio.</p>
+        </div>
+        <div class="web-gallery">
+          <figure class="wide"><img src="/assets/web/B1_banqueteria_mesa_larga_campanas.jpg" alt="Mesa larga montada con campanas para evento"><figcaption>Mesa larga y servicio preparado.</figcaption></figure>
+          <figure><img src="/assets/web/B3_banqueteria_mesa_servida_comida.jpg" alt="Mesa servida con entradas y copas"><figcaption>Montaje con comida servida.</figcaption></figure>
+          <figure><img src="/assets/web/B6_banqueteria_mesa_redonda_elegante.jpg" alt="Mesa redonda montada para celebración"><figcaption>Celebraciones en el local.</figcaption></figure>
+          <figure><img src="/assets/web/B2_banqueteria_evento_bautizo.jpg" alt="Decoración de bautizo en CM Banquetería"><figcaption>Eventos familiares.</figcaption></figure>
+          <figure><img src="/assets/web/B5_banqueteria_parrilla_eventos.jpg" alt="Parrilla para evento de CM Banquetería"><figcaption>Asados y preparaciones especiales.</figcaption></figure>
+          <figure><img src="/assets/web/B8_banqueteria_postre_tiramisu.jpg" alt="Postre individual preparado por CM"><figcaption>Postres individuales.</figcaption></figure>
+          <figure><img src="/assets/web/B9_banqueteria_postre_crema_merengue.jpg" alt="Postre individual con crema y merengue"><figcaption>Cierre dulce del servicio.</figcaption></figure>
+        </div>
       </div>
     </section>
 
-    <section class="section section-alt" id="cotiza">
+    <section class="section service-section experiencias-section" id="experiencias">
+      <div class="container service-layout reverse">
+        <div class="service-copy">
+          <div class="kicker">CM Experiencias · Próximamente</div>
+          <h2>Encuentros gastronómicos frente a la laguna.</h2>
+          <p class="service-lead">CM Experiencias será la nueva línea de actividades especiales: encuentros temáticos, propuestas gastronómicas, relatos territoriales y reservas con cupos limitados.</p>
+          <div class="feature-list compact">
+            <div><strong>Estado</strong><span>Próximamente. Aún no opera como servicio permanente.</span></div>
+            <div><strong>Formato</strong><span>Actividades con reserva previa, fechas definidas y comunicación anticipada.</span></div>
+            <div><strong>Enfoque</strong><span>Comida, territorio, ambiente y nuevas formas de vivir CM.</span></div>
+          </div>
+          <div class="service-actions">
+            <a class="btn btn-primary" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20recibir%20informaci%C3%B3n%20cuando%20est%C3%A9n%20disponibles%20las%20pr%C3%B3ximas%20CM%20Experiencias." target="_blank" rel="noopener">Quiero recibir novedades</a>
+            <a class="btn btn-secondary" href="#cotiza">Dejar consulta</a>
+          </div>
+        </div>
+        <div class="experience-media-stack">
+          <img class="experience-photo" src="/assets/web/R6_restaurant_ambiente_nocturno_experiencias.jpg" alt="Ambiente nocturno del salón de CM para futuras experiencias">
+          <img class="experience-line" src="/assets/web/R11_restaurant_recurso_lineal_interior.jpg" alt="Recurso gráfico lineal del interior de CM">
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt quote-section" id="cotiza">
       <div class="container">
         <div class="section-head quote-head">
-          <div class="quote-head-main"><div class="kicker">Cotiza tu evento</div><h2>Cuéntanos qué necesitas.</h2></div>
-          <p class="muted">Servicio de banquetería adaptado a las necesidades de tu celebración</p>
+          <div class="quote-head-main">
+            <div class="kicker">Cotiza o reserva</div>
+            <h2>Cuéntanos qué necesitas.</h2>
+          </div>
+          <p class="muted">Completa el formulario para ordenar la solicitud. Al enviarlo se abrirá WhatsApp con los datos preparados y, si la plataforma está activa, quedará registrado en el panel interno.</p>
         </div>
-        <div class="quote-media-grid">
-        <form class="card form-grid quote-form" id="quoteForm">
-          <div class="form-line"><label>Nombre</label><input name="clientName" required /></div>
-          <div class="form-line"><label>Teléfono</label><input name="phone" required /></div>
-          <div class="form-line"><label>Correo</label><input name="email" type="email" /></div>
-          <div class="form-line"><label>Fecha del evento</label><input name="eventDate" type="date" /></div>
-          <div class="form-line"><label>Tipo de evento</label><input name="eventType" /></div>
-          <div class="form-line"><label>Número de personas</label><input name="guests" type="number" min="1" /></div>
-          <div class="form-line"><label>Lugar / comuna</label><input name="location" /></div>
-          <div class="form-line"><label>Presupuesto estimado</label><input name="estimatedBudget" type="number" min="0" /></div>
-          <div class="form-line"><label>Servicio requerido</label><input name="requestedService" placeholder="Coffee break, almuerzo, cóctel o cena" /></div>
-          <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Detalles relevantes del evento."></textarea></div>
-          <button class="btn btn-primary quote-submit" type="submit">Enviar solicitud</button>
-        </form>
-        <aside class="promo-video-card is-loading" aria-label="Video promocional de CM Banquetería">
-          <video id="promoVideo" muted loop playsinline controls preload="auto" poster="/assets/prom.png">
-            <source src="/assets/prom.mp4" type="video/mp4">
-            Tu navegador no puede reproducir este video.
-          </video>
-          <div class="promo-video-caption"><span>CM Banquetería</span><strong>Momentos preparados con dedicación</strong></div>
-        </aside>
+        <div class="quote-media-grid editorial-quote-grid">
+          <form class="card form-grid quote-form" id="quoteForm">
+            <div class="two-cols">
+              <div class="form-line"><label>Nombre</label><input name="clientName" autocomplete="name" required /></div>
+              <div class="form-line"><label>Teléfono / WhatsApp</label><input name="phone" autocomplete="tel" required /></div>
+            </div>
+            <div class="two-cols">
+              <div class="form-line"><label>Correo</label><input name="email" type="email" autocomplete="email" /></div>
+              <div class="form-line"><label>Fecha estimada</label><input name="eventDate" type="date" /></div>
+            </div>
+            <div class="two-cols">
+              <div class="form-line">
+                <label>Servicio requerido</label>
+                <select name="requestedService" required>
+                  <option value="">Selecciona una opción</option>
+                  <option>CM Banquetería</option>
+                  <option>CM Restaurant / menú del día</option>
+                  <option>CM Experiencias (próximamente)</option>
+                  <option>Consulta general</option>
+                </select>
+              </div>
+              <div class="form-line"><label>Número de personas</label><input name="guests" type="number" min="1" /></div>
+            </div>
+            <div class="two-cols">
+              <div class="form-line"><label>Tipo de evento</label><input name="eventType" placeholder="Cumpleaños, bautizo, empresa, almuerzo..." /></div>
+              <div class="form-line"><label>Lugar / comuna</label><input name="location" placeholder="Local CM, domicilio, empresa, comuna..." /></div>
+            </div>
+            <div class="form-line"><label>Presupuesto estimado</label><input name="estimatedBudget" type="number" min="0" placeholder="Opcional" /></div>
+            <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Cuéntanos fecha, horario, número de personas, tipo de servicio, restricciones o cualquier detalle importante."></textarea></div>
+            <div class="form-actions-row">
+              <button class="btn btn-primary quote-submit" type="submit">Enviar por WhatsApp</button>
+              <a class="btn btn-gold" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20hacer%20una%20consulta." target="_blank" rel="noopener">WhatsApp directo</a>
+            </div>
+            <p class="form-note">También puedes escribir a contacto@cmbanqueteria.cl o llamar al +56 9 8774 1182.</p>
+          </form>
+          <aside class="quote-photo-card">
+            <img src="/assets/web/B4_banqueteria_montaje_calido.jpg" alt="Montaje cálido de CM Banquetería para evento">
+            <div><span>CM Banquetería</span><strong>Eventos preparados con dedicación.</strong></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section visit-section" id="como-llegar">
+      <div class="container visit-grid location-layout">
+        <div>
+          <div class="kicker">Cómo llegar</div>
+          <h2>Costanera Norte 1012, Laja.</h2>
+          <p class="muted">CM está ubicado frente al entorno de Laguna La Señoraza. Para almuerzos, consulta el menú del día; para banquetería y experiencias, reserva previamente.</p>
+          <div class="visit-actions">
+            <a class="btn btn-primary" href="https://www.google.com/maps/search/?api=1&query=Costanera%20Norte%201012%20Laja%20Chile" target="_blank" rel="noopener">Abrir en Google Maps</a>
+            <a class="btn btn-secondary" href="tel:+56987741182">Llamar</a>
+            <a class="btn btn-gold" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20por%20la%20ubicaci%C3%B3n%20y%20disponibilidad." target="_blank" rel="noopener">WhatsApp</a>
+          </div>
+          <aside class="info-card location-info">
+            <strong>Información rápida</strong>
+            <span>Restaurant: lunes a viernes, 12:00 a 15:30 hrs.</span>
+            <span>Banquetería: cotización previa según fecha y número de personas.</span>
+            <span>CM Experiencias: próxima línea, con fechas por anunciar.</span>
+          </aside>
+        </div>
+        <div class="map-stack">
+          <img src="/assets/web/R8_restaurant_terraza_laguna_web.jpg" alt="Terraza de CM con vista al entorno de Laguna La Señoraza">
+          <iframe title="Mapa de CM Banquetería en Laja" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Costanera%20Norte%201012%20Laja%20Chile&output=embed"></iframe>
         </div>
       </div>
     </section>
   </main>
-<footer class="footer">
-  <div class="container footer-grid">
-    <div class="footer-brand">
-      <img src="/assets/logo-cm.png" alt="Logo CM Banquetería & Restaurant" class="footer-logo">
 
-      <div>
-        <h3>CM Banquetería & Restaurant</h3>
-        <p>Costanera Norte 1012 · Laja</p>
-        <p class="footer-credit">
-          Sitio web y plataforma interna creada por
-          <a href="https://metamorfosislab.cl" target="_blank" rel="noopener">
-            Metamorfosis Lab
-          </a>.
-        </p>
+  <a class="floating-whatsapp" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20hacer%20una%20consulta." target="_blank" rel="noopener" aria-label="Escribir a CM Banquetería por WhatsApp">WhatsApp</a>
+
+  <footer class="footer public-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="/assets/logo-cm.png" alt="Logo CM Banquetería" class="footer-logo">
+        <div>
+          <h3>CM Banquetería, Restaurant y Experiencias</h3>
+          <p>Costanera Norte 1012 · Laja</p>
+          <p class="footer-credit">Sitio web y plataforma interna creada por <a href="https://metamorfosislab.cl" target="_blank" rel="noopener">Metamorfosis Lab</a>.</p>
+        </div>
+      </div>
+      <div class="footer-contact">
+        <h4>Contacto</h4>
+        <a href="tel:+56987741182">Teléfono: +56 9 8774 1182</a>
+        <a class="footer-email-link" href="mailto:contacto@cmbanqueteria.cl?subject=Consulta%20desde%20cmbanqueteria.cl&body=Hola%20CM%20Banqueter%C3%ADa%2C%0A%0AQuiero%20realizar%20una%20consulta%20sobre%20sus%20servicios.%0A%0AMis%20datos%20son%3A%0A-%20Nombre%3A%0A-%20Tel%C3%A9fono%3A%0A-%20Fecha%20estimada%3A%0A-%20Tipo%20de%20servicio%3A">contacto@cmbanqueteria.cl</a>
+        <a href="https://www.instagram.com/cm.banqueteria_/" target="_blank" rel="noopener">Instagram: @cm.banqueteria_</a>
       </div>
     </div>
-
-    <div class="footer-contact">
-      <h4>Contacto</h4>
-
-      <a href="tel:+56987741182">
-        Teléfono: +56 9 8774 1182
-      </a>
-
-      <a class="footer-email-link" href="mailto:contacto@cmbanqueteria.cl?subject=Consulta%20desde%20cmbanqueteria.cl&body=Hola%20CM%20Banqueter%C3%ADa%2C%0A%0AQuiero%20realizar%20una%20consulta%20sobre%20sus%20servicios.%0A%0AMis%20datos%20son%3A%0A-%20Nombre%3A%0A-%20Tel%C3%A9fono%3A%0A-%20Fecha%20estimada%3A%0A-%20Tipo%20de%20evento%3A" aria-label="Enviar correo a CM Banquetería">
-        Enviar correo: contacto@cmbanqueteria.cl
-      </a>
-
-      <a href="https://www.instagram.com/cm.banqueteria_/" target="_blank" rel="noopener">
-        Instagram: @cm.banqueteria_
-      </a>
-    </div>
-  </div>
-</footer>
-  <script src="/menu-graphic.js?v=20260625-final"></script>
-  <script src="/public.js?v=20260625-final"></script>
+  </footer>
+  <script src="/menu-graphic.js?v=20260708-web-publica-v2"></script>
+  <script src="/public.js?v=20260708-web-publica-v2"></script>
 </body>
 </html>
