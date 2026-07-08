@@ -4302,3 +4302,196 @@ body.public-v2 {
     font-size:.92rem;
   }
 }
+
+/* ===== Ajustes 2026-07-08: hero público más limpio + panel interno sin desborde ===== */
+.public-v2 .public-hero{
+  padding:52px 0 76px;
+}
+.public-v2 .hero-editorial-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(320px,420px);
+  gap:52px;
+  align-items:center;
+  min-height:calc(100vh - 150px);
+}
+.public-v2 .hero-copy{
+  max-width:700px;
+}
+.public-v2 .hero-copy h1{
+  max-width:10ch;
+  margin-bottom:20px;
+  line-height:.93;
+}
+.public-v2 .hero-copy .lead{
+  max-width:640px;
+  font-size:1.14rem;
+}
+.public-v2 .hero-actions{
+  margin-top:28px;
+}
+.public-v2 .hero-service-panel{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:18px;
+  max-width:420px;
+  width:100%;
+  padding:20px;
+  border-radius:30px;
+  background:rgba(255,255,255,.14);
+  backdrop-filter:blur(10px);
+  align-self:center;
+}
+.public-v2 .hero-service-panel article{
+  min-height:0;
+  padding:24px 22px 20px;
+  border-radius:24px;
+}
+.public-v2 .hero-service-panel article span{
+  margin-bottom:14px;
+}
+.public-v2 .hero-service-panel h2{
+  font-size:clamp(1.8rem,2vw,2.25rem);
+  line-height:.98;
+  margin-bottom:10px;
+}
+.public-v2 .hero-service-panel p{
+  font-size:.98rem;
+  line-height:1.5;
+  min-height:0;
+}
+.public-v2 .hero-service-panel a{
+  margin-top:14px;
+}
+.public-v2 .service-section,
+.public-v2 .founder-section,
+.public-v2 .quote-section,
+.public-v2 .location-section{
+  padding:72px 0;
+}
+.public-v2 .service-layout,
+.public-v2 .founder-layout{
+  align-items:center;
+}
+@media (min-width: 1081px){
+  .public-v2 .service-section > .container.service-layout,
+  .public-v2 .founder-layout,
+  .public-v2 .quote-section > .container,
+  .public-v2 .location-section > .container{
+    min-height:calc(100vh - 136px);
+    align-content:center;
+  }
+}
+.public-v2 .service-lead,
+.public-v2 .founder-copy p,
+.public-v2 .muted{
+  max-width:62ch;
+}
+.public-v2 .gallery-block{
+  padding-top:10px;
+}
+.public-v2 .curated-gallery{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.public-v2 .curated-gallery .wide{
+  grid-column:auto;
+}
+.public-v2 .curated-gallery figure{
+  margin:0;
+}
+.public-v2 .curated-gallery img{
+  min-height:240px;
+  max-height:280px;
+  object-fit:cover;
+}
+.public-v2 .section-head{
+  margin-bottom:26px;
+}
+
+body,
+.admin-shell,
+.admin-main{
+  overflow-x:hidden;
+}
+.process-timeline .consultation-track,
+.process-timeline .milestone-detail-panels{
+  min-width:0 !important;
+}
+.process-timeline .consultation-track-wrap{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:14px;
+}
+.process-timeline .milestone-detail-panels-wrap{
+  display:block;
+  margin-top:18px;
+}
+.process-timeline .milestone-detail-panel{
+  display:none;
+}
+.process-timeline .milestone-detail-panel.active{
+  display:block;
+}
+.process-timeline .deliverable-grid-wrap{
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+}
+.deliverable-actions-stack{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.deliverable-related-list{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.deliverable-related-list article{
+  display:grid;
+  gap:6px;
+  padding:14px 16px;
+  border:1px solid rgba(90,22,36,.12);
+  border-radius:16px;
+  background:#fff;
+}
+.deliverable-related-list article span{
+  color:var(--muted);
+  font-size:.92rem;
+  line-height:1.45;
+}
+.milestone-general-docs{
+  margin-top:22px;
+  padding-top:6px;
+  border-top:1px solid rgba(90,22,36,.08);
+}
+@media(max-width:1080px){
+  .public-v2 .hero-editorial-grid{
+    grid-template-columns:1fr;
+    gap:28px;
+    min-height:auto;
+  }
+  .public-v2 .hero-copy h1{
+    max-width:12ch;
+  }
+  .public-v2 .hero-service-panel{
+    max-width:none;
+  }
+}
+@media(max-width:760px){
+  .public-v2 .public-hero,
+  .public-v2 .service-section,
+  .public-v2 .founder-section,
+  .public-v2 .quote-section,
+  .public-v2 .location-section{
+    padding:48px 0;
+  }
+  .public-v2 .curated-gallery{
+    grid-template-columns:1fr;
+  }
+  .public-v2 .curated-gallery img{
+    max-height:none;
+  }
+  .process-timeline .consultation-track-wrap,
+  .process-timeline .deliverable-grid-wrap{
+    grid-template-columns:1fr;
+  }
+}
