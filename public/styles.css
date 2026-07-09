@@ -6043,3 +6043,560 @@ body.public-site [id="menu-del-dia"]{
     min-height:300px !important;
   }
 }
+
+
+/* ===== Ajuste v16: secciones completas, formulario compacto y mapa igual al video ===== */
+:root{
+  --cm-header-h: 86px;
+  --cm-section-gap: 18px;
+}
+html{
+  scroll-padding-top: var(--cm-header-h) !important;
+}
+body.public-site{
+  overflow-x: hidden;
+}
+.public-v2 main > section[id]{
+  scroll-margin-top: var(--cm-header-h) !important;
+}
+.public-v2 .public-topbar{
+  min-height: var(--cm-header-h);
+}
+.public-v2 .public-hero,
+.public-v2 .service-section,
+.public-v2 .founder-section,
+.public-v2 .quote-section,
+.public-v2 .visit-section{
+  min-height: calc(100svh - var(--cm-header-h)) !important;
+  padding: 20px 0 !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow: hidden;
+}
+.public-v2 .public-hero > .container,
+.public-v2 .service-section > .container,
+.public-v2 .founder-section > .container,
+.public-v2 .quote-section > .container,
+.public-v2 .visit-section > .container{
+  min-height: 0 !important;
+}
+.public-v2 .container{
+  width: min(100% - 48px, 1280px);
+}
+.public-v2 .hero-editorial-grid,
+.public-v2 .service-layout,
+.public-v2 .service-layout-montage,
+.public-v2 .founder-layout,
+.public-v2 .quote-media-grid,
+.public-v2 .visit-grid{
+  min-height: 0 !important;
+}
+.public-v2 .hero-copy h1,
+.public-v2 .service-copy h2,
+.public-v2 .founder-copy h2,
+.public-v2 .quote-head h2,
+.public-v2 .visit-grid h2,
+.public-v2 .service-layout .service-copy h2{
+  max-width: min(820px, 60vw) !important;
+  width: 100% !important;
+  font-size: clamp(2.35rem, 3.55vw, 4.05rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.035em !important;
+  text-wrap: balance;
+  margin-bottom: 12px !important;
+}
+.public-v2 .hero-copy h1{
+  max-width: min(900px, 62vw) !important;
+  font-size: clamp(3rem, 4.25vw, 4.8rem) !important;
+}
+.public-v2 .kicker{
+  margin-bottom: 8px !important;
+}
+.public-v2 .service-copy .service-lead,
+.public-v2 .founder-copy .service-lead,
+.public-v2 .quote-head .muted,
+.public-v2 .visit-grid .muted{
+  max-width: 700px !important;
+  font-size: .97rem !important;
+  line-height: 1.48 !important;
+}
+.public-v2 .feature-list.compact{
+  margin-top: 14px !important;
+}
+.public-v2 .feature-list.compact div{
+  padding: 9px 0 !important;
+}
+.public-v2 .service-actions,
+.public-v2 .visit-actions{
+  margin-top: 13px !important;
+}
+.public-v2 .btn{
+  min-height: 40px;
+  padding: 10px 18px;
+}
+
+/* Cotiza: todo el formulario dentro de una sola pantalla */
+.public-v2 #cotiza.quote-section{
+  padding: 16px 0 !important;
+}
+.public-v2 #cotiza > .container{
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 14px !important;
+  height: calc(100svh - var(--cm-header-h) - 32px) !important;
+}
+.public-v2 #cotiza .quote-head{
+  display:grid !important;
+  grid-template-columns: minmax(0,.86fr) minmax(0,1fr) !important;
+  gap: 22px !important;
+  align-items:end !important;
+  margin:0 !important;
+}
+.public-v2 #cotiza .quote-head h2{
+  max-width: 760px !important;
+  font-size: clamp(2.25rem, 3.2vw, 3.55rem) !important;
+}
+.public-v2 #cotiza .quote-head .muted{
+  margin:0 !important;
+  max-width: 670px !important;
+  font-size: .92rem !important;
+}
+.public-v2 #cotiza .quote-media-grid,
+.public-v2 #cotiza .editorial-quote-grid{
+  display:grid !important;
+  grid-template-columns: minmax(0, 1.24fr) minmax(300px, .72fr) !important;
+  gap: 20px !important;
+  align-items: stretch !important;
+  min-height:0 !important;
+  height: 100% !important;
+}
+.public-v2 #cotiza .quote-form{
+  height:100% !important;
+  min-height:0 !important;
+  padding: 16px 18px !important;
+  gap: 8px !important;
+  align-self: stretch !important;
+  overflow: hidden !important;
+}
+.public-v2 #cotiza .quote-form .two-cols,
+.public-v2 #cotiza .quote-service-row{
+  gap: 10px !important;
+}
+.public-v2 #cotiza .quote-form .form-line label{
+  font-size: .73rem !important;
+  margin-bottom: 3px !important;
+  line-height:1.1 !important;
+}
+.public-v2 #cotiza .quote-form input,
+.public-v2 #cotiza .quote-form select{
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 7px 10px !important;
+  font-size: .88rem !important;
+}
+.public-v2 #cotiza .quote-form textarea{
+  min-height: 54px !important;
+  height: 54px !important;
+  padding: 8px 10px !important;
+  font-size: .88rem !important;
+}
+.public-v2 #cotiza .quote-notes-row{
+  align-items: end;
+}
+.public-v2 #cotiza .form-actions-row{
+  gap: 10px !important;
+  margin-top: 1px !important;
+}
+.public-v2 #cotiza .form-actions-row .btn{
+  min-height: 38px !important;
+  padding: 9px 16px !important;
+}
+.public-v2 #cotiza .form-note{
+  margin: 0 !important;
+  font-size: .78rem !important;
+  line-height:1.25 !important;
+}
+.public-v2 #cotiza .quote-video-card{
+  height:100% !important;
+  min-height:0 !important;
+  max-height:none !important;
+  align-self: stretch !important;
+  border-radius: 26px !important;
+}
+.public-v2 #cotiza .quote-video-card video{
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  object-fit:cover !important;
+}
+.public-v2 #cotiza .quote-video-card > div{
+  left:16px !important;
+  right:16px !important;
+  bottom:16px !important;
+  padding: 12px 14px !important;
+}
+
+/* Cómo llegar: video y Google Maps con el mismo tamaño visual */
+.public-v2 #como-llegar.visit-section{
+  padding: 18px 0 !important;
+}
+.public-v2 #como-llegar .location-layout{
+  display:grid !important;
+  grid-template-columns: minmax(0, .94fr) minmax(580px, 1.06fr) !important;
+  gap: 30px !important;
+  align-items:center !important;
+}
+.public-v2 #como-llegar .visit-grid h2{
+  max-width: 720px !important;
+  font-size: clamp(2.35rem, 3.5vw, 3.9rem) !important;
+}
+.public-v2 #como-llegar .visit-actions{
+  gap: 10px !important;
+}
+.public-v2 #como-llegar .location-info{
+  margin-top: 16px !important;
+  padding: 16px 18px !important;
+  border-radius: 24px !important;
+}
+.public-v2 #como-llegar .location-info span{
+  padding: 10px 0 !important;
+  font-size: .96rem !important;
+  line-height:1.35 !important;
+}
+.public-v2 #como-llegar .location-media-pair{
+  display:grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+  height: min(48vh, 390px) !important;
+  min-height: 330px !important;
+  align-items:stretch !important;
+}
+.public-v2 #como-llegar .location-video-card,
+.public-v2 #como-llegar .location-map-card{
+  height:100% !important;
+  min-height:0 !important;
+  max-height:none !important;
+  border-radius:28px !important;
+  overflow:hidden !important;
+}
+.public-v2 #como-llegar .location-video-card video,
+.public-v2 #como-llegar .location-map-card iframe{
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  border:0 !important;
+  border-radius:28px !important;
+  object-fit:cover !important;
+}
+.public-v2 #como-llegar .location-map-card{
+  box-shadow: 0 24px 58px rgba(77,9,24,.12) !important;
+  background:#fff;
+}
+.public-v2 #como-llegar .location-video-card .video-caption{
+  left:14px !important;
+  right:14px !important;
+  bottom:14px !important;
+  padding: 11px 13px !important;
+}
+
+@media (max-width: 1120px){
+  :root{--cm-header-h: 78px;}
+  .public-v2 .public-hero,
+  .public-v2 .service-section,
+  .public-v2 .founder-section,
+  .public-v2 .quote-section,
+  .public-v2 .visit-section{
+    min-height:auto !important;
+    padding: 34px 0 !important;
+    display:block !important;
+    overflow: visible !important;
+  }
+  .public-v2 .hero-copy h1,
+  .public-v2 .service-copy h2,
+  .public-v2 .founder-copy h2,
+  .public-v2 .quote-head h2,
+  .public-v2 .visit-grid h2,
+  .public-v2 .service-layout .service-copy h2{
+    max-width: 780px !important;
+    font-size: clamp(2.4rem, 6.5vw, 4rem) !important;
+  }
+  .public-v2 #cotiza > .container{
+    height:auto !important;
+    display:block !important;
+  }
+  .public-v2 #cotiza .quote-head,
+  .public-v2 #cotiza .quote-media-grid,
+  .public-v2 #cotiza .editorial-quote-grid,
+  .public-v2 #como-llegar .location-layout{
+    grid-template-columns:1fr !important;
+  }
+  .public-v2 #cotiza .quote-head{
+    margin-bottom:18px !important;
+  }
+  .public-v2 #cotiza .quote-form{
+    height:auto !important;
+    overflow:visible !important;
+  }
+  .public-v2 #cotiza .quote-video-card{
+    height:360px !important;
+    min-height:360px !important;
+  }
+  .public-v2 #como-llegar .location-media-pair{
+    grid-template-columns:1fr 1fr !important;
+    height:340px !important;
+    min-height:340px !important;
+  }
+}
+@media (max-width: 760px){
+  :root{--cm-header-h: 72px;}
+  .public-v2 .container{
+    width: min(100% - 28px, 100%) !important;
+  }
+  .public-v2 .hero-copy h1,
+  .public-v2 .service-copy h2,
+  .public-v2 .founder-copy h2,
+  .public-v2 .quote-head h2,
+  .public-v2 .visit-grid h2,
+  .public-v2 .service-layout .service-copy h2{
+    font-size: clamp(2.1rem, 9vw, 3rem) !important;
+    line-height:1.05 !important;
+    max-width:100% !important;
+  }
+  .public-v2 #cotiza .quote-form .two-cols,
+  .public-v2 #cotiza .quote-service-row,
+  .public-v2 #cotiza .quote-notes-row{
+    grid-template-columns:1fr !important;
+  }
+  .public-v2 #cotiza .quote-video-card{
+    height:300px !important;
+    min-height:300px !important;
+  }
+  .public-v2 #como-llegar .location-media-pair{
+    grid-template-columns:1fr !important;
+    height:auto !important;
+    min-height:0 !important;
+  }
+  .public-v2 #como-llegar .location-video-card,
+  .public-v2 #como-llegar .location-map-card{
+    height:290px !important;
+    min-height:290px !important;
+  }
+}
+
+
+/* ===== Ajuste v16: cotiza y cómo llegar en una sola pantalla, sin superposición ===== */
+@media (min-width:1121px){
+  .public-v2 #cotiza.quote-section,
+  .public-v2 #como-llegar.visit-section{
+    min-height:calc(100svh - var(--cm-header-h)) !important;
+    padding:18px 0 !important;
+    display:flex !important;
+    align-items:center !important;
+    overflow:hidden !important;
+  }
+  .public-v2 #cotiza > .container,
+  .public-v2 #como-llegar > .container{
+    height:calc(100svh - var(--cm-header-h) - 36px) !important;
+    min-height:0 !important;
+  }
+  .public-v2 #cotiza > .container{
+    display:grid !important;
+    grid-template-rows:auto minmax(0,1fr) !important;
+    gap:12px !important;
+  }
+  .public-v2 #cotiza .quote-head{
+    display:grid !important;
+    grid-template-columns:minmax(0,.72fr) minmax(0,.9fr) !important;
+    align-items:end !important;
+    gap:24px !important;
+    margin:0 !important;
+  }
+  .public-v2 #cotiza .quote-head h2{
+    font-size:clamp(2.05rem,2.75vw,3.15rem) !important;
+    line-height:1.02 !important;
+    margin:0 !important;
+    max-width:680px !important;
+  }
+  .public-v2 #cotiza .quote-head .muted{
+    font-size:.88rem !important;
+    line-height:1.35 !important;
+    max-width:640px !important;
+    margin:0 !important;
+  }
+  .public-v2 #cotiza .quote-media-grid,
+  .public-v2 #cotiza .editorial-quote-grid{
+    height:100% !important;
+    min-height:0 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1.22fr) minmax(300px,.68fr) !important;
+    gap:20px !important;
+    align-items:stretch !important;
+  }
+  .public-v2 #cotiza .quote-form{
+    min-height:0 !important;
+    height:100% !important;
+    padding:14px 16px !important;
+    gap:6px !important;
+    overflow:hidden !important;
+    align-self:stretch !important;
+  }
+  .public-v2 #cotiza .quote-form .two-cols,
+  .public-v2 #cotiza .quote-service-row,
+  .public-v2 #cotiza .quote-notes-row{
+    gap:8px !important;
+  }
+  .public-v2 #cotiza .quote-form .form-line label{
+    font-size:.7rem !important;
+    line-height:1 !important;
+    margin-bottom:3px !important;
+  }
+  .public-v2 #cotiza .quote-form input,
+  .public-v2 #cotiza .quote-form select{
+    height:31px !important;
+    min-height:31px !important;
+    padding:6px 10px !important;
+    font-size:.84rem !important;
+  }
+  .public-v2 #cotiza .quote-form textarea{
+    height:46px !important;
+    min-height:46px !important;
+    padding:7px 10px !important;
+    font-size:.84rem !important;
+    resize:none !important;
+  }
+  .public-v2 #cotiza .form-actions-row{
+    margin-top:0 !important;
+    gap:8px !important;
+  }
+  .public-v2 #cotiza .form-actions-row .btn{
+    min-height:34px !important;
+    padding:7px 14px !important;
+    font-size:.88rem !important;
+  }
+  .public-v2 #cotiza .form-note{
+    font-size:.72rem !important;
+    line-height:1.15 !important;
+    margin:0 !important;
+  }
+  .public-v2 #cotiza .quote-video-card{
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    align-self:stretch !important;
+  }
+  .public-v2 #cotiza .quote-video-card video{
+    height:100% !important;
+    min-height:0 !important;
+    object-fit:cover !important;
+  }
+
+  .public-v2 #como-llegar .location-layout{
+    display:grid !important;
+    grid-template-columns:minmax(0,.9fr) minmax(560px,1.1fr) !important;
+    gap:28px !important;
+    align-items:center !important;
+  }
+  .public-v2 #como-llegar .visit-grid h2{
+    font-size:clamp(2.25rem,3.1vw,3.6rem) !important;
+    line-height:1.02 !important;
+    margin-bottom:12px !important;
+    max-width:720px !important;
+  }
+  .public-v2 #como-llegar .visit-grid .muted{
+    font-size:.96rem !important;
+    line-height:1.48 !important;
+    max-width:620px !important;
+  }
+  .public-v2 #como-llegar .visit-actions{
+    margin-top:14px !important;
+  }
+  .public-v2 #como-llegar .location-info{
+    margin-top:16px !important;
+    padding:15px 18px !important;
+    border-radius:24px !important;
+  }
+  .public-v2 #como-llegar .location-info span{
+    padding:9px 0 !important;
+    font-size:.93rem !important;
+    line-height:1.3 !important;
+  }
+  .public-v2 #como-llegar .location-media-pair{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:16px !important;
+    height:min(48vh,390px) !important;
+    min-height:330px !important;
+    align-items:stretch !important;
+  }
+  .public-v2 #como-llegar .location-video-card,
+  .public-v2 #como-llegar .location-map-card{
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    border-radius:28px !important;
+    overflow:hidden !important;
+  }
+  .public-v2 #como-llegar .location-video-card video,
+  .public-v2 #como-llegar .location-map-card iframe{
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    border:0 !important;
+    border-radius:28px !important;
+  }
+}
+
+@media (max-width:1120px){
+  .public-v2 #cotiza.quote-section,
+  .public-v2 #como-llegar.visit-section{
+    min-height:auto !important;
+    padding:34px 0 !important;
+    overflow:visible !important;
+  }
+  .public-v2 #cotiza > .container,
+  .public-v2 #como-llegar > .container{
+    height:auto !important;
+    min-height:0 !important;
+    display:block !important;
+  }
+  .public-v2 #cotiza .quote-head,
+  .public-v2 #cotiza .quote-media-grid,
+  .public-v2 #cotiza .editorial-quote-grid,
+  .public-v2 #como-llegar .location-layout{
+    grid-template-columns:1fr !important;
+  }
+  .public-v2 #cotiza .quote-form{
+    height:auto !important;
+    overflow:visible !important;
+  }
+  .public-v2 #cotiza .quote-video-card{
+    height:340px !important;
+    min-height:340px !important;
+  }
+  .public-v2 #como-llegar .location-media-pair{
+    grid-template-columns:1fr 1fr !important;
+    height:340px !important;
+    min-height:340px !important;
+  }
+}
+@media (max-width:760px){
+  .public-v2 #cotiza .quote-form .two-cols,
+  .public-v2 #cotiza .quote-service-row,
+  .public-v2 #cotiza .quote-notes-row{
+    grid-template-columns:1fr !important;
+  }
+  .public-v2 #cotiza .quote-video-card{
+    height:300px !important;
+    min-height:300px !important;
+  }
+  .public-v2 #como-llegar .location-media-pair{
+    grid-template-columns:1fr !important;
+    height:auto !important;
+    min-height:0 !important;
+  }
+  .public-v2 #como-llegar .location-video-card,
+  .public-v2 #como-llegar .location-map-card{
+    height:290px !important;
+    min-height:290px !important;
+  }
+}
