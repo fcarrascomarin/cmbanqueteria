@@ -5982,3 +5982,64 @@ body.public-site [id="menu-del-dia"]{
     min-height:220px !important;
   }
 }
+
+
+/* ===== Ajuste v15: contacto sin superposición + video prom3 en cómo llegar ===== */
+@media (min-width:1121px){
+  .public-v2 .quote-section .container{
+    display:block !important;
+  }
+  .public-v2 .quote-media-grid{
+    height:auto !important;
+    min-height:min(60vh, 500px);
+    align-items:stretch !important;
+  }
+  .public-v2 .quote-form,
+  .public-v2 .quote-video-card{
+    height:auto !important;
+  }
+  .public-v2 .quote-video-card{
+    min-height:100% !important;
+  }
+  .public-v2 #como-llegar .location-layout{
+    grid-template-columns:minmax(0,.98fr) minmax(260px,.48fr) minmax(320px,.62fr) !important;
+    gap:22px !important;
+    align-items:center !important;
+  }
+}
+.public-v2 #como-llegar .location-video-card{
+  height:min(46vh, 390px);
+  min-height:320px;
+}
+.public-v2 #como-llegar .location-map-card{
+  height:min(46vh, 390px) !important;
+  min-height:320px;
+}
+.public-v2 #como-llegar .location-map-card iframe{
+  width:100%;
+  height:100%;
+  min-height:100% !important;
+  border:0;
+  border-radius:28px;
+  box-shadow:0 22px 54px rgba(77,9,24,.12);
+}
+.public-v2 #como-llegar .map-stack{
+  height:auto !important;
+}
+@media (max-width:1120px){
+  .public-v2 #como-llegar .location-layout{
+    grid-template-columns:1fr !important;
+  }
+  .public-v2 #como-llegar .location-video-card,
+  .public-v2 #como-llegar .location-map-card{
+    height:360px !important;
+    min-height:360px !important;
+  }
+}
+@media (max-width:760px){
+  .public-v2 #como-llegar .location-video-card,
+  .public-v2 #como-llegar .location-map-card{
+    height:300px !important;
+    min-height:300px !important;
+  }
+}
