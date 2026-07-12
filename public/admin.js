@@ -839,3 +839,111 @@ if(document.body && !window.__cmAdminIconObserver){
   }
   requestAnimationFrame(cmAfterRender);
 })();
+
+
+/* ===== UX v22: iconografía estratégica, menos texto y una sola lectura vertical ===== */
+(function(){
+  const WA_ICON_SRC='/assets/icons/whatsapp.png';
+  const IG_ICON_SRC='/assets/icons/instagram.svg';
+  const VIEW_ICONS={
+    dashboard:'dashboard',operations:'table_restaurant',menus:'restaurant_menu',kitchenMinutas:'soup_kitchen',screenMedia:'smart_display',quotes:'request_quote',expenses:'payments',purchases:'receipt_long',suppliers:'local_shipping',inventory:'kitchen',rations:'calculate',observations:'edit_note',staff:'groups',documents:'folder_open',weekly:'verified'
+  };
+  const SECTION_ICONS={inicio:'dashboard','operacion-diaria':'restaurant_menu',comercial:'request_quote','compras-stock':'shopping_cart_checkout','gestion-interna':'assignment_turned_in',proceso:'verified'};
+  const LABEL_ICONS={
+    'Panel diario':'dashboard','Reservas / Cocina':'table_restaurant','Reservas / cocina':'table_restaurant','Menú del día':'restaurant_menu','Minutas cocina':'soup_kitchen','Pantallas / videos':'smart_display','Cotizaciones':'request_quote','Gastos / compras':'payments','Compras imagen/manual':'receipt_long','Proveedores':'local_shipping','Stock e insumos':'kitchen','Costeo / raciones':'calculate','Bitácora diaria':'edit_note','Personal':'groups','Documentos CM':'folder_open','Proceso by Metamorfosis':'verified','Proceso Metamorfosis':'verified',
+    'Agregar proveedor':'local_shipping','Agregar gasto':'payments','Compra manual':'edit_note','Compra por imagen':'add_photo_alternate','Agregar producto':'add_box','Crear menú diario':'restaurant_menu','Crear minuta semanal':'soup_kitchen','Calcular raciones':'calculate','Agregar cotización':'request_quote','Nueva cotización':'request_quote','Agregar persona':'person_add','Agregar documento':'note_add','Agregar observación':'edit_note','Agregar video/imagen':'perm_media','Nueva reserva/retiro':'event_available','Mensaje a pantalla':'desktop_windows','Crear minuta':'playlist_add','Ingresar documento':'upload_file','Registrar hito / acta':'edit_document','Compras':'shopping_cart_checkout','Stock':'kitchen','Pantalla restaurant':'desktop_windows','Guardar':'check','Cancelar':'close','Salir':'logout'
+  };
+  const STRATEGIC_ACTIONS=[
+    {type:'whatsapp',symbol:'',test:(label,href)=>label.includes('whatsapp')||href.includes('wa.me')},
+    {type:'mail',symbol:'mail',test:(label,href)=>label.includes('correo')||label.includes('email')||href.startsWith('mailto:')||label.includes('@')},
+    {type:'call',symbol:'call',test:(label,href)=>label.includes('llamar')||label.includes('teléfono')||href.startsWith('tel:')},
+    {type:'instagram',symbol:'',test:(label,href)=>label.includes('instagram')||href.includes('instagram.com')},
+    {type:'view',symbol:'visibility',test:(label)=>/^ver\b/.test(label)||label.includes('abrir')||label.includes('ficha')||label.includes('vista previa')},
+    {type:'download',symbol:'download',test:(label)=>label.includes('descargar')||label==='pdf'||label.includes('download')},
+    {type:'edit',symbol:'edit',test:(label)=>label.includes('editar')},
+    {type:'delete',symbol:'delete',test:(label)=>label.includes('eliminar')||label.includes('borrar')}
+  ];
+  function textOf(el){return (el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').replace(/\s+/g,' ').trim();}
+  function safeText(value){return String(value||'').replace(/[&<>"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));}
+  function mat(name){return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;}
+  function labelIcon(label){const clean=String(label||'').replace(/\s+/g,' ').trim();return LABEL_ICONS[clean]||LABEL_ICONS[clean.replace(/\s*\/\s*/g,' / ')]||'radio_button_unchecked';}
+  function actionFor(el){
+    const label=textOf(el).toLowerCase();
+    const href=(el.getAttribute('href')||'').toLowerCase();
+    return STRATEGIC_ACTIONS.find(a=>a.test(label,href))||null;
+  }
+  function actionMarkup(action,label){
+    if(action.type==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safeText(label)}</span>`;
+    if(action.type==='instagram') return `<img class="brand-icon-img local-action-icon" src="${IG_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safeText(label)}</span>`;
+    return `${mat(action.symbol)}<span class="sr-only">${safeText(label)}</span>`;
+  }
+  function decorateSidebar(){
+    document.querySelectorAll('.side-group').forEach(group=>{
+      const btn=group.querySelector('.side-group-toggle');
+      if(!btn) return;
+      const label=btn.querySelector('span:last-child')?.textContent?.trim()||btn.textContent.trim();
+      btn.innerHTML=`${mat(SECTION_ICONS[group.dataset.group]||'folder')}<span>${safeText(label)}</span>`;
+    });
+    document.querySelectorAll('.side-btn').forEach(btn=>{
+      const label=btn.querySelector('span:last-child')?.textContent?.trim()||btn.textContent.trim();
+      btn.innerHTML=`${mat(VIEW_ICONS[btn.dataset.view]||labelIcon(label))}<span>${safeText(label)}</span>`;
+      const active=btn.dataset.view===currentView;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-current',active?'page':'false');
+    });
+  }
+  function decorateButtons(root=document){
+    root.querySelectorAll('a.btn,button.btn,.row-actions a,.row-actions button,.footer-contact a,.mail-info-link').forEach(el=>{
+      const action=actionFor(el);
+      if(!action) return;
+      const label=textOf(el)||'Acción';
+      el.dataset.originalLabel=label;
+      el.removeAttribute('data-icon');
+      el.setAttribute('aria-label',label);
+      el.setAttribute('title',label);
+      el.classList.add('uses-strategic-icon',`action-${action.type}`,'action-icon-only');
+      el.innerHTML=actionMarkup(action,label);
+    });
+    root.querySelectorAll('#viewActions .btn,.quick-actions .btn,.finance-tabs .btn,.menu-downloads .btn,.modal-actions .btn').forEach(el=>{
+      if(el.classList.contains('action-icon-only')) return;
+      if(el.querySelector('.material-symbols-rounded,.brand-icon-img')) return;
+      const label=textOf(el);
+      const icon=labelIcon(label);
+      if(icon && icon!=='radio_button_unchecked') el.insertAdjacentHTML('afterbegin',mat(icon));
+    });
+  }
+  function decorateHeader(){
+    if(typeof cfg==='undefined' || !window.viewTitle) return;
+    const title=cfg[currentView]?.[1]||viewTitle.textContent||'Panel';
+    viewTitle.innerHTML=`${mat(VIEW_ICONS[currentView]||'dashboard')}<span>${safeText(title)}</span>`;
+  }
+  function normalizeTables(){
+    document.querySelectorAll('.table-wrap').forEach(wrap=>{
+      wrap.classList.add('embedded-table-wrap');
+      wrap.style.maxHeight='none';
+      wrap.style.overflowY='visible';
+    });
+  }
+  function decorateAll(){
+    decorateSidebar();
+    decorateHeader();
+    decorateButtons(document);
+    normalizeTables();
+  }
+  const previousSetHeader=typeof setHeader==='function'?setHeader:null;
+  if(previousSetHeader){
+    setHeader=function(v){previousSetHeader(v);decorateSidebar();decorateHeader();};
+    window.setHeader=setHeader;
+  }
+  const previousRender=typeof renderView==='function'?renderView:null;
+  if(previousRender){
+    renderView=async function(v){const result=await previousRender(v);requestAnimationFrame(decorateAll);return result;};
+    window.renderView=renderView;
+  }
+  window.cmDecorateAdminV22=decorateAll;
+  requestAnimationFrame(decorateAll);
+  if(document.body && !window.__cmAdminV22Observer){
+    window.__cmAdminV22Observer=true;
+    new MutationObserver(()=>decorateAll()).observe(document.body,{childList:true,subtree:true,attributes:false});
+  }
+})();

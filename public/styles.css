@@ -7002,3 +7002,148 @@ body:not(.public-site) .row-actions .btn.action-icon-only{
     max-width:200px !important;
   }
 }
+
+
+/* ===== Deploy v21: fallback anti-pantalla negra y cache bust ===== */
+html,body{min-height:100%;}
+body.public-site{background:#e6e3e3!important;color:#231f20!important;}
+body.public-site .public-topbar,
+body.public-site main,
+body.public-site footer{visibility:visible!important;opacity:1!important;}
+body.public-site .screen-body,
+body.public-site .screen-media{background:transparent!important;}
+.public-v2 .public-hero{background-color:#e6e3e3!important;}
+
+
+/* ===== UX v22: iconos estratégicos y aire visual consistente ===== */
+.material-symbols-rounded{
+  font-family:'Material Symbols Rounded';
+  font-weight:500;
+  font-style:normal;
+  font-size:1.18em;
+  line-height:1;
+  letter-spacing:normal;
+  text-transform:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  word-wrap:normal;
+  direction:ltr;
+  -webkit-font-feature-settings:'liga';
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:'liga';
+  font-variation-settings:'FILL' 0,'wght' 520,'GRAD' 0,'opsz' 24;
+}
+.btn[data-icon]::before{content:none!important;display:none!important;}
+.uses-strategic-icon{position:relative;}
+.btn.action-icon-only,
+a.action-icon-only,
+button.action-icon-only,
+.floating-whatsapp.action-icon-only{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  min-height:42px!important;
+  padding:0!important;
+  border-radius:999px!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  gap:0!important;
+  text-indent:0!important;
+  overflow:hidden!important;
+}
+.btn-small.action-icon-only,
+td .action-icon-only,
+.row-actions .action-icon-only{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+}
+.action-icon-only .material-symbols-rounded,
+.action-icon-only .brand-icon-img{
+  margin:0!important;
+  width:1.18rem;
+  height:1.18rem;
+  object-fit:contain;
+}
+.local-action-icon,
+.brand-icon-img{display:inline-block;object-fit:contain;vertical-align:-.18em;}
+.btn-primary .local-action-icon,
+.btn-danger .local-action-icon,
+.btn-primary .whatsapp-brand,
+.btn-danger .whatsapp-brand,
+.floating-whatsapp .whatsapp-brand{filter:brightness(0) invert(1);}
+.btn-secondary .local-action-icon,
+.btn-gold .local-action-icon,
+.btn-secondary .whatsapp-brand,
+.btn-gold .whatsapp-brand{filter:none;}
+.public-v2 .floating-whatsapp.action-icon-only{
+  width:56px!important;
+  height:56px!important;
+  min-width:56px!important;
+  min-height:56px!important;
+  right:24px!important;
+  bottom:24px!important;
+}
+.public-v2 .mobile-sticky-actions .action-icon-only{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;}
+.footer-contact a.action-icon-only{
+  display:inline-grid!important;
+  margin-right:8px;
+}
+body:not(.public-site) .admin-main{
+  overflow:visible!important;
+  max-height:none!important;
+  min-height:calc(100svh - 64px)!important;
+}
+body:not(.public-site) .table-wrap,
+body:not(.public-site) .embedded-table-wrap,
+body:not(.public-site) .doc-column .table-wrap{
+  max-height:none!important;
+  overflow-y:visible!important;
+  overflow-x:auto!important;
+}
+body:not(.public-site) .sidebar{
+  overflow:visible!important;
+  max-height:none!important;
+}
+body:not(.public-site) .row-actions{
+  display:flex!important;
+  gap:6px!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+}
+body:not(.public-site) #viewTitle{
+  text-transform:uppercase!important;
+  letter-spacing:-.01em!important;
+}
+body:not(.public-site) #viewActions .btn:not(.action-icon-only),
+body:not(.public-site) .quick-actions .btn:not(.action-icon-only),
+body:not(.public-site) .finance-tabs .btn:not(.action-icon-only){
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+body:not(.public-site) .mail-info-link.action-icon-only{
+  background:#fbf4ea!important;
+  border:1px solid rgba(90,22,36,.12)!important;
+  color:#4d0918!important;
+}
+body:not(.public-site) .side-group-toggle,
+body:not(.public-site) .side-btn{
+  text-transform:uppercase!important;
+}
+body:not(.public-site) .side-group-toggle .material-symbols-rounded,
+body:not(.public-site) .side-btn .material-symbols-rounded{
+  color:#e2b354!important;
+  flex:0 0 auto!important;
+}
+body:not(.public-site) .side-btn.active .material-symbols-rounded,
+body:not(.public-site) .side-btn[aria-current="page"] .material-symbols-rounded{
+  color:#3e0714!important;
+}
+@media(max-width:760px){
+  .btn.action-icon-only,a.action-icon-only,button.action-icon-only{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;}
+  .public-v2 .floating-whatsapp.action-icon-only{width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;}
+}

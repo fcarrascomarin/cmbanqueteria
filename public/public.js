@@ -200,3 +200,62 @@ if(document.body && !window.__cmPublicIconObserver){
   cmDecoratePublicActions=window.cmDecoratePublicActions;
   requestAnimationFrame(()=>cmDecoratePublicActions());
 })();
+
+
+/* ===== UX v22: iconos estratégicos Google Fonts + WhatsApp local ===== */
+(function(){
+  const WA_ICON_SRC='/assets/icons/whatsapp.png';
+  const IG_ICON_SRC='/assets/icons/instagram.svg';
+  const ACTIONS=[
+    {type:'whatsapp',test:(label,href)=>label.includes('whatsapp')||href.includes('wa.me')},
+    {type:'mail',test:(label,href)=>label.includes('correo')||label.includes('email')||href.startsWith('mailto:')||label.includes('@')},
+    {type:'call',test:(label,href)=>label.includes('llamar')||label.includes('teléfono')||href.startsWith('tel:')},
+    {type:'instagram',test:(label,href)=>label.includes('instagram')||href.includes('instagram.com')},
+    {type:'visibility',test:(label)=>/^ver\b/.test(label)||label.includes(' vista')||label.includes('abrir')},
+    {type:'download',test:(label)=>label.includes('descargar')||label==='pdf'||label.includes('download')},
+    {type:'edit',test:(label)=>label.includes('editar')},
+    {type:'delete',test:(label)=>label.includes('eliminar')||label.includes('borrar')}
+  ];
+  function labelOf(el){return (el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').replace(/\s+/g,' ').trim();}
+  function actionFor(el){
+    const label=labelOf(el).toLowerCase();
+    const href=(el.getAttribute('href')||'').toLowerCase();
+    return ACTIONS.find(a=>a.test(label,href))?.type||'';
+  }
+  function symbol(name){return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;}
+  function iconMarkup(type,label){
+    if(type==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${label}</span>`;
+    if(type==='instagram') return `<img class="brand-icon-img local-action-icon" src="${IG_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${label}</span>`;
+    return `${symbol(type)}<span class="sr-only">${label}</span>`;
+  }
+  function shouldKeepText(el,type){
+    // Main narrative CTAs keep their word when the action is not a contact/action utility.
+    if(el.closest('.hero-actions') && !['whatsapp','mail','call','instagram'].includes(type)) return true;
+    if(el.closest('.nav-links')) return true;
+    return false;
+  }
+  function decorate(root=document){
+    root.querySelectorAll('a.btn,button.btn,.floating-whatsapp,.footer-contact a').forEach(el=>{
+      const type=actionFor(el);
+      if(!type) return;
+      const label=labelOf(el)||'Acción';
+      el.dataset.originalLabel=label;
+      el.removeAttribute('data-icon');
+      el.setAttribute('aria-label',label);
+      el.setAttribute('title',label);
+      el.classList.add('uses-strategic-icon',`action-${type}`);
+      if(shouldKeepText(el,type)){
+        if(!el.querySelector('.material-symbols-rounded,.brand-icon-img')) el.insertAdjacentHTML('afterbegin',iconMarkup(type,label).replace(/<span class="sr-only">.*?<\/span>/,''));
+        return;
+      }
+      el.classList.add('action-icon-only');
+      el.innerHTML=iconMarkup(type,label);
+    });
+  }
+  window.cmDecoratePublicActionsV22=decorate;
+  requestAnimationFrame(()=>decorate(document));
+  if(document.body && !window.__cmPublicV22Observer){
+    window.__cmPublicV22Observer=true;
+    new MutationObserver(()=>decorate(document)).observe(document.body,{childList:true,subtree:true});
+  }
+})();
