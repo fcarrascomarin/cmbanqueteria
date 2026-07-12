@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
   <link rel="preload" href="/assets/menu-template.png?v=20260623-consultoria" as="image" type="image/png">
   <link rel="preload" href="/assets/menu-instagram-template.png?v=20260622" as="image" type="image/png">
-  <link rel="stylesheet" href="/styles.css?v=20260709-contacto-armonia-v16">
+  <link rel="stylesheet" href="/styles.css?v=20260710-ux-v18">
 </head>
 <body>
   <div id="loginView" class="login-page">
@@ -18,35 +18,33 @@
       <div><div class="kicker">Acceso interno</div><h2>CM Administración</h2><p class="muted">Panel privado para administrar la operación del restaurant.</p></div>
       <div class="form-line"><label>Usuario</label><input name="user" type="email" required></div>
       <div class="form-line"><label>Contraseña</label><input name="password" type="password" required></div>
-      <button class="btn btn-primary" type="submit">Ingresar</button><a class="btn btn-secondary" href="/">Volver a la web</a>
+      <button class="btn btn-primary" data-icon="→" type="submit">Ingresar</button><a class="btn btn-secondary" data-icon="↩" href="/">Volver a la web</a>
     </form>
   </div>
   <div id="adminView" class="hidden">
-    <header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel interno<br><small>Administración</small></span></a><div style="display:flex;gap:10px"><a class="btn btn-secondary" href="/pantalla.html" target="_blank">Pantalla restaurant</a><a class="btn btn-secondary" href="/" target="_blank">Ver web</a><button class="btn btn-primary" id="logoutBtn">Salir</button></div></div></header>
+    <header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel interno<br><small>Administración</small></span></a><div style="display:flex;gap:10px"><a class="btn btn-secondary" data-icon="▣" href="/pantalla.html" target="_blank">Pantalla restaurant</a><a class="btn btn-secondary" data-icon="↗" href="/" target="_blank">Ver web</a><button class="btn btn-primary" data-icon="⏻" id="logoutBtn">Salir</button></div></div></header>
     <div class="admin-shell">
       <aside class="sidebar">
         <h3>Módulos</h3>
         <div class="side-group open" data-group="inicio">
           <button class="side-group-toggle" type="button" aria-expanded="true">Inicio</button>
           <div class="side-submenu">
-            <button class="side-btn active" data-view="dashboard">Panel ejecutivo</button>
+            <button class="side-btn active" data-view="dashboard">Panel diario</button>
           </div>
         </div>
-        <div class="side-group" data-group="proceso">
-          <button class="side-group-toggle" type="button" aria-expanded="false">Proceso</button>
-          <div class="side-submenu">
-            <button class="side-btn consulting" data-view="weekly">Proceso CM by Metamorfosis</button>
-            <button class="side-btn" data-view="documents">Biblioteca documental</button>
-          </div>
-        </div>
-        <div class="side-group" data-group="restaurant">
-          <button class="side-group-toggle" type="button" aria-expanded="false">Restaurant</button>
+        <div class="side-group" data-group="operacion-diaria">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Operación diaria</button>
           <div class="side-submenu">
             <button class="side-btn" data-view="operations">Reservas / Cocina</button>
-            <button class="side-btn" data-view="menus">Gráficas menú</button>
+            <button class="side-btn" data-view="menus">Menú del día</button>
             <button class="side-btn" data-view="kitchenMinutas">Minutas cocina</button>
-            <button class="side-btn" data-view="rations">Costeo / Raciones</button>
             <button class="side-btn" data-view="screenMedia">Pantallas / videos</button>
+          </div>
+        </div>
+        <div class="side-group" data-group="comercial">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Comercial</button>
+          <div class="side-submenu">
+            <button class="side-btn" data-view="quotes">Cotizaciones</button>
           </div>
         </div>
         <div class="side-group" data-group="compras-stock">
@@ -56,12 +54,7 @@
             <button class="side-btn" data-view="purchases">Compras imagen/manual</button>
             <button class="side-btn" data-view="suppliers">Proveedores</button>
             <button class="side-btn" data-view="inventory">Stock e insumos</button>
-          </div>
-        </div>
-        <div class="side-group" data-group="comercial">
-          <button class="side-group-toggle" type="button" aria-expanded="false">Comercial</button>
-          <div class="side-submenu">
-            <button class="side-btn" data-view="quotes">Cotizaciones</button>
+            <button class="side-btn" data-view="rations">Costeo / raciones</button>
           </div>
         </div>
         <div class="side-group" data-group="gestion-interna">
@@ -69,6 +62,13 @@
           <div class="side-submenu">
             <button class="side-btn" data-view="observations">Bitácora diaria</button>
             <button class="side-btn" data-view="staff">Personal</button>
+            <button class="side-btn" data-view="documents">Documentos CM</button>
+          </div>
+        </div>
+        <div class="side-group" data-group="proceso">
+          <button class="side-group-toggle" type="button" aria-expanded="false">Consolidación</button>
+          <div class="side-submenu">
+            <button class="side-btn consulting" data-view="weekly">Proceso by Metamorfosis</button>
           </div>
         </div>
       </aside>
@@ -76,8 +76,8 @@
     </div>
   </div>
   <dialog class="modal" id="modal"><form class="modal-content form-grid" id="modalForm"></form></dialog>
-  <script src="/menu-graphic.js?v=20260709-contacto-armonia-v16"></script>
-  <script src="/admin.js?v=20260709-contacto-armonia-v16"></script>
+  <script src="/menu-graphic.js?v=20260710-ux-v18"></script>
+  <script src="/admin.js?v=20260710-ux-v18"></script>
   <script src="/purchases.js?v=20260625-final"></script>
   <script src="/kitchen-minutas.js?v=20260625-final"></script>
 </body>

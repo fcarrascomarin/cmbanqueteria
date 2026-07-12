@@ -11,7 +11,7 @@
   <link rel="preload" href="/assets/web/H1_home_cm_banqueteria_evento_brand.jpg" as="image" type="image/jpeg">
   <link rel="preload" href="/assets/web/R5_restaurant_salon_calido_hero.jpg" as="image" type="image/jpeg">
   <link rel="preload" href="/assets/web/B15_banqueteria_salon_completo_evento_hero.jpg" as="image" type="image/jpeg">
-  <link rel="stylesheet" href="/styles.css?v=20260709-contacto-armonia-v16" />
+  <link rel="stylesheet" href="/styles.css?v=20260710-ux-v18" />
 </head>
 <body class="public-site public-v2">
   <header class="topbar public-topbar">
@@ -40,9 +40,9 @@
           <h1>Restaurant y banquetería familiar frente a Laguna La Señoraza.</h1>
           <p class="lead">Almuerzos diarios, eventos y reservas especiales, ordenados de forma simple en una misma propuesta.</p>
           <div class="hero-actions">
-            <a class="btn btn-gold" href="#restaurant">Ver restaurant</a>
-            <a class="btn btn-primary" href="#banqueteria">Cotizar banquetería</a>
-            <a class="btn btn-secondary hero-secondary" href="#trayectoria">Conocer trayectoria</a>
+            <a class="btn btn-gold" data-icon="🍽" href="#restaurant">Ver restaurant</a>
+            <a class="btn btn-primary" data-icon="✉" href="#banqueteria">Cotizar banquetería</a>
+            <a class="btn btn-secondary hero-secondary" data-icon="◆" href="#trayectoria">Conocer trayectoria</a>
           </div>
         </div>
 
@@ -75,8 +75,8 @@
             <div><strong>Ubicación</strong><span>Costanera Norte 1012, Laja.</span></div>
           </div>
           <div class="service-actions">
-            <a class="btn btn-gold" href="#menu-del-dia">Ver menú publicado</a>
-            <a class="btn btn-secondary" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20por%20el%20men%C3%BA%20del%20d%C3%ADa%20del%20Restaurant." target="_blank" rel="noopener">Consultar por WhatsApp</a>
+            <a class="btn btn-gold" data-icon="☰" href="#menu-del-dia">Ver menú publicado</a>
+            <a class="btn btn-secondary" data-icon="💬" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20por%20el%20men%C3%BA%20del%20d%C3%ADa%20del%20Restaurant." target="_blank" rel="noopener">Consultar por WhatsApp</a>
           </div>
         </div>
         <div class="service-side-stack restaurant-side-stack">
@@ -101,8 +101,8 @@
             <div><strong>Reserva</strong><span>Con anticipación para diseñar menú, montaje y logística.</span></div>
           </div>
           <div class="service-actions">
-            <a class="btn btn-primary" href="#cotiza">Cotizar evento</a>
-            <a class="btn btn-secondary" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20cotizar%20un%20evento.%20Fecha%3A%20%2F%20Personas%3A%20%2F%20Tipo%20de%20evento%3A%20%2F%20Lugar%3A" target="_blank" rel="noopener">WhatsApp directo</a>
+            <a class="btn btn-primary" data-icon="✉" href="#cotiza">Cotizar evento</a>
+            <a class="btn btn-secondary" data-icon="💬" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20cotizar%20un%20evento.%20Fecha%3A%20%2F%20Personas%3A%20%2F%20Tipo%20de%20evento%3A%20%2F%20Lugar%3A" target="_blank" rel="noopener">WhatsApp directo</a>
           </div>
         </div>
         <div class="service-montage banqueteria-montage two-up" aria-label="Montajes reales de CM Banquetería">
@@ -145,8 +145,8 @@
             </article>
           </div>
           <div class="service-actions founder-actions">
-            <a class="btn btn-primary" href="#cotiza">Cotizar con CM</a>
-            <a class="btn btn-secondary" href="#restaurant">Ver servicios</a>
+            <a class="btn btn-primary" data-icon="✉" href="#cotiza">Cotizar con CM</a>
+            <a class="btn btn-secondary" data-icon="↘" href="#restaurant">Ver servicios</a>
           </div>
         </div>
       </div>
@@ -164,8 +164,8 @@
             <div><strong>Consulta</strong><span>La disponibilidad se revisa según fecha, formato y número de personas.</span></div>
           </div>
           <div class="service-actions">
-            <a class="btn btn-primary" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20la%20disponibilidad%20del%20espacio%20para%20una%20actividad%20o%20reserva%20especial." target="_blank" rel="noopener">Consultar disponibilidad</a>
-            <a class="btn btn-secondary" href="#cotiza">Dejar consulta</a>
+            <a class="btn btn-primary" data-icon="💬" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20la%20disponibilidad%20del%20espacio%20para%20una%20actividad%20o%20reserva%20especial." target="_blank" rel="noopener">Consultar disponibilidad</a>
+            <a class="btn btn-secondary" data-icon="✎" href="#cotiza">Dejar consulta</a>
           </div>
         </div>
         <div class="service-media video-card instagram-video-card">
@@ -185,44 +185,59 @@
           <p class="muted">Completa el formulario para ordenar la solicitud. Al enviarlo se abrirá WhatsApp con los datos preparados y, si la plataforma está activa, quedará registrado en el panel interno.</p>
         </div>
         <div class="quote-media-grid editorial-quote-grid">
-          <form class="card form-grid quote-form" id="quoteForm">
-            <div class="two-cols">
-              <div class="form-line"><label>Nombre</label><input name="clientName" autocomplete="name" required /></div>
-              <div class="form-line"><label>Teléfono / WhatsApp</label><input name="phone" autocomplete="tel" required /></div>
+          <form class="card form-grid quote-form quote-step-form" id="quoteForm">
+            <div class="quote-step-progress" aria-label="Avance de cotización">
+              <span class="active" data-step-dot="1">1 · Servicio</span>
+              <span data-step-dot="2">2 · Detalle</span>
+              <span data-step-dot="3">3 · Contacto</span>
             </div>
-            <div class="two-cols">
-              <div class="form-line"><label>Correo</label><input name="email" type="email" autocomplete="email" /></div>
-              <div class="form-line"><label>Fecha estimada</label><input name="eventDate" type="date" /></div>
-            </div>
-            <div class="quote-service-row">
-              <div class="form-line service-select-line">
-                <label>Servicio requerido</label>
-                <select name="requestedService" required>
-                  <option value="">Elige una opción</option>
-                  <option>CM Banquetería</option>
-                  <option>CM Restaurant / menú del día</option>
-                  <option>Espacio / reserva especial</option>
-                  <option>Consulta general</option>
-                </select>
+            <section class="quote-step active" data-step="1">
+              <div class="quote-step-head"><strong>¿Qué necesitas cotizar?</strong><small>Parte por lo esencial. El resto se completa en dos pasos breves.</small></div>
+              <div class="quote-service-row">
+                <div class="form-line service-select-line">
+                  <label>Servicio requerido</label>
+                  <select name="requestedService" required>
+                    <option value="">Elige una opción</option>
+                    <option>CM Banquetería</option>
+                    <option>CM Restaurant / menú del día</option>
+                    <option>Espacio / reserva especial</option>
+                    <option>Consulta general</option>
+                  </select>
+                </div>
+                <div class="form-line"><label>Número de personas</label><input name="guests" type="number" min="1" /></div>
               </div>
-              <div class="form-line"><label>Número de personas</label><input name="guests" type="number" min="1" /></div>
-            </div>
-            <div class="two-cols">
-              <div class="form-line"><label>Tipo de evento</label><input name="eventType" placeholder="Cumpleaños, bautizo, empresa, almuerzo..." /></div>
-              <div class="form-line"><label>Lugar / comuna</label><input name="location" placeholder="Local CM, domicilio, empresa, comuna..." /></div>
-            </div>
-            <div class="two-cols quote-notes-row">
-              <div class="form-line"><label>Presupuesto estimado</label><input name="estimatedBudget" type="number" min="0" placeholder="Opcional" /></div>
-              <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Fecha, horario, tipo de servicio, restricciones o detalles importantes."></textarea></div>
-            </div>
-            <div class="form-actions-row">
-              <button class="btn btn-primary quote-submit" type="submit">Enviar por WhatsApp</button>
-              <a class="btn btn-gold" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20hacer%20una%20consulta." target="_blank" rel="noopener">WhatsApp directo</a>
-            </div>
-            <p class="form-note">contacto@cmbanqueteria.cl · +56 9 8774 1182</p>
+              <div class="form-line"><label>Fecha estimada</label><input name="eventDate" type="date" /></div>
+              <div class="quote-step-actions"><button class="btn btn-primary quote-step-next" data-icon="→" type="button">Continuar</button></div>
+            </section>
+            <section class="quote-step" data-step="2">
+              <div class="quote-step-head"><strong>Detalle del evento</strong><small>Agrega contexto para responder con una cotización más útil.</small></div>
+              <div class="two-cols">
+                <div class="form-line"><label>Tipo de evento</label><input name="eventType" placeholder="Cumpleaños, bautizo, empresa, almuerzo..." /></div>
+                <div class="form-line"><label>Lugar / comuna</label><input name="location" placeholder="Local CM, domicilio, empresa, comuna..." /></div>
+              </div>
+              <div class="two-cols quote-notes-row">
+                <div class="form-line"><label>Presupuesto estimado</label><input name="estimatedBudget" type="number" min="0" placeholder="Opcional" /></div>
+                <div class="form-line"><label>Comentarios</label><textarea name="internalNotes" placeholder="Horario, tipo de servicio, restricciones o detalles importantes."></textarea></div>
+              </div>
+              <div class="quote-step-actions"><button class="btn btn-secondary quote-step-prev" data-icon="←" type="button">Volver</button><button class="btn btn-primary quote-step-next" data-icon="→" type="button">Continuar</button></div>
+            </section>
+            <section class="quote-step" data-step="3">
+              <div class="quote-step-head"><strong>Datos de contacto</strong><small>CM recibirá tu solicitud y podrá responder por WhatsApp o correo.</small></div>
+              <div class="two-cols">
+                <div class="form-line"><label>Nombre</label><input name="clientName" autocomplete="name" required /></div>
+                <div class="form-line"><label>Teléfono / WhatsApp</label><input name="phone" autocomplete="tel" required /></div>
+              </div>
+              <div class="form-line"><label>Correo</label><input name="email" type="email" autocomplete="email" /></div>
+              <div class="form-actions-row quote-step-actions">
+                <button class="btn btn-secondary quote-step-prev" data-icon="←" type="button">Volver</button>
+                <button class="btn btn-primary quote-submit" data-icon="✓" type="submit">Enviar por WhatsApp</button>
+                <a class="btn btn-gold" data-icon="💬" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20hacer%20una%20consulta." target="_blank" rel="noopener">WhatsApp directo</a>
+              </div>
+              <p class="form-note">contacto@cmbanqueteria.cl · +56 9 8774 1182</p>
+            </section>
           </form>
           <aside class="quote-photo-card quote-video-card">
-            <video src="assets/prom2.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="Video promocional de CM Banquetería para cotizaciones"></video>
+            <video src="/assets/prom2.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="Video promocional de CM Banquetería para cotizaciones"></video>
             <div><span>CM Banquetería</span><strong>Momentos preparados con dedicación.</strong></div>
           </aside>
         </div>
@@ -236,9 +251,9 @@
           <h2>Costanera Norte 1012, Laja.</h2>
           <p class="muted">CM está ubicado frente al entorno de Laguna La Señoraza. Para almuerzos, consulta el menú del día; para banquetería y reservas especiales, coordina previamente.</p>
           <div class="visit-actions">
-            <a class="btn btn-primary" href="https://www.google.com/maps/search/?api=1&query=Costanera%20Norte%201012%20Laja%20Chile" target="_blank" rel="noopener">Abrir en Google Maps</a>
-            <a class="btn btn-secondary" href="tel:+56987741182">Llamar</a>
-            <a class="btn btn-gold" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20por%20la%20ubicaci%C3%B3n%20y%20disponibilidad." target="_blank" rel="noopener">WhatsApp</a>
+            <a class="btn btn-primary" data-icon="⌖" href="https://www.google.com/maps/search/?api=1&query=Costanera%20Norte%201012%20Laja%20Chile" target="_blank" rel="noopener">Abrir en Google Maps</a>
+            <a class="btn btn-secondary" data-icon="☎" href="tel:+56987741182">Llamar</a>
+            <a class="btn btn-gold" data-icon="💬" href="https://wa.me/56987741182?text=Hola%20CM%2C%20quiero%20consultar%20por%20la%20ubicaci%C3%B3n%20y%20disponibilidad." target="_blank" rel="noopener">WhatsApp</a>
           </div>
           <aside class="info-card location-info">
             <strong>Información rápida</strong>
@@ -249,7 +264,7 @@
         </div>
         <div class="location-media-pair">
           <aside class="video-card instagram-video-card location-video-card">
-            <video src="assets/prom.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="Video promocional de CM Banquetería sobre el entorno y servicio"></video>
+            <video src="/assets/prom3.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="Video promocional de CM Banquetería sobre el entorno y servicio"></video>
             <div class="video-caption"><span>CM Banquetería</span><strong>Entorno, atención y momentos preparados con dedicación.</strong></div>
           </aside>
           <div class="map-stack location-map-card">
@@ -259,6 +274,8 @@
       </div>
     </section>
   </main>
+
+  <div class="mobile-sticky-actions"><a class="btn btn-primary" data-icon="✉" href="#cotiza">Cotizar</a><a class="btn btn-gold" data-icon="💬" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20hacer%20una%20consulta." target="_blank" rel="noopener">WhatsApp</a></div>
 
   <a class="floating-whatsapp" href="https://wa.me/56987741182?text=Hola%20CM%20Banqueter%C3%ADa%2C%20quiero%20hacer%20una%20consulta." target="_blank" rel="noopener" aria-label="Escribir a CM Banquetería por WhatsApp">WhatsApp</a>
 
@@ -280,7 +297,7 @@
       </div>
     </div>
   </footer>
-  <script src="/menu-graphic.js?v=20260709-contacto-armonia-v16"></script>
-  <script src="/public.js?v=20260709-contacto-armonia-v16"></script>
+  <script src="/menu-graphic.js?v=20260710-ux-v18"></script>
+  <script src="/public.js?v=20260710-ux-v18"></script>
 </body>
 </html>

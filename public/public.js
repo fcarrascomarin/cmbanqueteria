@@ -66,7 +66,7 @@ document.querySelector('#quoteForm')?.addEventListener('submit',async e=>{
 
   const whatsappWindow=window.open(cmWhatsappUrl(quoteMessage(payload)),'_blank','noopener');
   try{
-    if(btn){btn.disabled=true;btn.textContent='Registrando solicitud...'}
+    if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-icon" aria-hidden="true">⌛</span> Registrando...'}
     const res=await fetch('/api/public/quotes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(res.ok){
       form.reset();
@@ -79,8 +79,37 @@ document.querySelector('#quoteForm')?.addEventListener('submit',async e=>{
     if(!whatsappWindow) alert('No se pudo abrir WhatsApp automáticamente. Usa el botón WhatsApp directo.');
   }
   finally{
-    if(btn){btn.disabled=false;btn.textContent='Enviar por WhatsApp'}
+    if(btn){btn.disabled=false;btn.innerHTML='<span class="btn-icon" aria-hidden="true">✓</span> Enviar por WhatsApp'}
   }
 });
+
+
+function setupQuoteStepper(){
+  const form=document.querySelector('#quoteForm.quote-step-form');
+  if(!form)return;
+  const steps=[...form.querySelectorAll('.quote-step')];
+  const dots=[...form.querySelectorAll('[data-step-dot]')];
+  let current=0;
+  const show=index=>{
+    current=Math.max(0,Math.min(index,steps.length-1));
+    steps.forEach((step,i)=>step.classList.toggle('active',i===current));
+    dots.forEach((dot,i)=>dot.classList.toggle('active',i<=current));
+  };
+  const validateCurrent=()=>{
+    const required=[...steps[current].querySelectorAll('[required]')];
+    for(const field of required){
+      if(!field.checkValidity()){
+        field.reportValidity();
+        return false;
+      }
+    }
+    return true;
+  };
+  form.querySelectorAll('.quote-step-next').forEach(button=>button.addEventListener('click',()=>{if(validateCurrent())show(current+1)}));
+  form.querySelectorAll('.quote-step-prev').forEach(button=>button.addEventListener('click',()=>show(current-1)));
+  show(0);
+}
+
+setupQuoteStepper();
 
 loadTodayMenu();
