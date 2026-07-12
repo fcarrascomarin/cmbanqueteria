@@ -696,3 +696,146 @@ if(document.body && !window.__cmAdminIconObserver){
   window.__cmAdminIconObserver=true;
   new MutationObserver(()=>cmAfterRender()).observe(document.body,{childList:true,subtree:true});
 }
+
+
+/* ===== UX v20: una sola lectura por página, tabla sin scroll interno e iconografía gastronómica ===== */
+(function(){
+  const WA_ICON_SRC='/assets/icons/whatsapp.png';
+  const V20_VIEW_ICONS={
+    dashboard:'dashboard',
+    operations:'table_restaurant',
+    menus:'restaurant_menu',
+    kitchenMinutas:'soup_kitchen',
+    screenMedia:'smart_display',
+    quotes:'request_quote',
+    expenses:'payments',
+    purchases:'shopping_cart_checkout',
+    suppliers:'local_shipping',
+    inventory:'kitchen',
+    rations:'calculate',
+    observations:'edit_note',
+    staff:'groups',
+    documents:'folder_open',
+    weekly:'verified'
+  };
+  const V20_LABEL_ICONS={
+    'Reservas / cocina':'table_restaurant',
+    'Menú del día':'restaurant_menu',
+    'Minutas cocina':'soup_kitchen',
+    'Compras':'shopping_cart_checkout',
+    'Stock':'kitchen',
+    'Proveedores':'local_shipping',
+    'Agregar proveedor':'local_shipping',
+    'Agregar gasto':'payments',
+    'Compra manual':'edit_note',
+    'Compra por imagen':'add_photo_alternate',
+    'Agregar producto':'add_box',
+    'Crear menú diario':'restaurant_menu',
+    'Crear minuta semanal':'soup_kitchen',
+    'Calcular raciones':'calculate',
+    'Agregar cotización':'request_quote',
+    'Nueva cotización':'request_quote',
+    'Agregar persona':'person_add',
+    'Agregar documento':'note_add',
+    'Agregar observación':'edit_note',
+    'Agregar video/imagen':'perm_media',
+    'Nueva reserva/retiro':'event_available',
+    'Mensaje a pantalla':'desktop_windows',
+    'Crear minuta':'playlist_add',
+    'Ingresar documento':'upload_file',
+    'Registrar hito / acta':'edit_document',
+    'Documentos CM':'folder_open',
+    'Proceso Metamorfosis':'verified',
+    'Pantalla restaurant':'desktop_windows',
+    'Guardar':'check',
+    'Cancelar':'close'
+  };
+  window.cmViewIcon=function(view){return V20_VIEW_ICONS[view] || 'dashboard';};
+  window.cmIcon=function(label){
+    const normalized=String(label||'').replace(/\s+/g,' ').trim();
+    return V20_LABEL_ICONS[normalized] || CM_MATERIAL_ICONS?.[normalized] || 'radio_button_unchecked';
+  };
+  window.cmIconHTML=function(label){return `${cmMat(cmIcon(label))}<span>${safe(label)}</span>`;};
+  window.cmBrandIcon=function(type,label){
+    if(type==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safe(label||'WhatsApp')}</span>`;
+    return '';
+  };
+  window.cmIconOnlyHTML=function(icon,label){
+    if(icon==='whatsapp') return cmBrandIcon('whatsapp',label);
+    return `${cmMat(icon)}<span class="sr-only">${safe(label)}</span>`;
+  };
+  window.cmActionIconForElement=function(el){
+    const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
+    const href=(el.getAttribute('href')||'').toLowerCase();
+    if(label.includes('whatsapp') || href.includes('wa.me')) return 'whatsapp';
+    if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
+    if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
+    if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
+    if(label.includes('editar')) return 'edit';
+    if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista previa')) return 'visibility';
+    return '';
+  };
+  window.cmDecorateAdminActions=function(root=document){
+    root.querySelectorAll('a.btn,button.btn').forEach(el=>{
+      const label=(el.dataset.originalLabel||el.textContent||el.getAttribute('aria-label')||'').trim();
+      const icon=cmActionIconForElement(el);
+      if(!icon) return;
+      el.dataset.cmIconOnly='1';
+      el.dataset.originalLabel=label || el.getAttribute('aria-label') || 'Acción';
+      el.classList.add('action-icon-only');
+      el.setAttribute('aria-label',el.dataset.originalLabel);
+      el.setAttribute('title',el.dataset.originalLabel);
+      el.innerHTML=cmIconOnlyHTML(icon,el.dataset.originalLabel);
+    });
+    root.querySelectorAll('.mail-info-link,.footer-contact a').forEach(el=>{
+      const icon=cmActionIconForElement(el);
+      if(!icon || el.dataset.cmInlineIcon==='1')return;
+      el.dataset.cmInlineIcon='1';
+      if(icon==='whatsapp') el.insertAdjacentHTML('afterbegin',`<img class="brand-icon-img whatsapp-brand inline-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"> `);
+      else if(!el.querySelector('.material-symbols-rounded')) el.insertAdjacentHTML('afterbegin',`${cmMat(icon)} `);
+    });
+  };
+  window.cmDecorateSidebar=function(){
+    const groupIcons={inicio:'dashboard','operacion-diaria':'restaurant_menu',comercial:'request_quote','compras-stock':'shopping_cart_checkout','gestion-interna':'assignment','proceso':'verified'};
+    document.querySelectorAll('.side-group').forEach(group=>{
+      const btn=group.querySelector('.side-group-toggle');
+      if(!btn) return;
+      const text=btn.querySelector('span:last-child')?.textContent?.trim() || btn.textContent.trim();
+      btn.innerHTML=`${cmMat(groupIcons[group.dataset.group]||'folder')}<span>${safe(text)}</span>`;
+    });
+    document.querySelectorAll('.side-btn').forEach(btn=>{
+      const text=btn.querySelector('span:last-child')?.textContent?.trim() || btn.textContent.trim();
+      btn.innerHTML=`${cmMat(cmViewIcon(btn.dataset.view))}<span>${safe(text)}</span>`;
+    });
+  };
+  window.cmAfterRender=function(){
+    cmDecorateSidebar();
+    cmDecorateAdminActions(document);
+    document.querySelectorAll('.table-wrap').forEach(wrap=>wrap.classList.add('embedded-table-wrap'));
+  };
+  cmViewIcon=window.cmViewIcon;
+  cmIcon=window.cmIcon;
+  cmIconHTML=window.cmIconHTML;
+  cmIconOnlyHTML=window.cmIconOnlyHTML;
+  cmActionIconForElement=window.cmActionIconForElement;
+  cmDecorateAdminActions=window.cmDecorateAdminActions;
+  cmDecorateSidebar=window.cmDecorateSidebar;
+  cmAfterRender=window.cmAfterRender;
+  if(typeof setHeader==='function'){
+    const previousSetHeader=setHeader;
+    window.setHeader=setHeader=function(v){
+      previousSetHeader(v);
+      viewTitle.innerHTML=`${cmMat(cmViewIcon(v))}<span>${cfg[v]?.[1]||'RESUMEN'}</span>`;
+      cmDecorateSidebar();
+    };
+  }
+  if(typeof renderView==='function'){
+    const previousRenderView=renderView;
+    window.renderView=renderView=async function(v){
+      const result=await previousRenderView(v);
+      requestAnimationFrame(cmAfterRender);
+      return result;
+    };
+  }
+  requestAnimationFrame(cmAfterRender);
+})();

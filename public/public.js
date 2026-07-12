@@ -156,3 +156,47 @@ if(document.body && !window.__cmPublicIconObserver){
   window.__cmPublicIconObserver=true;
   new MutationObserver(()=>cmDecoratePublicActions()).observe(document.body,{childList:true,subtree:true});
 }
+
+
+/* ===== UX v20: icono real de WhatsApp en acciones públicas ===== */
+(function(){
+  const WA_ICON_SRC='/assets/icons/whatsapp.png';
+  window.cmPublicMaterialIcon=function(name){
+    if(name==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true">`;
+    return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;
+  };
+  window.cmActionIconForElement=function(el){
+    const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
+    const href=(el.getAttribute('href')||'').toLowerCase();
+    if(label.includes('whatsapp') || href.includes('wa.me')) return 'whatsapp';
+    if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
+    if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
+    if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
+    if(label.includes('editar')) return 'edit';
+    if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista')) return 'visibility';
+    return '';
+  };
+  window.cmDecoratePublicActions=function(root=document){
+    root.querySelectorAll('a.btn,button.btn,.floating-whatsapp').forEach(el=>{
+      const label=(el.dataset.originalLabel||el.textContent||el.getAttribute('aria-label')||'').trim();
+      const icon=cmActionIconForElement(el);
+      if(!icon)return;
+      el.dataset.cmDecorated='1';
+      el.dataset.originalLabel=label || el.getAttribute('aria-label') || 'Acción';
+      el.classList.add('action-icon-only');
+      el.setAttribute('aria-label',el.dataset.originalLabel);
+      el.setAttribute('title',el.dataset.originalLabel);
+      el.innerHTML=`${cmPublicMaterialIcon(icon)}<span class="sr-only">${el.dataset.originalLabel}</span>`;
+    });
+    root.querySelectorAll('.footer-contact a,.footer-credit a').forEach(el=>{
+      const icon=cmActionIconForElement(el);
+      if(!icon || el.dataset.cmInlineIcon==='1')return;
+      el.dataset.cmInlineIcon='1';
+      el.insertAdjacentHTML('afterbegin',`${cmPublicMaterialIcon(icon)} `);
+    });
+  };
+  cmPublicMaterialIcon=window.cmPublicMaterialIcon;
+  cmActionIconForElement=window.cmActionIconForElement;
+  cmDecoratePublicActions=window.cmDecoratePublicActions;
+  requestAnimationFrame(()=>cmDecoratePublicActions());
+})();
