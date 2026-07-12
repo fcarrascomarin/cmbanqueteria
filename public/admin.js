@@ -576,3 +576,123 @@ async function dashboard(){
     <div class="grid-2"><div class="card"><h3>Menú de hoy</h3>${d.todayMenu?`<p><strong>${safe(d.todayMenu.title)}</strong></p><p class="muted">${safe(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button></div><div class="card"><h3>Stock crítico</h3>${d.criticalStock.length?d.criticalStock.map(x=>`<p><span class="badge red">${x.current_stock} ${safe(x.unit)}</span> ${safe(x.name)} · mínimo: ${x.min_stock}</p>`).join(''):'<p class="muted">Sin alertas de stock.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div></div>
     <div class="grid-2" style="margin-top:18px"><div class="card"><h3>Documentos por vencer</h3>${d.expiringDocuments.length?d.expiringDocuments.map(x=>`<p><span class="badge red">${fmtDate(x.expiration_date)}</span> ${safe(x.title)}</p>`).join(''):'<p class="muted">Sin vencimientos próximos registrados.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('documents')">${cmIconHTML('Documentos CM')}</button></div><div class="card process-card-muted"><h3>Consolidación by Metamorfosis</h3><p class="muted">${current}</p><div class="summary-progress compact-progress"><strong>${c.evidenceProgress||0}%</strong><div class="progress-track"><span style="width:${c.evidenceProgress||0}%"></span></div><small>AVANCE DOCUMENTADO</small><strong class="completion-small">${c.progress||0}%</strong><div class="progress-track progress-track-secondary"><span style="width:${c.progress||0}%"></span></div><small>COMPLETITUD VALIDADA</small></div><button class="btn btn-secondary btn-small" type="button" onclick="renderView('weekly')">${cmIconHTML('Proceso Metamorfosis')}</button></div></div>`;
 }
+
+
+/* ===== UX v19: Material Symbols, panel compacto y acciones icon-only ===== */
+const CM_MATERIAL_ICONS={
+  dashboard:'dashboard',operations:'restaurant',menus:'menu_book',kitchenMinutas:'list_alt',screenMedia:'smart_display',quotes:'request_quote',expenses:'payments',purchases:'receipt_long',suppliers:'local_shipping',inventory:'inventory_2',rations:'calculate',observations:'edit_note',staff:'groups',documents:'folder_open',weekly:'verified',
+  'Agregar gasto':'add_circle','Compra manual':'edit_note','Compra por imagen':'add_photo_alternate','Proveedores':'local_shipping','Agregar producto':'add_box','Crear menú diario':'restaurant_menu','Crear minuta semanal':'list_alt','Calcular raciones':'calculate','Agregar cotización':'request_quote','Agregar persona':'person_add','Agregar documento':'note_add','Agregar observación':'edit_note','Agregar video/imagen':'perm_media','Nueva reserva/retiro':'event_available','Mensaje a pantalla':'desktop_windows','Crear minuta':'playlist_add','Ingresar documento':'upload_file','Registrar hito / acta':'edit_document','Nueva cotización':'request_quote','Documentos CM':'folder_open','Proceso Metamorfosis':'verified','Abrir proceso':'open_in_new','Reservas / cocina':'restaurant','Menú del día':'menu_book','Compras':'receipt_long','Stock':'inventory_2','Pantalla restaurant':'desktop_windows','Guardar':'check','Cancelar':'close'
+};
+function cmMat(name){return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;}
+function cmViewIcon(view){return CM_MATERIAL_ICONS[view]||'dashboard';}
+function cmIcon(label){return CM_MATERIAL_ICONS[label]||CM_MATERIAL_ICONS[String(label||'').replace(/\s+/g,' ')]||'radio_button_unchecked'}
+function cmIconHTML(label){return `${cmMat(cmIcon(label))}<span>${safe(label)}</span>`}
+function cmIconOnlyHTML(icon,label){return `${cmMat(icon)}<span class="sr-only">${safe(label)}</span>`}
+function cmActionIconForElement(el){
+  const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
+  const href=(el.getAttribute('href')||'').toLowerCase();
+  if(label.includes('whatsapp') || href.includes('wa.me')) return 'chat';
+  if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
+  if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
+  if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
+  if(label.includes('editar')) return 'edit';
+  if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista previa')) return 'visibility';
+  return '';
+}
+function cmDecorateAdminActions(root=document){
+  root.querySelectorAll('a.btn,button.btn').forEach(el=>{
+    if(el.dataset.cmIconOnly==='1')return;
+    const label=(el.textContent||el.getAttribute('aria-label')||'').trim();
+    const icon=cmActionIconForElement(el);
+    if(!icon)return;
+    el.dataset.cmIconOnly='1';
+    el.dataset.originalLabel=label||el.getAttribute('aria-label')||'Acción';
+    el.classList.add('action-icon-only');
+    el.setAttribute('aria-label',el.dataset.originalLabel);
+    el.setAttribute('title',el.dataset.originalLabel);
+    el.innerHTML=cmIconOnlyHTML(icon,el.dataset.originalLabel);
+  });
+  root.querySelectorAll('.mail-info-link,.footer-contact a').forEach(el=>{
+    if(el.dataset.cmInlineIcon==='1')return;
+    const icon=cmActionIconForElement(el);
+    if(!icon)return;
+    el.dataset.cmInlineIcon='1';
+    if(!el.querySelector('.material-symbols-rounded'))el.insertAdjacentHTML('afterbegin',`${cmMat(icon)} `);
+  });
+}
+function cmDecorateSidebar(){
+  const groupIcons={inicio:'dashboard','operacion-diaria':'restaurant','comercial':'request_quote','compras-stock':'inventory_2','gestion-interna':'assignment','proceso':'verified'};
+  document.querySelectorAll('.side-group').forEach(group=>{
+    const btn=group.querySelector('.side-group-toggle');
+    if(btn && !btn.querySelector('.material-symbols-rounded')){
+      btn.innerHTML=`${cmMat(groupIcons[group.dataset.group]||'folder')}<span>${btn.textContent.trim()}</span>`;
+    }
+  });
+  document.querySelectorAll('.side-btn').forEach(btn=>{
+    if(btn.querySelector('.material-symbols-rounded'))return;
+    const icon=cmViewIcon(btn.dataset.view);
+    btn.innerHTML=`${cmMat(icon)}<span>${safe(btn.textContent.trim())}</span>`;
+  });
+}
+function cmAfterRender(){
+  cmDecorateSidebar();
+  cmDecorateAdminActions(document);
+}
+setHeader=function(v){
+  currentView=v;
+  document.querySelectorAll('.side-btn').forEach(b=>{const active=b.dataset.view===v;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});
+  syncSidebarForView(v);
+  viewKicker.textContent=cfg[v]?.[0]||'PANEL';
+  viewTitle.innerHTML=`${cmMat(cmViewIcon(v))}<span>${cfg[v]?.[1]||'RESUMEN'}</span>`;
+  viewActions.innerHTML='';
+  cmDecorateSidebar();
+}
+addAction=function(label,fn){
+  if([...viewActions.children].some(b=>b.dataset.label===label||b.textContent.trim()===label))return;
+  const b=document.createElement('button');
+  b.className='btn btn-primary';
+  b.dataset.label=label;
+  b.innerHTML=cmIconHTML(label);
+  b.onclick=fn;
+  viewActions.appendChild(b);
+}
+openForm=function(title,html,onSubmit){
+  modalForm.innerHTML=`<div><div class="kicker">REGISTRO</div><h2>${safe(title)}</h2></div>${html}<div class="modal-actions"><button class="btn btn-primary" type="submit">${cmIconHTML('Guardar')}</button><button class="btn btn-secondary" type="button" id="closeModal">${cmIconHTML('Cancelar')}</button></div>`;
+  modalForm.onsubmit=onSubmit;
+  modalForm.querySelector('#closeModal').onclick=()=>modal.close();
+  modal.showModal();
+  requestAnimationFrame(cmAfterRender);
+}
+dashboard=async function(){
+  const [d,c]=await Promise.all([api('/api/admin/dashboard'),api('/api/admin/consultation/summary')]);
+  const current=c.current?`${cmHitoLabel(c.current)} · ${safe(c.current.title)}`:'PROCESO SIN HITO ACTIVO';
+  const stat=(icon,label,value,extra='')=>`<div class="stat stat-with-icon"><span class="stat-icon material-symbols-rounded" aria-hidden="true">${icon}</span><span>${safe(label)}</span><strong>${value}</strong>${extra?`<small>${extra}</small>`:''}</div>`;
+  content.innerHTML=`
+    <section class="daily-hero-card compact-daily-hero">
+      <div><div class="kicker">OPERACIÓN DIARIA</div><h3>PANEL DE CONTROL CM</h3><p>Accesos rápidos para la administración diaria. El proceso by Metamorfosis queda al final del menú porque es temporal y se cerrará cuando termine la consolidación.</p></div>
+      <a class="mail-info-link" href="mailto:contacto@cmbanqueteria.cl"><span class="material-symbols-rounded" aria-hidden="true">mail</span><span>contacto@cmbanqueteria.cl</span></a>
+    </section>
+    <div class="quick-actions daily-actions"><button class="btn btn-primary" type="button" onclick="renderView('operations')">${cmIconHTML('Reservas / cocina')}</button><button class="btn btn-primary" type="button" onclick="renderView('quotes')">${cmIconHTML('Nueva cotización')}</button><button class="btn btn-secondary" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button><button class="btn btn-secondary" type="button" onclick="renderView('purchases')">${cmIconHTML('Compras')}</button><button class="btn btn-secondary" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div>
+    <div class="stat-grid stat-grid-icons">${stat('payments','Gastos últimos 7 días',money(d.weekExpenses))}${stat('calendar_month','Gastos del mes',money(d.monthExpenses))}${stat('request_quote','Cotizaciones pendientes',d.pendingQuotes)}${stat('warning','Stock crítico',d.criticalStock.length)}${stat('edit_note','Observaciones abiertas',d.openObservations||0)}${stat('smart_display','Videos activos',d.activeMedia||0)}</div>
+    <div class="dashboard-columns"><div class="card"><h3>MENÚ DE HOY</h3>${d.todayMenu?`<p><strong>${safe(d.todayMenu.title)}</strong></p><p class="muted">${safe(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button></div><div class="card"><h3>STOCK CRÍTICO</h3>${d.criticalStock.length?d.criticalStock.slice(0,4).map(x=>`<p><span class="badge red">${x.current_stock} ${safe(x.unit)}</span> ${safe(x.name)} · mínimo: ${x.min_stock}</p>`).join(''):'<p class="muted">Sin alertas de stock.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div><div class="card"><h3>DOCUMENTOS POR VENCER</h3>${d.expiringDocuments.length?d.expiringDocuments.slice(0,4).map(x=>`<p><span class="badge red">${fmtDate(x.expiration_date)}</span> ${safe(x.title)}</p>`).join(''):'<p class="muted">Sin vencimientos próximos registrados.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('documents')">${cmIconHTML('Documentos CM')}</button></div><div class="card process-card-muted"><h3>CONSOLIDACIÓN BY METAMORFOSIS</h3><p class="muted">${current}</p><div class="summary-progress compact-progress"><strong>${c.evidenceProgress||0}%</strong><div class="progress-track"><span style="width:${c.evidenceProgress||0}%"></span></div><small>AVANCE DOCUMENTADO</small><strong class="completion-small">${c.progress||0}%</strong><div class="progress-track progress-track-secondary"><span style="width:${c.progress||0}%"></span></div><small>COMPLETITUD VALIDADA</small></div><button class="btn btn-secondary btn-small" type="button" onclick="renderView('weekly')">${cmIconHTML('Proceso Metamorfosis')}</button></div></div>`;
+}
+documents=async function(){
+  addAction('Agregar documento',async()=>{const s=cache.staff||(await api('/api/admin/staff')).items;const opts=['<option value="">Empresa / general</option>'].concat(s.map(p=>`<option value="${p.id}">${safe(p.full_name)}</option>`)).join('');openForm('Agregar documento',`<div class="two-cols">${field('title','Título')}${field('document_type','Tipo documento')}</div><div class="two-cols">${selectField('owner_type','Asociado a',['empresa','personal'])}<div class="form-line"><label>Persona</label><select name="staff_id">${opts}</select></div></div><div class="two-cols">${field('document_date','Fecha documento','date')}${field('expiration_date','Vencimiento','date')}</div>${field('file_url','Link al archivo')}${textArea('notes','Observaciones')}<div class="notice">Para esta versión, los archivos se guardan como enlace. Se recomienda usar Drive o carpeta documental ordenada.</div>`,async e=>{e.preventDefault();await api('/api/admin/documents',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget).entries()))});modal.close();documents()})});
+  const d=await api('/api/admin/documents');
+  const items=d.items||[];
+  const empresa=items.filter(x=>(x.owner_type||'empresa')==='empresa');
+  const personal=items.filter(x=>(x.owner_type||'')==='personal');
+  const renderList=(title,icon,list)=>`<article class="doc-column card"><div class="doc-column-head"><span class="material-symbols-rounded" aria-hidden="true">${icon}</span><div><h3>${title}</h3><small>${list.length} registros</small></div></div>${table(['Documento','Tipo','Vencimiento','Archivo','Acciones'],list.map(x=>`<tr><td><strong>${safe(x.title)}</strong>${x.notes?`<br><small>${safe(x.notes)}</small>`:''}</td><td>${safe(x.document_type||'')}</td><td>${x.expiration_date?`<span class="badge red">${fmtDate(x.expiration_date)}</span>`:''}</td><td>${x.file_url?`<a class="btn btn-secondary btn-small" href="${safe(x.file_url)}" target="_blank" rel="noopener">Ver</a>`:''}</td><td class="row-actions"><button class="btn btn-danger btn-small" onclick="removeRow('documents',${x.id})">Eliminar</button></td></tr>`))}</article>`;
+  content.innerHTML=`<section class="documents-board"><div class="notice notice-soft"><strong>BIBLIOTECA DOCUMENTAL CM.</strong> Separada por procedencia para leer la página en columnas. Si la lista crece, cada columna se desplaza de forma independiente.</div><div class="documents-columns">${renderList('EMPRESA / GENERAL','business',empresa)}${renderList('PERSONAL','groups',personal)}</div></section>`;
+}
+const cmRenderViewV19=renderView;
+renderView=async function(v){
+  const result=await cmRenderViewV19(v);
+  requestAnimationFrame(cmAfterRender);
+  return result;
+}
+cmAfterRender();
+if(document.body && !window.__cmAdminIconObserver){
+  window.__cmAdminIconObserver=true;
+  new MutationObserver(()=>cmAfterRender()).observe(document.body,{childList:true,subtree:true});
+}

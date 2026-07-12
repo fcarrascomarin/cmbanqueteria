@@ -113,3 +113,46 @@ function setupQuoteStepper(){
 setupQuoteStepper();
 
 loadTodayMenu();
+
+
+/* ===== UX v19: Material Symbols y acciones icon-only selectivas ===== */
+function cmPublicMaterialIcon(name){
+  return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;
+}
+function cmActionIconForElement(el){
+  const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
+  const href=(el.getAttribute('href')||'').toLowerCase();
+  if(label.includes('whatsapp') || href.includes('wa.me')) return 'chat';
+  if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
+  if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
+  if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
+  if(label.includes('editar')) return 'edit';
+  if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista')) return 'visibility';
+  return '';
+}
+function cmDecoratePublicActions(root=document){
+  root.querySelectorAll('a.btn,button.btn,.floating-whatsapp').forEach(el=>{
+    if(el.dataset.cmDecorated==='1')return;
+    const label=(el.textContent||el.getAttribute('aria-label')||'').trim();
+    const icon=cmActionIconForElement(el);
+    if(!icon)return;
+    el.dataset.cmDecorated='1';
+    el.dataset.originalLabel=label || el.getAttribute('aria-label') || 'Acción';
+    el.classList.add('action-icon-only');
+    el.setAttribute('aria-label',el.dataset.originalLabel);
+    el.setAttribute('title',el.dataset.originalLabel);
+    el.innerHTML=`${cmPublicMaterialIcon(icon)}<span class="sr-only">${el.dataset.originalLabel}</span>`;
+  });
+  root.querySelectorAll('.footer-contact a,.footer-credit a').forEach(el=>{
+    if(el.dataset.cmInlineIcon==='1')return;
+    const icon=cmActionIconForElement(el);
+    if(!icon)return;
+    el.dataset.cmInlineIcon='1';
+    el.insertAdjacentHTML('afterbegin',`${cmPublicMaterialIcon(icon)} `);
+  });
+}
+cmDecoratePublicActions();
+if(document.body && !window.__cmPublicIconObserver){
+  window.__cmPublicIconObserver=true;
+  new MutationObserver(()=>cmDecoratePublicActions()).observe(document.body,{childList:true,subtree:true});
+}
