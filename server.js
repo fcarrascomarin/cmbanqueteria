@@ -5,15 +5,60 @@ const {Pool}=require('pg');
 const app=express(); 
 app.set("trust proxy", 1);
 
+const PUBLIC_DIR = path.join(__dirname, 'public');
+
 const PORT = process.env.PORT || 3000;
 const SITE_URL = process.env.SITE_URL || `http://localhost:${PORT}`;
-const pool=new Pool({connectionString:process.env.DATABASE_URL, ssl:process.env.DATABASE_URL?.includes('neon.tech')?{rejectUnauthorized:false}:undefined});
+function buildPoolConfig(){
+  const connectionString=process.env.DATABASE_URL;
+  if(!connectionString) return {};
+  try{
+    const url=new URL(connectionString);
+    if(process.env.NODE_ENV==='production' && url.searchParams.get('sslmode')==='require'){
+      url.searchParams.set('sslmode','verify-full');
+    }
+    return {connectionString:url.toString()};
+  }catch{
+    return {connectionString,ssl:process.env.NODE_ENV==='production'?{rejectUnauthorized:false}:undefined};
+  }
+}
+const pool=new Pool(buildPoolConfig());
 app.use(cors()); app.use(express.json({limit:'15mb'})); app.use(express.urlencoded({extended:true}));
-app.use(session({name:'cm_admin_sid',secret:process.env.SESSION_SECRET||'dev-secret',resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:SITE_URL.startsWith('https://'),maxAge:1000*60*60*8}}));
-app.use(express.static('public',{
+
+const sessionConfig={
+  name:'cm_admin_sid',
+  secret:process.env.SESSION_SECRET||'dev-secret',
+  resave:false,
+  saveUninitialized:false,
+  cookie:{
+    httpOnly:true,
+    sameSite:'lax',
+    secure:process.env.NODE_ENV==='production'||SITE_URL.startsWith('https://'),
+    maxAge:1000*60*60*8
+  }
+};
+try{
+  if(process.env.DATABASE_URL){
+    const PgSession=require('connect-pg-simple')(session);
+    sessionConfig.store=new PgSession({pool,tableName:'user_sessions',createTableIfMissing:true});
+  }
+}catch(e){
+  console.warn('No se pudo activar sesión persistente en Postgres. Se usará MemoryStore temporal:',e.message);
+}
+app.use(session(sessionConfig));
+
+app.get('/healthz',(req,res)=>res.status(200).json({ok:true,service:'cm-banqueteria',time:new Date().toISOString()}));
+app.get('/',(req,res)=>{
+  res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.sendFile(path.join(PUBLIC_DIR,'index.html'));
+});
+app.use(express.static(PUBLIC_DIR,{
   etag:false,
   maxAge:0,
-  setHeaders(res,filePath){if(/\.(?:html|js)$/i.test(filePath))res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate')}
+  setHeaders(res,filePath){
+    if(/\.(?:html|css|js)$/i.test(filePath))res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
+    else if(/\.(?:mp4|webm|png|jpe?g|webp|svg|ico)$/i.test(filePath))res.setHeader('Cache-Control','public, max-age=3600');
+  }
 }));
 const schema=`
 

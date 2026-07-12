@@ -78,3 +78,8 @@ npm run dev
 Esta versión reemplaza la lógica rígida de “Semana 1 a Semana 6” por el módulo **Proceso de Regularización y Consolidación CM by Metamorfosis Lab**. El proceso queda organizado por hitos, con trazabilidad de hitos realizados, pendientes inmediatos, preparación sanitaria, Drive como respaldo, biblioteca documental, actas y cotizaciones vinculadas al correo institucional `contacto@cmbanqueteria.cl`.
 
 La vista actual está pensada para Claudia + Metamorfosis. La visual de trabajadoras debe desarrollarse después como pantalla separada y mucho más simple.
+
+
+## Deploy v21
+
+Esta versión fuerza la lectura de `public/index.html` desde la raíz, desactiva caché para HTML/CSS/JS y agrega `/healthz` para comprobar que el servicio está vivo. En Render mantener Root Directory vacío, Build Command `npm install` y Start Command `npm start`.
