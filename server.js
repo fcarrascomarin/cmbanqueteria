@@ -53,11 +53,25 @@ app.get('/',(req,res)=>{
   res.sendFile(path.join(PUBLIC_DIR,'index.html'));
 });
 app.use(express.static(PUBLIC_DIR,{
-  etag:false,
-  maxAge:0,
+  etag:true,
+  maxAge:'1h',
   setHeaders(res,filePath){
-    if(/\.(?:html|css|js)$/i.test(filePath))res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
-    else if(/\.(?:mp4|webm|png|jpe?g|webp|svg|ico)$/i.test(filePath))res.setHeader('Cache-Control','public, max-age=3600');
+    if(/\.html$/i.test(filePath)){
+      res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
+      return;
+    }
+    if(/\.(?:css|js)$/i.test(filePath)){
+      res.setHeader('Cache-Control','public, max-age=3600, must-revalidate');
+      return;
+    }
+    if(/\.(?:mp4|webm)$/i.test(filePath)){
+      res.setHeader('Cache-Control','public, max-age=604800, immutable');
+      res.setHeader('Accept-Ranges','bytes');
+      return;
+    }
+    if(/\.(?:png|jpe?g|webp|svg|ico)$/i.test(filePath)){
+      res.setHeader('Cache-Control','public, max-age=604800, immutable');
+    }
   }
 }));
 const schema=`
