@@ -1,8 +1,11 @@
 cfg.kitchenMinutas=['Cocina','Minutas de preparación'];
 const kitchenBaseRenderView=renderView;
 renderView=async function(view){
-  if(view==='kitchenMinutas'){setHeader(view);return kitchenMinutas()}
-  return kitchenBaseRenderView(view);
+  let result;
+  if(view==='kitchenMinutas'){setHeader(view);result=await kitchenMinutas();requestAnimationFrame(()=>window.cmAdminAfterRender?.());return result}
+  result=await kitchenBaseRenderView(view);
+  requestAnimationFrame(()=>window.cmAdminAfterRender?.());
+  return result;
 };
 
 function minutaStatusBadge(status){

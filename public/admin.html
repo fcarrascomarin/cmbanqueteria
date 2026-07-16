@@ -6,11 +6,8 @@
   <title>Panel interno · CM Banquetería</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
-  <link rel="preload" href="/assets/menu-template.png?v=20260623-consultoria" as="image" type="image/png">
-  <link rel="preload" href="/assets/menu-instagram-template.png?v=20260622" as="image" type="image/png">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=20260712-icons-v22">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css?v=20260714-perf-v23">
 </head>
 <body>
   <div id="loginView" class="login-page">
@@ -19,11 +16,11 @@
       <div><div class="kicker">Acceso interno</div><h2>CM Administración</h2><p class="muted">Panel privado para administrar la operación del restaurant.</p></div>
       <div class="form-line"><label>Usuario</label><input name="user" type="email" required></div>
       <div class="form-line"><label>Contraseña</label><input name="password" type="password" required></div>
-      <button class="btn btn-primary" data-icon="→" type="submit">Ingresar</button><a class="btn btn-secondary" data-icon="↩" href="/">Volver a la web</a>
+      <button class="btn btn-primary" type="submit">Ingresar</button><a class="btn btn-secondary" href="/">Volver a la web</a>
     </form>
   </div>
   <div id="adminView" class="hidden">
-    <header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel interno<br><small>Administración</small></span></a><div style="display:flex;gap:10px"><a class="btn btn-secondary" data-icon="▣" href="/pantalla.html" target="_blank">Pantalla restaurant</a><a class="btn btn-secondary" data-icon="↗" href="/" target="_blank">Ver web</a><button class="btn btn-primary" data-icon="⏻" id="logoutBtn">Salir</button></div></div></header>
+    <header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel interno<br><small>Administración</small></span></a><div style="display:flex;gap:10px"><a class="btn btn-secondary" href="/pantalla.html" target="_blank">Pantalla restaurant</a><a class="btn btn-secondary" href="/" target="_blank">Ver web</a><button class="btn btn-primary" id="logoutBtn">Salir</button></div></div></header>
     <div class="admin-shell">
       <aside class="sidebar">
         <h3>Módulos</h3>
@@ -77,9 +74,9 @@
     </div>
   </div>
   <dialog class="modal" id="modal"><form class="modal-content form-grid" id="modalForm"></form></dialog>
-  <script src="/menu-graphic.js?v=20260712-icons-v22"></script>
-  <script src="/admin.js?v=20260712-icons-v22"></script>
-  <script src="/purchases.js?v=20260625-final"></script>
-  <script src="/kitchen-minutas.js?v=20260625-final"></script>
+  <script src="/menu-graphic.js?v=20260714-perf-v23"></script>
+  <script src="/admin.js?v=20260714-perf-v23"></script>
+  <script src="/purchases.js?v=20260714-perf-v23"></script>
+  <script src="/kitchen-minutas.js?v=20260714-perf-v23"></script>
 </body>
 </html>

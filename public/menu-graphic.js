@@ -4,14 +4,14 @@
 
   function loadTemplate(format){
     const portrait=format==='portrait';
-    if(portrait&&!portraitTemplatePromise)portraitTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-instagram-template.png?v=20260622-final'});
-    if(!portrait&&!landscapeTemplatePromise)landscapeTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-template.png?v=20260623-consultoria'});
+    if(portrait&&!portraitTemplatePromise)portraitTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-instagram-template.png?v=20260714-perf-v23'});
+    if(!portrait&&!landscapeTemplatePromise)landscapeTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/menu-template.png?v=20260714-perf-v23'});
     return portrait?portraitTemplatePromise:landscapeTemplatePromise;
   }
 
   let sweetTemplatePromise;
   function loadSweetTemplate(){
-    if(!sweetTemplatePromise)sweetTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/sweet-promo-template.png?v=20260625-final'});
+    if(!sweetTemplatePromise)sweetTemplatePromise=new Promise(resolve=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='/assets/sweet-promo-template.png?v=20260714-perf-v23'});
     return sweetTemplatePromise;
   }
 

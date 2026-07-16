@@ -66,7 +66,7 @@ document.querySelector('#quoteForm')?.addEventListener('submit',async e=>{
 
   const whatsappWindow=window.open(cmWhatsappUrl(quoteMessage(payload)),'_blank','noopener');
   try{
-    if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-icon" aria-hidden="true">⌛</span> Registrando...'}
+    if(btn){btn.disabled=true;btn.innerHTML='<span class="material-symbols-rounded" aria-hidden="true">hourglass_top</span><span>Registrando...</span>'}
     const res=await fetch('/api/public/quotes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(res.ok){
       form.reset();
@@ -79,7 +79,7 @@ document.querySelector('#quoteForm')?.addEventListener('submit',async e=>{
     if(!whatsappWindow) alert('No se pudo abrir WhatsApp automáticamente. Usa el botón WhatsApp directo.');
   }
   finally{
-    if(btn){btn.disabled=false;btn.innerHTML='<span class="btn-icon" aria-hidden="true">✓</span> Enviar por WhatsApp'}
+    if(btn){btn.disabled=false;btn.innerHTML='<img class="brand-icon-img whatsapp-brand" src="/assets/icons/whatsapp.png" alt="" aria-hidden="true"><span>Enviar por WhatsApp</span>'}
   }
 });
 
@@ -110,152 +110,121 @@ function setupQuoteStepper(){
   show(0);
 }
 
-setupQuoteStepper();
-
-loadTodayMenu();
 
 
-/* ===== UX v19: Material Symbols y acciones icon-only selectivas ===== */
-function cmPublicMaterialIcon(name){
+
+/* ===== Performance v23: carga diferida de menú, videos e iconografía limpia ===== */
+const CM_WA_ICON_SRC='/assets/icons/whatsapp.png';
+const CM_IG_ICON_SRC='/assets/icons/instagram.svg';
+
+function cmSymbol(name){
   return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;
 }
-function cmActionIconForElement(el){
-  const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
+function cmSafeLabel(value){
+  return String(value||'').replace(/[&<>\"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+function cmButtonLabel(el){
+  return (el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').replace(/\s+/g,' ').trim();
+}
+function cmStrategicAction(el){
+  const label=cmButtonLabel(el).toLowerCase();
   const href=(el.getAttribute('href')||'').toLowerCase();
-  if(label.includes('whatsapp') || href.includes('wa.me')) return 'chat';
-  if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
-  if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
-  if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
-  if(label.includes('editar')) return 'edit';
-  if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista')) return 'visibility';
-  return '';
+  if(label.includes('whatsapp') || href.includes('wa.me')) return {type:'whatsapp'};
+  if(label.includes('instagram') || href.includes('instagram.com')) return {type:'instagram'};
+  if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return {type:'mail',symbol:'mail'};
+  if(label.includes('llamar') || label.includes('teléfono') || href.startsWith('tel:')) return {type:'call',symbol:'call'};
+  if(/^ver\b/.test(label) || label.includes('abrir') || label.includes('vista')) return {type:'view',symbol:'visibility'};
+  if(label.includes('descargar') || label.includes('download') || label==='pdf') return {type:'download',symbol:'download'};
+  if(label.includes('editar')) return {type:'edit',symbol:'edit'};
+  if(label.includes('eliminar') || label.includes('borrar')) return {type:'delete',symbol:'delete'};
+  return null;
+}
+function cmActionIconMarkup(action,label){
+  const safe=cmSafeLabel(label);
+  if(action.type==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${CM_WA_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safe}</span>`;
+  if(action.type==='instagram') return `<img class="brand-icon-img local-action-icon" src="${CM_IG_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safe}</span>`;
+  return `${cmSymbol(action.symbol)}<span class="sr-only">${safe}</span>`;
 }
 function cmDecoratePublicActions(root=document){
-  root.querySelectorAll('a.btn,button.btn,.floating-whatsapp').forEach(el=>{
-    if(el.dataset.cmDecorated==='1')return;
-    const label=(el.textContent||el.getAttribute('aria-label')||'').trim();
-    const icon=cmActionIconForElement(el);
-    if(!icon)return;
-    el.dataset.cmDecorated='1';
-    el.dataset.originalLabel=label || el.getAttribute('aria-label') || 'Acción';
-    el.classList.add('action-icon-only');
-    el.setAttribute('aria-label',el.dataset.originalLabel);
-    el.setAttribute('title',el.dataset.originalLabel);
-    el.innerHTML=`${cmPublicMaterialIcon(icon)}<span class="sr-only">${el.dataset.originalLabel}</span>`;
-  });
-  root.querySelectorAll('.footer-contact a,.footer-credit a').forEach(el=>{
-    if(el.dataset.cmInlineIcon==='1')return;
-    const icon=cmActionIconForElement(el);
-    if(!icon)return;
-    el.dataset.cmInlineIcon='1';
-    el.insertAdjacentHTML('afterbegin',`${cmPublicMaterialIcon(icon)} `);
-  });
-}
-cmDecoratePublicActions();
-if(document.body && !window.__cmPublicIconObserver){
-  window.__cmPublicIconObserver=true;
-  new MutationObserver(()=>cmDecoratePublicActions()).observe(document.body,{childList:true,subtree:true});
-}
-
-
-/* ===== UX v20: icono real de WhatsApp en acciones públicas ===== */
-(function(){
-  const WA_ICON_SRC='/assets/icons/whatsapp.png';
-  window.cmPublicMaterialIcon=function(name){
-    if(name==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true">`;
-    return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;
-  };
-  window.cmActionIconForElement=function(el){
-    const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
-    const href=(el.getAttribute('href')||'').toLowerCase();
-    if(label.includes('whatsapp') || href.includes('wa.me')) return 'whatsapp';
-    if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
-    if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
-    if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
-    if(label.includes('editar')) return 'edit';
-    if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista')) return 'visibility';
-    return '';
-  };
-  window.cmDecoratePublicActions=function(root=document){
-    root.querySelectorAll('a.btn,button.btn,.floating-whatsapp').forEach(el=>{
-      const label=(el.dataset.originalLabel||el.textContent||el.getAttribute('aria-label')||'').trim();
-      const icon=cmActionIconForElement(el);
-      if(!icon)return;
-      el.dataset.cmDecorated='1';
-      el.dataset.originalLabel=label || el.getAttribute('aria-label') || 'Acción';
-      el.classList.add('action-icon-only');
-      el.setAttribute('aria-label',el.dataset.originalLabel);
-      el.setAttribute('title',el.dataset.originalLabel);
-      el.innerHTML=`${cmPublicMaterialIcon(icon)}<span class="sr-only">${el.dataset.originalLabel}</span>`;
-    });
-    root.querySelectorAll('.footer-contact a,.footer-credit a').forEach(el=>{
-      const icon=cmActionIconForElement(el);
-      if(!icon || el.dataset.cmInlineIcon==='1')return;
-      el.dataset.cmInlineIcon='1';
-      el.insertAdjacentHTML('afterbegin',`${cmPublicMaterialIcon(icon)} `);
-    });
-  };
-  cmPublicMaterialIcon=window.cmPublicMaterialIcon;
-  cmActionIconForElement=window.cmActionIconForElement;
-  cmDecoratePublicActions=window.cmDecoratePublicActions;
-  requestAnimationFrame(()=>cmDecoratePublicActions());
-})();
-
-
-/* ===== UX v22: iconos estratégicos Google Fonts + WhatsApp local ===== */
-(function(){
-  const WA_ICON_SRC='/assets/icons/whatsapp.png';
-  const IG_ICON_SRC='/assets/icons/instagram.svg';
-  const ACTIONS=[
-    {type:'whatsapp',test:(label,href)=>label.includes('whatsapp')||href.includes('wa.me')},
-    {type:'mail',test:(label,href)=>label.includes('correo')||label.includes('email')||href.startsWith('mailto:')||label.includes('@')},
-    {type:'call',test:(label,href)=>label.includes('llamar')||label.includes('teléfono')||href.startsWith('tel:')},
-    {type:'instagram',test:(label,href)=>label.includes('instagram')||href.includes('instagram.com')},
-    {type:'visibility',test:(label)=>/^ver\b/.test(label)||label.includes(' vista')||label.includes('abrir')},
-    {type:'download',test:(label)=>label.includes('descargar')||label==='pdf'||label.includes('download')},
-    {type:'edit',test:(label)=>label.includes('editar')},
-    {type:'delete',test:(label)=>label.includes('eliminar')||label.includes('borrar')}
-  ];
-  function labelOf(el){return (el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').replace(/\s+/g,' ').trim();}
-  function actionFor(el){
-    const label=labelOf(el).toLowerCase();
-    const href=(el.getAttribute('href')||'').toLowerCase();
-    return ACTIONS.find(a=>a.test(label,href))?.type||'';
-  }
-  function symbol(name){return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;}
-  function iconMarkup(type,label){
-    if(type==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${label}</span>`;
-    if(type==='instagram') return `<img class="brand-icon-img local-action-icon" src="${IG_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${label}</span>`;
-    return `${symbol(type)}<span class="sr-only">${label}</span>`;
-  }
-  function shouldKeepText(el,type){
-    // Main narrative CTAs keep their word when the action is not a contact/action utility.
-    if(el.closest('.hero-actions') && !['whatsapp','mail','call','instagram'].includes(type)) return true;
-    if(el.closest('.nav-links')) return true;
-    return false;
-  }
-  function decorate(root=document){
-    root.querySelectorAll('a.btn,button.btn,.floating-whatsapp,.footer-contact a').forEach(el=>{
-      const type=actionFor(el);
-      if(!type) return;
-      const label=labelOf(el)||'Acción';
-      el.dataset.originalLabel=label;
-      el.removeAttribute('data-icon');
-      el.setAttribute('aria-label',label);
-      el.setAttribute('title',label);
-      el.classList.add('uses-strategic-icon',`action-${type}`);
-      if(shouldKeepText(el,type)){
-        if(!el.querySelector('.material-symbols-rounded,.brand-icon-img')) el.insertAdjacentHTML('afterbegin',iconMarkup(type,label).replace(/<span class="sr-only">.*?<\/span>/,''));
-        return;
+  root.querySelectorAll('a.btn,button.btn,.floating-whatsapp,.footer-contact a').forEach(el=>{
+    const action=cmStrategicAction(el);
+    if(!action) return;
+    const label=cmButtonLabel(el)||'Acción';
+    el.dataset.originalLabel=label;
+    el.removeAttribute('data-icon');
+    el.setAttribute('aria-label',label);
+    el.setAttribute('title',label);
+    el.classList.add('uses-strategic-icon',`action-${action.type}`);
+    const keepText=el.closest('.hero-actions') && !['whatsapp','mail','call','instagram'].includes(action.type);
+    if(keepText){
+      if(!el.querySelector('.material-symbols-rounded,.brand-icon-img')){
+        if(action.type==='whatsapp') el.insertAdjacentHTML('afterbegin',`<img class="brand-icon-img whatsapp-brand" src="${CM_WA_ICON_SRC}" alt="" aria-hidden="true">`);
+        else if(action.type==='instagram') el.insertAdjacentHTML('afterbegin',`<img class="brand-icon-img local-action-icon" src="${CM_IG_ICON_SRC}" alt="" aria-hidden="true">`);
+        else el.insertAdjacentHTML('afterbegin',cmSymbol(action.symbol));
       }
-      el.classList.add('action-icon-only');
-      el.innerHTML=iconMarkup(type,label);
+      return;
+    }
+    el.classList.add('action-icon-only');
+    el.innerHTML=cmActionIconMarkup(action,label);
+  });
+}
+
+function setupLazyVideos(){
+  document.querySelectorAll('.lazy-video-card[data-video-src]').forEach(card=>{
+    const trigger=card.querySelector('.lazy-video-trigger');
+    if(!trigger || trigger.dataset.ready==='1') return;
+    trigger.dataset.ready='1';
+    const play=()=>{
+      if(card.classList.contains('is-playing')) return;
+      const src=card.dataset.videoSrc;
+      const poster=card.dataset.videoPoster||'';
+      const label=card.dataset.videoLabel||'Video promocional CM';
+      const video=document.createElement('video');
+      video.src=src;
+      video.poster=poster;
+      video.controls=true;
+      video.playsInline=true;
+      video.preload='auto';
+      video.setAttribute('aria-label',label);
+      video.className='lazy-video-player';
+      card.classList.add('is-playing');
+      trigger.replaceWith(video);
+      const attempt=video.play();
+      if(attempt && typeof attempt.catch==='function') attempt.catch(()=>{});
+    };
+    trigger.addEventListener('click',play,{once:true});
+    trigger.addEventListener('keydown',event=>{
+      if(event.key==='Enter' || event.key===' '){
+        event.preventDefault();
+        play();
+      }
     });
+  });
+}
+
+function setupDeferredMenu(){
+  const box=document.querySelector('#todayMenu, #menu-del-dia');
+  if(!box) return;
+  let loaded=false;
+  const run=()=>{
+    if(loaded) return;
+    loaded=true;
+    loadTodayMenu().then(()=>cmDecoratePublicActions(document)).catch(()=>{});
+  };
+  if('IntersectionObserver' in window){
+    const observer=new IntersectionObserver(entries=>{
+      if(entries.some(entry=>entry.isIntersecting)){
+        observer.disconnect();
+        run();
+      }
+    },{rootMargin:'260px 0px'});
+    observer.observe(box);
+  }else{
+    window.addEventListener('load',()=>setTimeout(run,900),{once:true});
   }
-  window.cmDecoratePublicActionsV22=decorate;
-  requestAnimationFrame(()=>decorate(document));
-  if(document.body && !window.__cmPublicV22Observer){
-    window.__cmPublicV22Observer=true;
-    new MutationObserver(()=>decorate(document)).observe(document.body,{childList:true,subtree:true});
-  }
-})();
+}
+
+setupQuoteStepper();
+setupLazyVideos();
+setupDeferredMenu();
+requestAnimationFrame(()=>cmDecoratePublicActions(document));

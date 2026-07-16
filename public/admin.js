@@ -531,122 +531,104 @@ initSidebar();
 checkAuth();
 
 
-/* ===== UX final v18: iconos, menú por uso diario y dashboard operativo ===== */
-var CM_ADMIN_ICONS={
-  'Agregar gasto':'＋','Compra manual':'✎','Compra por imagen':'▧','Proveedores':'☷','Agregar producto':'＋','Crear menú diario':'☰','Crear minuta semanal':'☰','Calcular raciones':'◉','Agregar cotización':'✉','Agregar persona':'👤','Agregar documento':'▤','Agregar observación':'✎','Agregar video/imagen':'▣','Nueva reserva/retiro':'☑','Mensaje a pantalla':'✎','Crear minuta':'☰','Ingresar documento':'▧','Registrar hito / acta':'✎','Nueva cotización':'✉','Documentos CM':'▤','Proceso Metamorfosis':'◆','Abrir proceso':'↗','Reservas / cocina':'☑','Menú del día':'☰','Compras':'▧','Stock':'⚠','Pantalla restaurant':'▣'
-};
-function cmIcon(label){return CM_ADMIN_ICONS[label]||CM_ADMIN_ICONS[label?.replace?.(/\s+/g,' ') ]||'•'}
-function cmIconHTML(label){return `<span class="ui-icon" aria-hidden="true">${cmIcon(label)}</span><span>${safe(label)}</span>`}
-function addAction(label,fn){
-  if([...viewActions.children].some(b=>b.dataset.label===label||b.textContent.trim()===label))return;
-  const b=document.createElement('button');
-  b.className='btn btn-primary';
-  b.dataset.label=label;
-  b.innerHTML=cmIconHTML(label);
-  b.onclick=fn;
-  viewActions.appendChild(b);
-}
-Object.assign(cfg,{dashboard:['OPERACIÓN DIARIA','PANEL DIARIO'],operations:['OPERACIÓN DIARIA','RESERVAS / COCINA'],menus:['COCINA','MENÚ DEL DÍA'],kitchenMinutas:['COCINA','MINUTAS COCINA'],screenMedia:['PANTALLAS','VIDEOS E IMÁGENES'],quotes:['COMERCIAL','COTIZACIONES'],expenses:['COMPRAS Y STOCK','GASTOS / COMPRAS'],purchases:['COMPRAS Y STOCK','COMPRAS IMAGEN / MANUAL'],suppliers:['COMPRAS Y STOCK','PROVEEDORES'],inventory:['COMPRAS Y STOCK','STOCK E INSUMOS'],rations:['COSTEO','RACIONES'],observations:['GESTIÓN INTERNA','BITÁCORA DIARIA'],staff:['GESTIÓN INTERNA','PERSONAL'],documents:['GESTIÓN INTERNA','DOCUMENTOS CM'],weekly:['CONSOLIDACIÓN','PROCESO BY METAMORFOSIS']});
-function setHeader(v){
-  currentView=v;
-  document.querySelectorAll('.side-btn').forEach(b=>{const active=b.dataset.view===v;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});
-  syncSidebarForView(v);
-  viewKicker.textContent=cfg[v]?.[0]||'PANEL';
-  viewTitle.textContent=cfg[v]?.[1]||'RESUMEN';
-  viewActions.innerHTML='';
-}
-function renderView(v){setHeader(v); if(v==='dashboard')return dashboard(); if(v==='operations')return operations(); if(v==='observations')return observations(); if(v==='expenses')return expenses(); if(v==='inventory')return inventory(); if(v==='menus')return menus(); if(v==='weekly')return weekly(); if(v==='rations')return rations(); if(v==='quotes')return quotes(); if(v==='staff')return staff(); if(v==='documents')return documents(); if(v==='screenMedia')return screenMedia();}
-function openForm(title,html,onSubmit){
-  modalForm.innerHTML=`<div><div class="kicker">REGISTRO</div><h2>${safe(title)}</h2></div>${html}<div class="modal-actions"><button class="btn btn-primary" type="submit"><span class="ui-icon" aria-hidden="true">✓</span><span>Guardar</span></button><button class="btn btn-secondary" type="button" id="closeModal"><span class="ui-icon" aria-hidden="true">×</span><span>Cancelar</span></button></div>`;
-  modalForm.onsubmit=onSubmit;
-  modalForm.querySelector('#closeModal').onclick=()=>modal.close();
-  modal.showModal();
-}
-async function dashboard(){
-  const [d,c]=await Promise.all([api('/api/admin/dashboard'),api('/api/admin/consultation/summary')]);
-  const current=c.current?`${cmHitoLabel(c.current)} · ${safe(c.current.title)}`:'PROCESO SIN HITO ACTIVO';
-  const stat=(icon,label,value,extra='')=>`<div class="stat stat-with-icon"><span class="stat-icon" aria-hidden="true">${icon}</span><span>${safe(label)}</span><strong>${value}</strong>${extra?`<small>${extra}</small>`:''}</div>`;
-  content.innerHTML=`
-    <section class="daily-hero-card">
-      <div><div class="kicker">OPERACIÓN DIARIA</div><h3>PANEL DE CONTROL CM</h3><p>Accesos rápidos para la administración diaria. El proceso by Metamorfosis queda al final del menú porque es temporal y se cerrará cuando termine la consolidación.</p></div>
-      <a class="mail-info-link" href="mailto:contacto@cmbanqueteria.cl"><span class="ui-icon" aria-hidden="true">✉</span><span>contacto@cmbanqueteria.cl</span></a>
-    </section>
-    <div class="quick-actions daily-actions"><button class="btn btn-primary" type="button" onclick="renderView('operations')">${cmIconHTML('Reservas / cocina')}</button><button class="btn btn-primary" type="button" onclick="renderView('quotes')">${cmIconHTML('Nueva cotización')}</button><button class="btn btn-secondary" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button><button class="btn btn-secondary" type="button" onclick="renderView('purchases')">${cmIconHTML('Compras')}</button><button class="btn btn-secondary" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div>
-    <div class="stat-grid stat-grid-icons">${stat('↙','Gastos últimos 7 días',money(d.weekExpenses))}${stat('▣','Gastos del mes',money(d.monthExpenses))}${stat('✉','Cotizaciones pendientes',d.pendingQuotes)}${stat('⚠','Stock crítico',d.criticalStock.length)}${stat('✎','Observaciones abiertas',d.openObservations||0)}${stat('▣','Videos activos',d.activeMedia||0)}</div>
-    <div class="grid-2"><div class="card"><h3>Menú de hoy</h3>${d.todayMenu?`<p><strong>${safe(d.todayMenu.title)}</strong></p><p class="muted">${safe(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button></div><div class="card"><h3>Stock crítico</h3>${d.criticalStock.length?d.criticalStock.map(x=>`<p><span class="badge red">${x.current_stock} ${safe(x.unit)}</span> ${safe(x.name)} · mínimo: ${x.min_stock}</p>`).join(''):'<p class="muted">Sin alertas de stock.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div></div>
-    <div class="grid-2" style="margin-top:18px"><div class="card"><h3>Documentos por vencer</h3>${d.expiringDocuments.length?d.expiringDocuments.map(x=>`<p><span class="badge red">${fmtDate(x.expiration_date)}</span> ${safe(x.title)}</p>`).join(''):'<p class="muted">Sin vencimientos próximos registrados.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('documents')">${cmIconHTML('Documentos CM')}</button></div><div class="card process-card-muted"><h3>Consolidación by Metamorfosis</h3><p class="muted">${current}</p><div class="summary-progress compact-progress"><strong>${c.evidenceProgress||0}%</strong><div class="progress-track"><span style="width:${c.evidenceProgress||0}%"></span></div><small>AVANCE DOCUMENTADO</small><strong class="completion-small">${c.progress||0}%</strong><div class="progress-track progress-track-secondary"><span style="width:${c.progress||0}%"></span></div><small>COMPLETITUD VALIDADA</small></div><button class="btn btn-secondary btn-small" type="button" onclick="renderView('weekly')">${cmIconHTML('Proceso Metamorfosis')}</button></div></div>`;
-}
 
-
-/* ===== UX v19: Material Symbols, panel compacto y acciones icon-only ===== */
-const CM_MATERIAL_ICONS={
-  dashboard:'dashboard',operations:'restaurant',menus:'menu_book',kitchenMinutas:'list_alt',screenMedia:'smart_display',quotes:'request_quote',expenses:'payments',purchases:'receipt_long',suppliers:'local_shipping',inventory:'inventory_2',rations:'calculate',observations:'edit_note',staff:'groups',documents:'folder_open',weekly:'verified',
-  'Agregar gasto':'add_circle','Compra manual':'edit_note','Compra por imagen':'add_photo_alternate','Proveedores':'local_shipping','Agregar producto':'add_box','Crear menú diario':'restaurant_menu','Crear minuta semanal':'list_alt','Calcular raciones':'calculate','Agregar cotización':'request_quote','Agregar persona':'person_add','Agregar documento':'note_add','Agregar observación':'edit_note','Agregar video/imagen':'perm_media','Nueva reserva/retiro':'event_available','Mensaje a pantalla':'desktop_windows','Crear minuta':'playlist_add','Ingresar documento':'upload_file','Registrar hito / acta':'edit_document','Nueva cotización':'request_quote','Documentos CM':'folder_open','Proceso Metamorfosis':'verified','Abrir proceso':'open_in_new','Reservas / cocina':'restaurant','Menú del día':'menu_book','Compras':'receipt_long','Stock':'inventory_2','Pantalla restaurant':'desktop_windows','Guardar':'check','Cancelar':'close'
+/* ===== Performance v23: iconografía limpia, sin observadores repetidos ===== */
+Object.assign(cfg,{
+  dashboard:['OPERACIÓN DIARIA','PANEL DIARIO'],operations:['OPERACIÓN DIARIA','RESERVAS / COCINA'],menus:['COCINA','MENÚ DEL DÍA'],kitchenMinutas:['COCINA','MINUTAS COCINA'],screenMedia:['PANTALLAS','VIDEOS E IMÁGENES'],quotes:['COMERCIAL','COTIZACIONES'],expenses:['COMPRAS Y STOCK','GASTOS / COMPRAS'],purchases:['COMPRAS Y STOCK','COMPRAS IMAGEN / MANUAL'],suppliers:['COMPRAS Y STOCK','PROVEEDORES'],inventory:['COMPRAS Y STOCK','STOCK E INSUMOS'],rations:['COSTEO','RACIONES'],observations:['GESTIÓN INTERNA','BITÁCORA DIARIA'],staff:['GESTIÓN INTERNA','PERSONAL'],documents:['GESTIÓN INTERNA','DOCUMENTOS CM'],weekly:['CONSOLIDACIÓN','PROCESO BY METAMORFOSIS']
+});
+const CM_ADMIN_WA_ICON='/assets/icons/whatsapp.png';
+const CM_ADMIN_IG_ICON='/assets/icons/instagram.svg';
+const CM_ADMIN_VIEW_ICONS={dashboard:'dashboard',operations:'table_restaurant',menus:'restaurant_menu',kitchenMinutas:'soup_kitchen',screenMedia:'smart_display',quotes:'request_quote',expenses:'payments',purchases:'receipt_long',suppliers:'local_shipping',inventory:'kitchen',rations:'calculate',observations:'edit_note',staff:'groups',documents:'folder_open',weekly:'verified'};
+const CM_ADMIN_SECTION_ICONS={inicio:'dashboard','operacion-diaria':'restaurant_menu',comercial:'request_quote','compras-stock':'shopping_cart_checkout','gestion-interna':'assignment_turned_in',proceso:'verified'};
+const CM_ADMIN_LABEL_ICONS={
+  'Panel diario':'dashboard','Reservas / Cocina':'table_restaurant','Reservas / cocina':'table_restaurant','Menú del día':'restaurant_menu','Minutas cocina':'soup_kitchen','Pantallas / videos':'smart_display','Cotizaciones':'request_quote','Gastos / compras':'payments','Compras imagen/manual':'receipt_long','Proveedores':'local_shipping','Stock e insumos':'kitchen','Costeo / raciones':'calculate','Bitácora diaria':'edit_note','Personal':'groups','Documentos CM':'folder_open','Proceso by Metamorfosis':'verified','Proceso Metamorfosis':'verified',
+  'Agregar proveedor':'local_shipping','Agregar gasto':'payments','Compra manual':'edit_note','Compra por imagen':'add_photo_alternate','Agregar producto':'add_box','Crear menú diario':'restaurant_menu','Crear minuta semanal':'soup_kitchen','Calcular raciones':'calculate','Agregar cotización':'request_quote','Nueva cotización':'request_quote','Agregar persona':'person_add','Agregar documento':'note_add','Agregar observación':'edit_note','Agregar video/imagen':'perm_media','Nueva reserva/retiro':'event_available','Mensaje a pantalla':'desktop_windows','Crear minuta':'playlist_add','Ingresar documento':'upload_file','Registrar hito / acta':'edit_document','Compras':'shopping_cart_checkout','Stock':'kitchen','Pantalla restaurant':'desktop_windows','Guardar':'check','Cancelar':'close','Salir':'logout','Ingresar':'login','Volver a la web':'home','Revisar compras':'receipt_long','Analizar documento':'document_scanner','Cerrar':'close'
 };
+function cmAdminEsc(value){return String(value||'').replace(/[&<>\"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));}
 function cmMat(name){return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;}
-function cmViewIcon(view){return CM_MATERIAL_ICONS[view]||'dashboard';}
-function cmIcon(label){return CM_MATERIAL_ICONS[label]||CM_MATERIAL_ICONS[String(label||'').replace(/\s+/g,' ')]||'radio_button_unchecked'}
-function cmIconHTML(label){return `${cmMat(cmIcon(label))}<span>${safe(label)}</span>`}
-function cmIconOnlyHTML(icon,label){return `${cmMat(icon)}<span class="sr-only">${safe(label)}</span>`}
-function cmActionIconForElement(el){
-  const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
+function cmViewIcon(view){return CM_ADMIN_VIEW_ICONS[view]||'dashboard';}
+function cmLabelIcon(label){const key=String(label||'').replace(/\s+/g,' ').trim();return CM_ADMIN_LABEL_ICONS[key]||CM_ADMIN_LABEL_ICONS[key.replace(/\s*\/\s*/g,' / ')]||'radio_button_unchecked';}
+function cmIconHTML(label){const icon=cmLabelIcon(label);return `${cmMat(icon)}<span>${cmAdminEsc(label)}</span>`;}
+function cmLabelOf(el){return (el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').replace(/\s+/g,' ').trim();}
+function cmStrategicAction(el){
+  const label=cmLabelOf(el).toLowerCase();
   const href=(el.getAttribute('href')||'').toLowerCase();
-  if(label.includes('whatsapp') || href.includes('wa.me')) return 'chat';
-  if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
-  if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
-  if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
-  if(label.includes('editar')) return 'edit';
-  if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista previa')) return 'visibility';
-  return '';
+  if(label.includes('whatsapp')||href.includes('wa.me'))return {type:'whatsapp'};
+  if(label.includes('instagram')||href.includes('instagram.com'))return {type:'instagram'};
+  if(label.includes('correo')||label.includes('email')||href.startsWith('mailto:')||label.includes('@'))return {type:'mail',symbol:'mail'};
+  if(label.includes('llamar')||label.includes('teléfono')||href.startsWith('tel:'))return {type:'call',symbol:'call'};
+  if(/^ver\b/.test(label)||label.includes('abrir')||label.includes('ficha')||label.includes('vista'))return {type:'view',symbol:'visibility'};
+  if(label.includes('descargar')||label.includes('download')||label==='pdf')return {type:'download',symbol:'download'};
+  if(label.includes('editar'))return {type:'edit',symbol:'edit'};
+  if(label.includes('eliminar')||label.includes('borrar')||label.includes('quitar'))return {type:'delete',symbol:'delete'};
+  return null;
 }
-function cmDecorateAdminActions(root=document){
-  root.querySelectorAll('a.btn,button.btn').forEach(el=>{
-    if(el.dataset.cmIconOnly==='1')return;
-    const label=(el.textContent||el.getAttribute('aria-label')||'').trim();
-    const icon=cmActionIconForElement(el);
-    if(!icon)return;
-    el.dataset.cmIconOnly='1';
-    el.dataset.originalLabel=label||el.getAttribute('aria-label')||'Acción';
-    el.classList.add('action-icon-only');
-    el.setAttribute('aria-label',el.dataset.originalLabel);
-    el.setAttribute('title',el.dataset.originalLabel);
-    el.innerHTML=cmIconOnlyHTML(icon,el.dataset.originalLabel);
-  });
-  root.querySelectorAll('.mail-info-link,.footer-contact a').forEach(el=>{
-    if(el.dataset.cmInlineIcon==='1')return;
-    const icon=cmActionIconForElement(el);
-    if(!icon)return;
-    el.dataset.cmInlineIcon='1';
-    if(!el.querySelector('.material-symbols-rounded'))el.insertAdjacentHTML('afterbegin',`${cmMat(icon)} `);
-  });
+function cmStrategicMarkup(action,label){
+  const safe=cmAdminEsc(label);
+  if(action.type==='whatsapp')return `<img class="brand-icon-img whatsapp-brand" src="${CM_ADMIN_WA_ICON}" alt="" aria-hidden="true"><span class="sr-only">${safe}</span>`;
+  if(action.type==='instagram')return `<img class="brand-icon-img local-action-icon" src="${CM_ADMIN_IG_ICON}" alt="" aria-hidden="true"><span class="sr-only">${safe}</span>`;
+  return `${cmMat(action.symbol)}<span class="sr-only">${safe}</span>`;
 }
 function cmDecorateSidebar(){
-  const groupIcons={inicio:'dashboard','operacion-diaria':'restaurant','comercial':'request_quote','compras-stock':'inventory_2','gestion-interna':'assignment','proceso':'verified'};
   document.querySelectorAll('.side-group').forEach(group=>{
     const btn=group.querySelector('.side-group-toggle');
-    if(btn && !btn.querySelector('.material-symbols-rounded')){
-      btn.innerHTML=`${cmMat(groupIcons[group.dataset.group]||'folder')}<span>${btn.textContent.trim()}</span>`;
-    }
+    if(!btn)return;
+    const label=btn.querySelector('span:last-child')?.textContent?.trim()||btn.textContent.trim();
+    btn.innerHTML=`${cmMat(CM_ADMIN_SECTION_ICONS[group.dataset.group]||'folder')}<span>${cmAdminEsc(label)}</span>`;
   });
   document.querySelectorAll('.side-btn').forEach(btn=>{
-    if(btn.querySelector('.material-symbols-rounded'))return;
-    const icon=cmViewIcon(btn.dataset.view);
-    btn.innerHTML=`${cmMat(icon)}<span>${safe(btn.textContent.trim())}</span>`;
+    const label=btn.querySelector('span:last-child')?.textContent?.trim()||btn.textContent.trim();
+    btn.innerHTML=`${cmMat(cmViewIcon(btn.dataset.view)||cmLabelIcon(label))}<span>${cmAdminEsc(label)}</span>`;
+    const active=btn.dataset.view===currentView;
+    btn.classList.toggle('active',active);
+    btn.setAttribute('aria-current',active?'page':'false');
   });
 }
-function cmAfterRender(){
-  cmDecorateSidebar();
-  cmDecorateAdminActions(document);
+function cmDecorateButtons(root=document){
+  root.querySelectorAll('a.btn,button.btn,.row-actions a,.row-actions button,.mail-info-link').forEach(el=>{
+    if(el.dataset.cmDecoratedV23==='1')return;
+    const action=cmStrategicAction(el);
+    const label=cmLabelOf(el)||'Acción';
+    el.dataset.originalLabel=label;
+    el.removeAttribute('data-icon');
+    if(action){
+      el.dataset.cmDecoratedV23='1';
+      el.setAttribute('aria-label',label);
+      el.setAttribute('title',label);
+      el.classList.add('uses-strategic-icon',`action-${action.type}`,'action-icon-only');
+      el.innerHTML=cmStrategicMarkup(action,label);
+      return;
+    }
+    const icon=cmLabelIcon(label);
+    if(icon && icon!=='radio_button_unchecked' && !el.querySelector('.material-symbols-rounded,.brand-icon-img')){
+      el.insertAdjacentHTML('afterbegin',cmMat(icon));
+      el.dataset.cmDecoratedV23='1';
+    }
+  });
 }
+function cmNormalizeTables(){
+  document.querySelectorAll('.table-wrap').forEach(wrap=>{
+    wrap.classList.add('embedded-table-wrap');
+    wrap.style.maxHeight='none';
+    wrap.style.overflowY='visible';
+  });
+}
+function cmAdminAfterRender(){
+  cmDecorateSidebar();
+  if(window.viewTitle){viewTitle.innerHTML=`${cmMat(cmViewIcon(currentView))}<span>${cmAdminEsc(cfg[currentView]?.[1]||'RESUMEN')}</span>`;}
+  cmDecorateButtons(document);
+  cmNormalizeTables();
+}
+window.cmAdminAfterRender=cmAdminAfterRender;
 setHeader=function(v){
   currentView=v;
   document.querySelectorAll('.side-btn').forEach(b=>{const active=b.dataset.view===v;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});
   syncSidebarForView(v);
   viewKicker.textContent=cfg[v]?.[0]||'PANEL';
-  viewTitle.innerHTML=`${cmMat(cmViewIcon(v))}<span>${cfg[v]?.[1]||'RESUMEN'}</span>`;
+  viewTitle.innerHTML=`${cmMat(cmViewIcon(v))}<span>${cmAdminEsc(cfg[v]?.[1]||'RESUMEN')}</span>`;
   viewActions.innerHTML='';
   cmDecorateSidebar();
-}
+};
 addAction=function(label,fn){
   if([...viewActions.children].some(b=>b.dataset.label===label||b.textContent.trim()===label))return;
   const b=document.createElement('button');
@@ -655,295 +637,33 @@ addAction=function(label,fn){
   b.innerHTML=cmIconHTML(label);
   b.onclick=fn;
   viewActions.appendChild(b);
-}
+};
 openForm=function(title,html,onSubmit){
-  modalForm.innerHTML=`<div><div class="kicker">REGISTRO</div><h2>${safe(title)}</h2></div>${html}<div class="modal-actions"><button class="btn btn-primary" type="submit">${cmIconHTML('Guardar')}</button><button class="btn btn-secondary" type="button" id="closeModal">${cmIconHTML('Cancelar')}</button></div>`;
+  modalForm.innerHTML=`<div><div class="kicker">REGISTRO</div><h2>${cmAdminEsc(title)}</h2></div>${html}<div class="modal-actions"><button class="btn btn-primary" type="submit">${cmIconHTML('Guardar')}</button><button class="btn btn-secondary" type="button" id="closeModal">${cmIconHTML('Cancelar')}</button></div>`;
   modalForm.onsubmit=onSubmit;
   modalForm.querySelector('#closeModal').onclick=()=>modal.close();
   modal.showModal();
-  requestAnimationFrame(cmAfterRender);
-}
-dashboard=async function(){
+  requestAnimationFrame(cmAdminAfterRender);
+};
+async function dashboard(){
   const [d,c]=await Promise.all([api('/api/admin/dashboard'),api('/api/admin/consultation/summary')]);
   const current=c.current?`${cmHitoLabel(c.current)} · ${safe(c.current.title)}`:'PROCESO SIN HITO ACTIVO';
   const stat=(icon,label,value,extra='')=>`<div class="stat stat-with-icon"><span class="stat-icon material-symbols-rounded" aria-hidden="true">${icon}</span><span>${safe(label)}</span><strong>${value}</strong>${extra?`<small>${extra}</small>`:''}</div>`;
   content.innerHTML=`
-    <section class="daily-hero-card compact-daily-hero">
-      <div><div class="kicker">OPERACIÓN DIARIA</div><h3>PANEL DE CONTROL CM</h3><p>Accesos rápidos para la administración diaria. El proceso by Metamorfosis queda al final del menú porque es temporal y se cerrará cuando termine la consolidación.</p></div>
-      <a class="mail-info-link" href="mailto:contacto@cmbanqueteria.cl"><span class="material-symbols-rounded" aria-hidden="true">mail</span><span>contacto@cmbanqueteria.cl</span></a>
+    <section class="daily-hero-card">
+      <div><div class="kicker">OPERACIÓN DIARIA</div><h3>PANEL DE CONTROL CM</h3><p>Accesos rápidos para la administración diaria. El proceso by Metamorfosis queda al final porque es temporal.</p></div>
+      <a class="mail-info-link" href="mailto:contacto@cmbanqueteria.cl"><span>contacto@cmbanqueteria.cl</span></a>
     </section>
     <div class="quick-actions daily-actions"><button class="btn btn-primary" type="button" onclick="renderView('operations')">${cmIconHTML('Reservas / cocina')}</button><button class="btn btn-primary" type="button" onclick="renderView('quotes')">${cmIconHTML('Nueva cotización')}</button><button class="btn btn-secondary" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button><button class="btn btn-secondary" type="button" onclick="renderView('purchases')">${cmIconHTML('Compras')}</button><button class="btn btn-secondary" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div>
-    <div class="stat-grid stat-grid-icons">${stat('payments','Gastos últimos 7 días',money(d.weekExpenses))}${stat('calendar_month','Gastos del mes',money(d.monthExpenses))}${stat('request_quote','Cotizaciones pendientes',d.pendingQuotes)}${stat('warning','Stock crítico',d.criticalStock.length)}${stat('edit_note','Observaciones abiertas',d.openObservations||0)}${stat('smart_display','Videos activos',d.activeMedia||0)}</div>
-    <div class="dashboard-columns"><div class="card"><h3>MENÚ DE HOY</h3>${d.todayMenu?`<p><strong>${safe(d.todayMenu.title)}</strong></p><p class="muted">${safe(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button></div><div class="card"><h3>STOCK CRÍTICO</h3>${d.criticalStock.length?d.criticalStock.slice(0,4).map(x=>`<p><span class="badge red">${x.current_stock} ${safe(x.unit)}</span> ${safe(x.name)} · mínimo: ${x.min_stock}</p>`).join(''):'<p class="muted">Sin alertas de stock.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div><div class="card"><h3>DOCUMENTOS POR VENCER</h3>${d.expiringDocuments.length?d.expiringDocuments.slice(0,4).map(x=>`<p><span class="badge red">${fmtDate(x.expiration_date)}</span> ${safe(x.title)}</p>`).join(''):'<p class="muted">Sin vencimientos próximos registrados.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('documents')">${cmIconHTML('Documentos CM')}</button></div><div class="card process-card-muted"><h3>CONSOLIDACIÓN BY METAMORFOSIS</h3><p class="muted">${current}</p><div class="summary-progress compact-progress"><strong>${c.evidenceProgress||0}%</strong><div class="progress-track"><span style="width:${c.evidenceProgress||0}%"></span></div><small>AVANCE DOCUMENTADO</small><strong class="completion-small">${c.progress||0}%</strong><div class="progress-track progress-track-secondary"><span style="width:${c.progress||0}%"></span></div><small>COMPLETITUD VALIDADA</small></div><button class="btn btn-secondary btn-small" type="button" onclick="renderView('weekly')">${cmIconHTML('Proceso Metamorfosis')}</button></div></div>`;
+    <div class="stat-grid stat-grid-icons">${stat('payments','Gastos últimos 7 días',money(d.weekExpenses))}${stat('account_balance_wallet','Gastos del mes',money(d.monthExpenses))}${stat('request_quote','Cotizaciones pendientes',d.pendingQuotes)}${stat('warning','Stock crítico',d.criticalStock.length)}${stat('edit_note','Observaciones abiertas',d.openObservations||0)}${stat('smart_display','Videos activos',d.activeMedia||0)}</div>
+    <div class="grid-2"><div class="card"><h3>Menú de hoy</h3>${d.todayMenu?`<p><strong>${safe(d.todayMenu.title)}</strong></p><p class="muted">${safe(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button></div><div class="card"><h3>Stock crítico</h3>${d.criticalStock.length?d.criticalStock.map(x=>`<p><span class="badge red">${x.current_stock} ${safe(x.unit)}</span> ${safe(x.name)} · mínimo: ${x.min_stock}</p>`).join(''):'<p class="muted">Sin alertas de stock.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('inventory')">${cmIconHTML('Stock')}</button></div></div>
+    <div class="grid-2" style="margin-top:18px"><div class="card"><h3>Documentos por vencer</h3>${d.expiringDocuments.length?d.expiringDocuments.map(x=>`<p><span class="badge red">${fmtDate(x.expiration_date)}</span> ${safe(x.title)}</p>`).join(''):'<p class="muted">Sin vencimientos próximos registrados.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('documents')">${cmIconHTML('Documentos CM')}</button></div><div class="card process-card-muted"><h3>Consolidación by Metamorfosis</h3><p class="muted">${current}</p><div class="summary-progress compact-progress"><strong>${c.evidenceProgress||0}%</strong><div class="progress-track"><span style="width:${c.evidenceProgress||0}%"></span></div><small>AVANCE DOCUMENTADO</small><strong class="completion-small">${c.progress||0}%</strong><div class="progress-track progress-track-secondary"><span style="width:${c.progress||0}%"></span></div><small>COMPLETITUD VALIDADA</small></div><button class="btn btn-secondary btn-small" type="button" onclick="renderView('weekly')">${cmIconHTML('Proceso Metamorfosis')}</button></div></div>`;
 }
-documents=async function(){
-  addAction('Agregar documento',async()=>{const s=cache.staff||(await api('/api/admin/staff')).items;const opts=['<option value="">Empresa / general</option>'].concat(s.map(p=>`<option value="${p.id}">${safe(p.full_name)}</option>`)).join('');openForm('Agregar documento',`<div class="two-cols">${field('title','Título')}${field('document_type','Tipo documento')}</div><div class="two-cols">${selectField('owner_type','Asociado a',['empresa','personal'])}<div class="form-line"><label>Persona</label><select name="staff_id">${opts}</select></div></div><div class="two-cols">${field('document_date','Fecha documento','date')}${field('expiration_date','Vencimiento','date')}</div>${field('file_url','Link al archivo')}${textArea('notes','Observaciones')}<div class="notice">Para esta versión, los archivos se guardan como enlace. Se recomienda usar Drive o carpeta documental ordenada.</div>`,async e=>{e.preventDefault();await api('/api/admin/documents',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget).entries()))});modal.close();documents()})});
-  const d=await api('/api/admin/documents');
-  const items=d.items||[];
-  const empresa=items.filter(x=>(x.owner_type||'empresa')==='empresa');
-  const personal=items.filter(x=>(x.owner_type||'')==='personal');
-  const renderList=(title,icon,list)=>`<article class="doc-column card"><div class="doc-column-head"><span class="material-symbols-rounded" aria-hidden="true">${icon}</span><div><h3>${title}</h3><small>${list.length} registros</small></div></div>${table(['Documento','Tipo','Vencimiento','Archivo','Acciones'],list.map(x=>`<tr><td><strong>${safe(x.title)}</strong>${x.notes?`<br><small>${safe(x.notes)}</small>`:''}</td><td>${safe(x.document_type||'')}</td><td>${x.expiration_date?`<span class="badge red">${fmtDate(x.expiration_date)}</span>`:''}</td><td>${x.file_url?`<a class="btn btn-secondary btn-small" href="${safe(x.file_url)}" target="_blank" rel="noopener">Ver</a>`:''}</td><td class="row-actions"><button class="btn btn-danger btn-small" onclick="removeRow('documents',${x.id})">Eliminar</button></td></tr>`))}</article>`;
-  content.innerHTML=`<section class="documents-board"><div class="notice notice-soft"><strong>BIBLIOTECA DOCUMENTAL CM.</strong> Separada por procedencia para leer la página en columnas. Si la lista crece, cada columna se desplaza de forma independiente.</div><div class="documents-columns">${renderList('EMPRESA / GENERAL','business',empresa)}${renderList('PERSONAL','groups',personal)}</div></section>`;
-}
-const cmRenderViewV19=renderView;
+const cmBaseRenderView=renderView;
 renderView=async function(v){
-  const result=await cmRenderViewV19(v);
-  requestAnimationFrame(cmAfterRender);
+  const result=await cmBaseRenderView(v);
+  requestAnimationFrame(cmAdminAfterRender);
   return result;
-}
-cmAfterRender();
-if(document.body && !window.__cmAdminIconObserver){
-  window.__cmAdminIconObserver=true;
-  new MutationObserver(()=>cmAfterRender()).observe(document.body,{childList:true,subtree:true});
-}
-
-
-/* ===== UX v20: una sola lectura por página, tabla sin scroll interno e iconografía gastronómica ===== */
-(function(){
-  const WA_ICON_SRC='/assets/icons/whatsapp.png';
-  const V20_VIEW_ICONS={
-    dashboard:'dashboard',
-    operations:'table_restaurant',
-    menus:'restaurant_menu',
-    kitchenMinutas:'soup_kitchen',
-    screenMedia:'smart_display',
-    quotes:'request_quote',
-    expenses:'payments',
-    purchases:'shopping_cart_checkout',
-    suppliers:'local_shipping',
-    inventory:'kitchen',
-    rations:'calculate',
-    observations:'edit_note',
-    staff:'groups',
-    documents:'folder_open',
-    weekly:'verified'
-  };
-  const V20_LABEL_ICONS={
-    'Reservas / cocina':'table_restaurant',
-    'Menú del día':'restaurant_menu',
-    'Minutas cocina':'soup_kitchen',
-    'Compras':'shopping_cart_checkout',
-    'Stock':'kitchen',
-    'Proveedores':'local_shipping',
-    'Agregar proveedor':'local_shipping',
-    'Agregar gasto':'payments',
-    'Compra manual':'edit_note',
-    'Compra por imagen':'add_photo_alternate',
-    'Agregar producto':'add_box',
-    'Crear menú diario':'restaurant_menu',
-    'Crear minuta semanal':'soup_kitchen',
-    'Calcular raciones':'calculate',
-    'Agregar cotización':'request_quote',
-    'Nueva cotización':'request_quote',
-    'Agregar persona':'person_add',
-    'Agregar documento':'note_add',
-    'Agregar observación':'edit_note',
-    'Agregar video/imagen':'perm_media',
-    'Nueva reserva/retiro':'event_available',
-    'Mensaje a pantalla':'desktop_windows',
-    'Crear minuta':'playlist_add',
-    'Ingresar documento':'upload_file',
-    'Registrar hito / acta':'edit_document',
-    'Documentos CM':'folder_open',
-    'Proceso Metamorfosis':'verified',
-    'Pantalla restaurant':'desktop_windows',
-    'Guardar':'check',
-    'Cancelar':'close'
-  };
-  window.cmViewIcon=function(view){return V20_VIEW_ICONS[view] || 'dashboard';};
-  window.cmIcon=function(label){
-    const normalized=String(label||'').replace(/\s+/g,' ').trim();
-    return V20_LABEL_ICONS[normalized] || CM_MATERIAL_ICONS?.[normalized] || 'radio_button_unchecked';
-  };
-  window.cmIconHTML=function(label){return `${cmMat(cmIcon(label))}<span>${safe(label)}</span>`;};
-  window.cmBrandIcon=function(type,label){
-    if(type==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safe(label||'WhatsApp')}</span>`;
-    return '';
-  };
-  window.cmIconOnlyHTML=function(icon,label){
-    if(icon==='whatsapp') return cmBrandIcon('whatsapp',label);
-    return `${cmMat(icon)}<span class="sr-only">${safe(label)}</span>`;
-  };
-  window.cmActionIconForElement=function(el){
-    const label=(el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();
-    const href=(el.getAttribute('href')||'').toLowerCase();
-    if(label.includes('whatsapp') || href.includes('wa.me')) return 'whatsapp';
-    if(label.includes('instagram') || href.includes('instagram.com')) return 'photo_camera';
-    if(label.includes('correo') || label.includes('email') || href.startsWith('mailto:') || label.includes('@')) return 'mail';
-    if(label.includes('descargar') || label === 'pdf' || label.includes('download')) return 'download';
-    if(label.includes('editar')) return 'edit';
-    if(/^ver\b/.test(label) || label.includes(' ver ') || label.includes('vista previa')) return 'visibility';
-    return '';
-  };
-  window.cmDecorateAdminActions=function(root=document){
-    root.querySelectorAll('a.btn,button.btn').forEach(el=>{
-      const label=(el.dataset.originalLabel||el.textContent||el.getAttribute('aria-label')||'').trim();
-      const icon=cmActionIconForElement(el);
-      if(!icon) return;
-      el.dataset.cmIconOnly='1';
-      el.dataset.originalLabel=label || el.getAttribute('aria-label') || 'Acción';
-      el.classList.add('action-icon-only');
-      el.setAttribute('aria-label',el.dataset.originalLabel);
-      el.setAttribute('title',el.dataset.originalLabel);
-      el.innerHTML=cmIconOnlyHTML(icon,el.dataset.originalLabel);
-    });
-    root.querySelectorAll('.mail-info-link,.footer-contact a').forEach(el=>{
-      const icon=cmActionIconForElement(el);
-      if(!icon || el.dataset.cmInlineIcon==='1')return;
-      el.dataset.cmInlineIcon='1';
-      if(icon==='whatsapp') el.insertAdjacentHTML('afterbegin',`<img class="brand-icon-img whatsapp-brand inline-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"> `);
-      else if(!el.querySelector('.material-symbols-rounded')) el.insertAdjacentHTML('afterbegin',`${cmMat(icon)} `);
-    });
-  };
-  window.cmDecorateSidebar=function(){
-    const groupIcons={inicio:'dashboard','operacion-diaria':'restaurant_menu',comercial:'request_quote','compras-stock':'shopping_cart_checkout','gestion-interna':'assignment','proceso':'verified'};
-    document.querySelectorAll('.side-group').forEach(group=>{
-      const btn=group.querySelector('.side-group-toggle');
-      if(!btn) return;
-      const text=btn.querySelector('span:last-child')?.textContent?.trim() || btn.textContent.trim();
-      btn.innerHTML=`${cmMat(groupIcons[group.dataset.group]||'folder')}<span>${safe(text)}</span>`;
-    });
-    document.querySelectorAll('.side-btn').forEach(btn=>{
-      const text=btn.querySelector('span:last-child')?.textContent?.trim() || btn.textContent.trim();
-      btn.innerHTML=`${cmMat(cmViewIcon(btn.dataset.view))}<span>${safe(text)}</span>`;
-    });
-  };
-  window.cmAfterRender=function(){
-    cmDecorateSidebar();
-    cmDecorateAdminActions(document);
-    document.querySelectorAll('.table-wrap').forEach(wrap=>wrap.classList.add('embedded-table-wrap'));
-  };
-  cmViewIcon=window.cmViewIcon;
-  cmIcon=window.cmIcon;
-  cmIconHTML=window.cmIconHTML;
-  cmIconOnlyHTML=window.cmIconOnlyHTML;
-  cmActionIconForElement=window.cmActionIconForElement;
-  cmDecorateAdminActions=window.cmDecorateAdminActions;
-  cmDecorateSidebar=window.cmDecorateSidebar;
-  cmAfterRender=window.cmAfterRender;
-  if(typeof setHeader==='function'){
-    const previousSetHeader=setHeader;
-    window.setHeader=setHeader=function(v){
-      previousSetHeader(v);
-      viewTitle.innerHTML=`${cmMat(cmViewIcon(v))}<span>${cfg[v]?.[1]||'RESUMEN'}</span>`;
-      cmDecorateSidebar();
-    };
-  }
-  if(typeof renderView==='function'){
-    const previousRenderView=renderView;
-    window.renderView=renderView=async function(v){
-      const result=await previousRenderView(v);
-      requestAnimationFrame(cmAfterRender);
-      return result;
-    };
-  }
-  requestAnimationFrame(cmAfterRender);
-})();
-
-
-/* ===== UX v22: iconografía estratégica, menos texto y una sola lectura vertical ===== */
-(function(){
-  const WA_ICON_SRC='/assets/icons/whatsapp.png';
-  const IG_ICON_SRC='/assets/icons/instagram.svg';
-  const VIEW_ICONS={
-    dashboard:'dashboard',operations:'table_restaurant',menus:'restaurant_menu',kitchenMinutas:'soup_kitchen',screenMedia:'smart_display',quotes:'request_quote',expenses:'payments',purchases:'receipt_long',suppliers:'local_shipping',inventory:'kitchen',rations:'calculate',observations:'edit_note',staff:'groups',documents:'folder_open',weekly:'verified'
-  };
-  const SECTION_ICONS={inicio:'dashboard','operacion-diaria':'restaurant_menu',comercial:'request_quote','compras-stock':'shopping_cart_checkout','gestion-interna':'assignment_turned_in',proceso:'verified'};
-  const LABEL_ICONS={
-    'Panel diario':'dashboard','Reservas / Cocina':'table_restaurant','Reservas / cocina':'table_restaurant','Menú del día':'restaurant_menu','Minutas cocina':'soup_kitchen','Pantallas / videos':'smart_display','Cotizaciones':'request_quote','Gastos / compras':'payments','Compras imagen/manual':'receipt_long','Proveedores':'local_shipping','Stock e insumos':'kitchen','Costeo / raciones':'calculate','Bitácora diaria':'edit_note','Personal':'groups','Documentos CM':'folder_open','Proceso by Metamorfosis':'verified','Proceso Metamorfosis':'verified',
-    'Agregar proveedor':'local_shipping','Agregar gasto':'payments','Compra manual':'edit_note','Compra por imagen':'add_photo_alternate','Agregar producto':'add_box','Crear menú diario':'restaurant_menu','Crear minuta semanal':'soup_kitchen','Calcular raciones':'calculate','Agregar cotización':'request_quote','Nueva cotización':'request_quote','Agregar persona':'person_add','Agregar documento':'note_add','Agregar observación':'edit_note','Agregar video/imagen':'perm_media','Nueva reserva/retiro':'event_available','Mensaje a pantalla':'desktop_windows','Crear minuta':'playlist_add','Ingresar documento':'upload_file','Registrar hito / acta':'edit_document','Compras':'shopping_cart_checkout','Stock':'kitchen','Pantalla restaurant':'desktop_windows','Guardar':'check','Cancelar':'close','Salir':'logout'
-  };
-  const STRATEGIC_ACTIONS=[
-    {type:'whatsapp',symbol:'',test:(label,href)=>label.includes('whatsapp')||href.includes('wa.me')},
-    {type:'mail',symbol:'mail',test:(label,href)=>label.includes('correo')||label.includes('email')||href.startsWith('mailto:')||label.includes('@')},
-    {type:'call',symbol:'call',test:(label,href)=>label.includes('llamar')||label.includes('teléfono')||href.startsWith('tel:')},
-    {type:'instagram',symbol:'',test:(label,href)=>label.includes('instagram')||href.includes('instagram.com')},
-    {type:'view',symbol:'visibility',test:(label)=>/^ver\b/.test(label)||label.includes('abrir')||label.includes('ficha')||label.includes('vista previa')},
-    {type:'download',symbol:'download',test:(label)=>label.includes('descargar')||label==='pdf'||label.includes('download')},
-    {type:'edit',symbol:'edit',test:(label)=>label.includes('editar')},
-    {type:'delete',symbol:'delete',test:(label)=>label.includes('eliminar')||label.includes('borrar')}
-  ];
-  function textOf(el){return (el.dataset.originalLabel||el.getAttribute('aria-label')||el.textContent||'').replace(/\s+/g,' ').trim();}
-  function safeText(value){return String(value||'').replace(/[&<>"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));}
-  function mat(name){return `<span class="material-symbols-rounded" aria-hidden="true">${name}</span>`;}
-  function labelIcon(label){const clean=String(label||'').replace(/\s+/g,' ').trim();return LABEL_ICONS[clean]||LABEL_ICONS[clean.replace(/\s*\/\s*/g,' / ')]||'radio_button_unchecked';}
-  function actionFor(el){
-    const label=textOf(el).toLowerCase();
-    const href=(el.getAttribute('href')||'').toLowerCase();
-    return STRATEGIC_ACTIONS.find(a=>a.test(label,href))||null;
-  }
-  function actionMarkup(action,label){
-    if(action.type==='whatsapp') return `<img class="brand-icon-img whatsapp-brand" src="${WA_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safeText(label)}</span>`;
-    if(action.type==='instagram') return `<img class="brand-icon-img local-action-icon" src="${IG_ICON_SRC}" alt="" aria-hidden="true"><span class="sr-only">${safeText(label)}</span>`;
-    return `${mat(action.symbol)}<span class="sr-only">${safeText(label)}</span>`;
-  }
-  function decorateSidebar(){
-    document.querySelectorAll('.side-group').forEach(group=>{
-      const btn=group.querySelector('.side-group-toggle');
-      if(!btn) return;
-      const label=btn.querySelector('span:last-child')?.textContent?.trim()||btn.textContent.trim();
-      btn.innerHTML=`${mat(SECTION_ICONS[group.dataset.group]||'folder')}<span>${safeText(label)}</span>`;
-    });
-    document.querySelectorAll('.side-btn').forEach(btn=>{
-      const label=btn.querySelector('span:last-child')?.textContent?.trim()||btn.textContent.trim();
-      btn.innerHTML=`${mat(VIEW_ICONS[btn.dataset.view]||labelIcon(label))}<span>${safeText(label)}</span>`;
-      const active=btn.dataset.view===currentView;
-      btn.classList.toggle('active',active);
-      btn.setAttribute('aria-current',active?'page':'false');
-    });
-  }
-  function decorateButtons(root=document){
-    root.querySelectorAll('a.btn,button.btn,.row-actions a,.row-actions button,.footer-contact a,.mail-info-link').forEach(el=>{
-      const action=actionFor(el);
-      if(!action) return;
-      const label=textOf(el)||'Acción';
-      el.dataset.originalLabel=label;
-      el.removeAttribute('data-icon');
-      el.setAttribute('aria-label',label);
-      el.setAttribute('title',label);
-      el.classList.add('uses-strategic-icon',`action-${action.type}`,'action-icon-only');
-      el.innerHTML=actionMarkup(action,label);
-    });
-    root.querySelectorAll('#viewActions .btn,.quick-actions .btn,.finance-tabs .btn,.menu-downloads .btn,.modal-actions .btn').forEach(el=>{
-      if(el.classList.contains('action-icon-only')) return;
-      if(el.querySelector('.material-symbols-rounded,.brand-icon-img')) return;
-      const label=textOf(el);
-      const icon=labelIcon(label);
-      if(icon && icon!=='radio_button_unchecked') el.insertAdjacentHTML('afterbegin',mat(icon));
-    });
-  }
-  function decorateHeader(){
-    if(typeof cfg==='undefined' || !window.viewTitle) return;
-    const title=cfg[currentView]?.[1]||viewTitle.textContent||'Panel';
-    viewTitle.innerHTML=`${mat(VIEW_ICONS[currentView]||'dashboard')}<span>${safeText(title)}</span>`;
-  }
-  function normalizeTables(){
-    document.querySelectorAll('.table-wrap').forEach(wrap=>{
-      wrap.classList.add('embedded-table-wrap');
-      wrap.style.maxHeight='none';
-      wrap.style.overflowY='visible';
-    });
-  }
-  function decorateAll(){
-    decorateSidebar();
-    decorateHeader();
-    decorateButtons(document);
-    normalizeTables();
-  }
-  const previousSetHeader=typeof setHeader==='function'?setHeader:null;
-  if(previousSetHeader){
-    setHeader=function(v){previousSetHeader(v);decorateSidebar();decorateHeader();};
-    window.setHeader=setHeader;
-  }
-  const previousRender=typeof renderView==='function'?renderView:null;
-  if(previousRender){
-    renderView=async function(v){const result=await previousRender(v);requestAnimationFrame(decorateAll);return result;};
-    window.renderView=renderView;
-  }
-  window.cmDecorateAdminV22=decorateAll;
-  requestAnimationFrame(decorateAll);
-  if(document.body && !window.__cmAdminV22Observer){
-    window.__cmAdminV22Observer=true;
-    new MutationObserver(()=>decorateAll()).observe(document.body,{childList:true,subtree:true,attributes:false});
-  }
-})();
+};
+window.renderView=renderView;
+requestAnimationFrame(cmAdminAfterRender);

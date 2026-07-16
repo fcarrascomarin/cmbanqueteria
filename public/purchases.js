@@ -2,9 +2,12 @@ cfg.purchases=['Compras y finanzas','Compras por imagen / manual'];
 cfg.suppliers=['Compras y finanzas','Proveedores e historial'];
 const baseRenderView=renderView;
 renderView=async function(view){
-  if(view==='purchases'){setHeader(view);return purchases()}
-  if(view==='suppliers'){setHeader(view);return suppliers()}
-  return baseRenderView(view);
+  let result;
+  if(view==='purchases'){setHeader(view);result=await purchases();requestAnimationFrame(()=>window.cmAdminAfterRender?.());return result}
+  if(view==='suppliers'){setHeader(view);result=await suppliers();requestAnimationFrame(()=>window.cmAdminAfterRender?.());return result}
+  result=await baseRenderView(view);
+  requestAnimationFrame(()=>window.cmAdminAfterRender?.());
+  return result;
 };
 
 const purchaseTypes={factura:'Factura',boleta:'Boleta',comprobante_manual:'Comprobante manuscrito',comprobante_pago:'Comprobante de pago',conteo_stock:'Conteo de stock',otro:'Otro'};
