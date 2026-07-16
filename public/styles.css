@@ -7172,3 +7172,101 @@ body:not(.public-site) .stat-icon.material-symbols-rounded{font-size:1.2rem!impo
 body:not(.public-site) .btn .material-symbols-rounded{font-size:1.05rem;}
 body:not(.public-site) .mail-info-link{display:inline-flex!important;align-items:center!important;gap:.45rem!important;background:transparent!important;border:0!important;padding:0!important;color:#4d0918!important;font-weight:800!important;box-shadow:none!important;}
 body:not(.public-site) .mail-info-link.action-icon-only{width:40px!important;height:40px!important;min-width:40px!important;border:1px solid rgba(77,9,24,.16)!important;background:#fffaf4!important;}
+
+
+/* ===== v24: reproducción controlada, un solo video activo y CTA Ver más ===== */
+.lazy-video-trigger{isolation:isolate;}
+.video-play-label{
+  position:absolute;
+  left:50%;
+  top:calc(50% + 48px);
+  transform:translateX(-50%);
+  z-index:3;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(255,250,244,.94);
+  color:#4d0918;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-size:.74rem;
+  line-height:1;
+  box-shadow:0 14px 34px rgba(0,0,0,.20);
+  white-space:nowrap;
+}
+.lazy-video-trigger:hover .video-play-label,
+.lazy-video-trigger:focus-visible .video-play-label{
+  background:#fff;
+}
+.lazy-video-card.is-playing{
+  background:#1a050b;
+}
+.lazy-video-card.is-active-video{
+  outline:2px solid rgba(217,167,68,.72);
+  outline-offset:3px;
+}
+.lazy-video-player{
+  cursor:default;
+}
+@media(max-width:760px){
+  .video-play-label{
+    top:calc(50% + 42px);
+    font-size:.68rem;
+    padding:7px 12px;
+  }
+}
+
+
+/* ===== v25: WhatsApp flotante permanente sin barra duplicada ===== */
+.public-v2 .mobile-sticky-actions,
+.mobile-sticky-actions{
+  display:none !important;
+}
+.public-v2 .floating-whatsapp.always-whatsapp,
+.floating-whatsapp.always-whatsapp{
+  position:fixed !important;
+  right:clamp(16px, 2.2vw, 28px) !important;
+  bottom:calc(clamp(16px, 2.2vw, 28px) + env(safe-area-inset-bottom, 0px)) !important;
+  z-index:9999 !important;
+  width:58px !important;
+  height:58px !important;
+  min-width:58px !important;
+  min-height:58px !important;
+  padding:0 !important;
+  border-radius:999px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  background:#25D366 !important;
+  color:#fff !important;
+  border:2px solid rgba(255,255,255,.9) !important;
+  box-shadow:0 18px 46px rgba(21,86,45,.28), 0 4px 16px rgba(77,9,24,.14) !important;
+  text-decoration:none !important;
+  transform:translateZ(0);
+  will-change:transform;
+}
+.public-v2 .floating-whatsapp.always-whatsapp:hover,
+.floating-whatsapp.always-whatsapp:hover{
+  transform:translateY(-2px) translateZ(0);
+  box-shadow:0 22px 54px rgba(21,86,45,.32), 0 6px 18px rgba(77,9,24,.16) !important;
+}
+.public-v2 .floating-whatsapp.always-whatsapp .whatsapp-brand,
+.floating-whatsapp.always-whatsapp .whatsapp-brand{
+  width:30px !important;
+  height:30px !important;
+  object-fit:contain !important;
+  display:block !important;
+  filter:none !important;
+}
+@media(max-width:760px){
+  .public-v2 .floating-whatsapp.always-whatsapp,
+  .floating-whatsapp.always-whatsapp{
+    right:16px !important;
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    width:56px !important;
+    height:56px !important;
+    min-width:56px !important;
+    min-height:56px !important;
+    display:inline-grid !important;
+  }
+  .public-footer{padding-bottom:96px !important;}
+}

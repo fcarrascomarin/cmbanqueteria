@@ -170,12 +170,32 @@ function cmDecoratePublicActions(root=document){
 }
 
 function setupLazyVideos(){
+  const pauseOtherVideos=(activeVideo=null)=>{
+    document.querySelectorAll('.lazy-video-player').forEach(video=>{
+      if(video!==activeVideo && !video.paused){
+        video.pause();
+      }
+    });
+    document.querySelectorAll('.lazy-video-card.is-playing').forEach(card=>{
+      const video=card.querySelector('.lazy-video-player');
+      card.classList.toggle('is-active-video',!!video && video===activeVideo && !video.paused);
+    });
+  };
+
   document.querySelectorAll('.lazy-video-card[data-video-src]').forEach(card=>{
     const trigger=card.querySelector('.lazy-video-trigger');
     if(!trigger || trigger.dataset.ready==='1') return;
     trigger.dataset.ready='1';
+
     const play=()=>{
-      if(card.classList.contains('is-playing')) return;
+      const existing=card.querySelector('.lazy-video-player');
+      if(existing){
+        pauseOtherVideos(existing);
+        existing.play().catch(()=>{});
+        return;
+      }
+
+      pauseOtherVideos(null);
       const src=card.dataset.videoSrc;
       const poster=card.dataset.videoPoster||'';
       const label=card.dataset.videoLabel||'Video promocional CM';
@@ -184,14 +204,18 @@ function setupLazyVideos(){
       video.poster=poster;
       video.controls=true;
       video.playsInline=true;
-      video.preload='auto';
+      video.preload='none';
       video.setAttribute('aria-label',label);
       video.className='lazy-video-player';
+      video.addEventListener('play',()=>pauseOtherVideos(video));
+      video.addEventListener('pause',()=>card.classList.remove('is-active-video'));
+      video.addEventListener('ended',()=>card.classList.remove('is-active-video'));
       card.classList.add('is-playing');
       trigger.replaceWith(video);
       const attempt=video.play();
       if(attempt && typeof attempt.catch==='function') attempt.catch(()=>{});
     };
+
     trigger.addEventListener('click',play,{once:true});
     trigger.addEventListener('keydown',event=>{
       if(event.key==='Enter' || event.key===' '){
