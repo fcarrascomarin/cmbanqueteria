@@ -9583,3 +9583,315 @@ body.public-site{
     height:70px!important;
   }
 }
+
+/* ===== v29 · reparación móvil, footer estable y separación estática ===== */
+@media (max-width: 760px){
+  html,
+  body.public-site{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+  }
+
+  .public-v2 .container,
+  .public-v2 .public-hero > .container,
+  .public-v2 .hero-editorial-grid,
+  .public-v2 .footer-clean-inner{
+    width:min(100% - 28px, 1120px)!important;
+    max-width:100%!important;
+    margin-inline:auto!important;
+  }
+
+  /* Hero móvil sin desbordes ni cortes */
+  .public-v2 .public-hero{
+    min-height:auto!important;
+    padding:34px 0 38px!important;
+    overflow:hidden!important;
+  }
+  .public-v2 .hero-editorial-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:24px!important;
+  }
+  .public-v2 .hero-copy{
+    max-width:100%!important;
+    padding:0!important;
+  }
+  .public-v2 .hero-copy h1{
+    max-width:12.5ch!important;
+    font-size:clamp(2.35rem, 11.4vw, 3.45rem)!important;
+    line-height:.98!important;
+    letter-spacing:-.02em!important;
+    margin:0 0 16px!important;
+  }
+  .public-v2 .hero-copy .lead{
+    max-width:100%!important;
+    font-size:1rem!important;
+    line-height:1.42!important;
+  }
+  .public-v2 .hero-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    margin-top:22px!important;
+  }
+  .public-v2 .hero-actions .btn{
+    width:100%!important;
+    min-height:46px!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal{
+    width:100%!important;
+    max-width:100%!important;
+    padding:12px!important;
+    gap:14px!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:none!important;
+    border-radius:26px!important;
+    overflow:hidden!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card{
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    aspect-ratio:1.18 / 1!important;
+    border-radius:22px!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card img{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    object-fit:cover!important;
+    object-position:center center!important;
+  }
+  .public-v2 .hero-photo-collage .hero-collage-card span{
+    left:14px!important;
+    bottom:14px!important;
+    max-width:calc(100% - 28px)!important;
+    padding:9px 15px!important;
+    font-size:.94rem!important;
+    white-space:normal!important;
+  }
+
+  /* Montajes móviles: nunca superponer fotografías */
+  .public-v2 .service-montage,
+  .public-v2 .service-montage.two-up,
+  .public-v2 .banqueteria-montage.two-up,
+  .public-v2 .restaurant-montage.two-up{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:18px!important;
+    overflow:visible!important;
+  }
+  .public-v2 .service-montage figure,
+  .public-v2 .service-montage.two-up figure,
+  .public-v2 .service-montage .compact-menu-card{
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:0!important;
+    aspect-ratio:1.06 / 1!important;
+    margin:0!important;
+    overflow:hidden!important;
+    border-radius:24px!important;
+  }
+  .public-v2 .service-montage img{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    object-fit:cover!important;
+  }
+  .public-v2 .service-montage figcaption{
+    left:14px!important;
+    right:auto!important;
+    bottom:14px!important;
+    max-width:calc(100% - 28px)!important;
+    padding:9px 14px!important;
+    font-size:.84rem!important;
+    line-height:1!important;
+  }
+
+  /* Ubicación móvil: separar información, foto y mapa */
+  .public-v2 #como-llegar .location-layout,
+  .public-v2 #como-llegar .location-media-pair{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:22px!important;
+    align-items:start!important;
+  }
+  .public-v2 #como-llegar .location-info{
+    margin:20px 0 0!important;
+    position:relative!important;
+    z-index:1!important;
+  }
+  .public-v2 #como-llegar .location-image-card,
+  .public-v2 #como-llegar .location-map-card{
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    position:relative!important;
+    overflow:hidden!important;
+    border-radius:26px!important;
+  }
+  .public-v2 #como-llegar .location-image-card{
+    aspect-ratio:1 / 1.04!important;
+    height:auto!important;
+    min-height:0!important;
+  }
+  .public-v2 #como-llegar .location-image-card img{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    object-fit:cover!important;
+  }
+  .public-v2 #como-llegar .location-image-caption{
+    left:16px!important;
+    right:16px!important;
+    bottom:16px!important;
+    max-width:none!important;
+    padding:18px!important;
+    border-radius:22px!important;
+  }
+  .public-v2 #como-llegar .location-image-caption strong{
+    font-size:clamp(1.45rem, 8vw, 2.15rem)!important;
+    line-height:1.03!important;
+  }
+  .public-v2 #como-llegar .location-map-card{
+    height:300px!important;
+    min-height:300px!important;
+    max-height:300px!important;
+  }
+  .public-v2 #como-llegar .location-map-card iframe{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:100%!important;
+  }
+
+  /* Footer móvil: una sola columna, sin tarjetas cortadas */
+  .public-v2 footer.footer-clean,
+  .public-v2 .footer-clean{
+    padding:34px 0 calc(36px + env(safe-area-inset-bottom, 0px))!important;
+    overflow:hidden!important;
+  }
+  .public-v2 .footer-clean-inner{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:26px!important;
+  }
+  .public-v2 .footer-clean-brand{
+    display:grid!important;
+    grid-template-columns:64px minmax(0,1fr)!important;
+    gap:14px!important;
+    align-items:start!important;
+  }
+  .public-v2 .footer-logo-clean{
+    width:64px!important;
+    height:64px!important;
+    min-width:64px!important;
+  }
+  .public-v2 .footer-clean h3{
+    font-size:1.35rem!important;
+    line-height:1.08!important;
+    margin:0 0 8px!important;
+    overflow-wrap:normal!important;
+  }
+  .public-v2 .footer-clean p{
+    max-width:100%!important;
+    font-size:.95rem!important;
+    line-height:1.42!important;
+  }
+  .public-v2 .footer-clean-contact{
+    display:grid!important;
+    gap:12px!important;
+  }
+  .public-v2 .footer-clean-contact h4{
+    font-size:1.08rem!important;
+    margin:0!important;
+    text-align:left!important;
+  }
+  .public-v2 .footer-clean-list{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+  .public-v2 .footer-clean-item{
+    display:grid!important;
+    grid-template-columns:40px minmax(0,1fr)!important;
+    gap:12px!important;
+    align-items:center!important;
+    min-height:68px!important;
+    padding:12px!important;
+    border-radius:18px!important;
+    transform:none!important;
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+  }
+  .public-v2 .footer-clean-item > .material-symbols-rounded{
+    width:40px!important;
+    height:40px!important;
+    min-width:40px!important;
+    font-size:1.18rem!important;
+  }
+  .public-v2 .footer-clean-item strong{
+    font-size:.9rem!important;
+    line-height:1.16!important;
+    overflow-wrap:anywhere!important;
+  }
+  .public-v2 .footer-clean-item small{
+    font-size:.8rem!important;
+    line-height:1.25!important;
+  }
+
+  /* WhatsApp flotante: menor y fuera de tarjetas críticas */
+  .public-v2 .floating-whatsapp,
+  .public-v2 .always-whatsapp{
+    width:56px!important;
+    height:56px!important;
+    min-width:56px!important;
+    min-height:56px!important;
+    right:16px!important;
+    left:auto!important;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 82px)!important;
+    padding:0!important;
+    z-index:80!important;
+  }
+  .public-v2 .floating-whatsapp img,
+  .public-v2 .always-whatsapp img{
+    width:31px!important;
+    height:31px!important;
+  }
+
+  .public-v2 .service-section,
+  .public-v2 .founder-section,
+  .public-v2 .quote-section,
+  .public-v2 .visit-section{
+    min-height:auto!important;
+    display:block!important;
+    padding:44px 0!important;
+  }
+}
+
+@media (max-width: 420px){
+  .public-v2 .hero-copy h1{
+    font-size:clamp(2.18rem, 10.8vw, 3rem)!important;
+  }
+  .public-v2 .footer-clean-brand{
+    grid-template-columns:58px minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+  .public-v2 .footer-logo-clean{
+    width:58px!important;
+    height:58px!important;
+    min-width:58px!important;
+  }
+  .public-v2 .footer-clean h3{
+    font-size:1.18rem!important;
+  }
+}

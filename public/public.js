@@ -1,4 +1,19 @@
 const CM_WHATSAPP = '56987741182';
+const CM_API_BASE = (window.CM_API_BASE || '').replace(/\/$/, '');
+const CM_ADMIN_URL = window.CM_ADMIN_URL || (CM_API_BASE ? `${CM_API_BASE}/admin.html` : '/admin.html');
+
+function cmApiUrl(path){
+  const cleanPath = String(path || '').startsWith('/') ? path : `/${path}`;
+  return CM_API_BASE ? `${CM_API_BASE}${cleanPath}` : cleanPath;
+}
+
+function setupAdminLinks(){
+  document.querySelectorAll('[data-admin-link]').forEach(link=>{
+    link.href = CM_ADMIN_URL;
+    if(CM_API_BASE) link.target = '_blank';
+    if(CM_API_BASE) link.rel = 'noopener';
+  });
+}
 
 function cmWhatsappUrl(message){
   return `https://wa.me/${CM_WHATSAPP}?text=${encodeURIComponent(message)}`;
@@ -8,7 +23,7 @@ async function loadTodayMenu(){
   const box=document.querySelector('#todayMenu, #menu-del-dia');
   if(!box)return;
   try{
-    const res=await fetch('/api/public/menu/today'),data=await res.json();
+    const res=await fetch(cmApiUrl('/api/public/menu/today'), {credentials: CM_API_BASE ? 'omit' : 'same-origin'}),data=await res.json();
     if(!data.menu){
       box.innerHTML=`
         <div class="menu-empty">
@@ -67,7 +82,7 @@ document.querySelector('#quoteForm')?.addEventListener('submit',async e=>{
   const whatsappWindow=window.open(cmWhatsappUrl(quoteMessage(payload)),'_blank','noopener');
   try{
     if(btn){btn.disabled=true;btn.innerHTML='<span class="material-symbols-rounded" aria-hidden="true">hourglass_top</span><span>Registrando...</span>'}
-    const res=await fetch('/api/public/quotes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const res=await fetch(cmApiUrl('/api/public/quotes'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(res.ok){
       form.reset();
       alert('Solicitud preparada en WhatsApp y registrada correctamente. CM Banquetería se contactará contigo.');
@@ -248,6 +263,7 @@ function setupDeferredMenu(){
   }
 }
 
+setupAdminLinks();
 setupQuoteStepper();
 setupLazyVideos();
 setupDeferredMenu();
