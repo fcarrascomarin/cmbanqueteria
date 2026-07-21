@@ -9296,3 +9296,290 @@ body.internal-screen-theme .kds-list{
     grid-template-columns:84px 1fr!important;
   }
 }
+
+/* ===== Reparación v28 · hero sin desborde y footer limpio ===== */
+html,
+body.public-site{
+  overflow-x:hidden!important;
+}
+.public-v2 .public-hero{
+  min-height:calc(100svh - 84px)!important;
+  height:auto!important;
+  overflow:hidden!important;
+  padding:clamp(46px,6vh,70px) 0!important;
+  display:flex!important;
+  align-items:center!important;
+}
+.public-v2 .public-hero > .container,
+.public-v2 .hero-editorial-grid{
+  width:min(1220px,calc(100% - 56px))!important;
+  max-width:1220px!important;
+  margin-inline:auto!important;
+  min-width:0!important;
+}
+.public-v2 .hero-editorial-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,.95fr) minmax(420px,.9fr)!important;
+  gap:clamp(34px,5vw,66px)!important;
+  align-items:center!important;
+}
+.public-v2 .hero-copy{
+  min-width:0!important;
+  max-width:700px!important;
+  padding:0!important;
+}
+.public-v2 .hero-copy h1{
+  max-width:12.6ch!important;
+  font-size:clamp(3rem,4.6vw,5.35rem)!important;
+  line-height:.95!important;
+  letter-spacing:-.028em!important;
+  margin:0 0 20px!important;
+}
+.public-v2 .hero-copy .lead{
+  max-width:690px!important;
+  font-size:clamp(1.02rem,1.25vw,1.28rem)!important;
+  line-height:1.45!important;
+}
+.public-v2 .hero-actions{
+  margin-top:26px!important;
+  gap:12px!important;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal{
+  width:100%!important;
+  max-width:680px!important;
+  min-width:0!important;
+  height:auto!important;
+  margin:0!important;
+  padding:20px!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:none!important;
+  gap:18px!important;
+  border-radius:34px!important;
+  overflow:hidden!important;
+  background:rgba(255,255,255,.08)!important;
+  border:1px solid rgba(255,255,255,.20)!important;
+  box-shadow:0 24px 58px rgba(22,2,2,.24)!important;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card{
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  aspect-ratio:1 / .92!important;
+  border-radius:26px!important;
+  overflow:hidden!important;
+  position:relative!important;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card img{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  display:block!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card::after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  opacity:.16!important;
+  background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(52,7,6,.42))!important;
+  pointer-events:none!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card span{
+  position:absolute!important;
+  left:16px!important;
+  bottom:16px!important;
+  right:auto!important;
+  z-index:2!important;
+  opacity:1!important;
+  transform:none!important;
+  padding:10px 18px!important;
+  border-radius:999px!important;
+  background:rgba(98,9,7,.86)!important;
+  color:#fff!important;
+  font-size:1rem!important;
+  font-weight:900!important;
+  letter-spacing:.01em!important;
+  line-height:1!important;
+  box-shadow:0 12px 28px rgba(32,2,2,.22)!important;
+}
+
+/* Footer limpio: neutraliza reglas anteriores del footer roto */
+.public-v2 footer.footer-clean,
+.public-v2 .footer-clean{
+  width:100%!important;
+  overflow:hidden!important;
+  padding:42px 0 36px!important;
+  background:
+    linear-gradient(105deg,rgba(52,7,6,.98),rgba(98,9,7,.96) 46%,rgba(148,22,19,.94)),
+    url('/assets/web/R11_restaurant_recurso_lineal_interior.jpg') center/cover no-repeat!important;
+  color:#fff!important;
+}
+.public-v2 .footer-clean .container,
+.public-v2 .footer-clean-inner{
+  width:min(1120px,calc(100% - 56px))!important;
+  max-width:1120px!important;
+  margin-inline:auto!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)!important;
+  gap:42px!important;
+  align-items:start!important;
+}
+.public-v2 .footer-clean-brand{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:86px minmax(0,1fr)!important;
+  gap:20px!important;
+  align-items:start!important;
+}
+.public-v2 .footer-logo-clean{
+  width:86px!important;
+  height:86px!important;
+  object-fit:contain!important;
+  border-radius:999px!important;
+  background:#fffaf6!important;
+  padding:7px!important;
+  box-shadow:0 12px 30px rgba(18,2,2,.22)!important;
+}
+.public-v2 .footer-clean h3,
+.public-v2 .footer-clean h4,
+.public-v2 .footer-clean p,
+.public-v2 .footer-clean a,
+.public-v2 .footer-clean strong,
+.public-v2 .footer-clean small{
+  color:#fff!important;
+}
+.public-v2 .footer-clean h3{
+  margin:0 0 10px!important;
+  font-family:"Montserrat",system-ui,sans-serif!important;
+  font-size:clamp(1.45rem,1.8vw,2rem)!important;
+  line-height:1.08!important;
+  letter-spacing:-.01em!important;
+}
+.public-v2 .footer-clean p{
+  margin:0 0 10px!important;
+  max-width:390px!important;
+  font-size:.98rem!important;
+  line-height:1.48!important;
+}
+.public-v2 .footer-clean-contact{
+  min-width:0!important;
+  display:grid!important;
+  gap:14px!important;
+}
+.public-v2 .footer-clean-contact h4{
+  margin:0!important;
+  font-size:1.1rem!important;
+  text-transform:uppercase!important;
+  letter-spacing:.08em!important;
+  line-height:1!important;
+  text-align:left!important;
+}
+.public-v2 .footer-clean-list{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+.public-v2 .footer-clean-item{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  gap:12px!important;
+  align-items:center!important;
+  padding:14px!important;
+  min-height:78px!important;
+  border-radius:20px!important;
+  background:rgba(255,255,255,.09)!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  box-shadow:none!important;
+  text-decoration:none!important;
+}
+.public-v2 .footer-clean-item > .material-symbols-rounded{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  border-radius:999px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#bd2b47!important;
+  color:#fff!important;
+  font-size:1.28rem!important;
+  margin:0!important;
+}
+.public-v2 .footer-clean-item span:last-child{
+  min-width:0!important;
+}
+.public-v2 .footer-clean-item strong,
+.public-v2 .footer-clean-item small{
+  display:block!important;
+  min-width:0!important;
+  overflow-wrap:anywhere!important;
+}
+.public-v2 .footer-clean-item strong{
+  font-size:.94rem!important;
+  line-height:1.15!important;
+  margin:0 0 4px!important;
+}
+.public-v2 .footer-clean-item small{
+  color:rgba(255,255,255,.78)!important;
+  font-size:.82rem!important;
+  line-height:1.3!important;
+}
+.public-v2 .footer-clean .footer-credit{
+  color:rgba(255,255,255,.82)!important;
+  font-size:.9rem!important;
+}
+
+@media(max-width:1100px){
+  .public-v2 .hero-editorial-grid{
+    grid-template-columns:1fr!important;
+    gap:30px!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal{
+    max-width:760px!important;
+  }
+}
+@media(max-width:900px){
+  .public-v2 .footer-clean-inner{
+    grid-template-columns:1fr!important;
+    gap:28px!important;
+  }
+  .public-v2 .footer-clean-list{
+    grid-template-columns:1fr!important;
+  }
+}
+@media(max-width:720px){
+  .public-v2 .public-hero{
+    padding:42px 0!important;
+  }
+  .public-v2 .public-hero > .container,
+  .public-v2 .hero-editorial-grid,
+  .public-v2 .footer-clean-inner{
+    width:min(100% - 28px,1120px)!important;
+  }
+  .public-v2 .hero-copy h1{
+    max-width:11ch!important;
+    font-size:clamp(2.55rem,12vw,4rem)!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal{
+    grid-template-columns:1fr!important;
+    padding:14px!important;
+    gap:14px!important;
+    border-radius:26px!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card{
+    aspect-ratio:1.35/1!important;
+    border-radius:22px!important;
+  }
+  .public-v2 .footer-clean-brand{
+    grid-template-columns:70px minmax(0,1fr)!important;
+    gap:14px!important;
+  }
+  .public-v2 .footer-logo-clean{
+    width:70px!important;
+    height:70px!important;
+  }
+}
