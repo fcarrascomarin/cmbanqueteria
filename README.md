@@ -92,3 +92,12 @@ Esta versión fuerza la lectura de `public/index.html` desde la raíz, desactiva
 - Se mejora la versión móvil: navegación por chips, hero más compacto, formularios y secciones adaptadas a pantallas pequeñas.
 - Se refuerza la organización visual del panel interno, panel operativo y pantalla interna de comandas/mensajes con la estética burdeo del hero.
 - Se reemplazan bloques públicos con video por imágenes estáticas reales para evitar cortes en PC y prevenir referencias a material desactualizado.
+
+
+## Actualización final observaciones CM · 21-07-2026
+
+- Se revisó la implementación contra el PDF de observaciones de CM.
+- Se reforzó el uso de burdeos/carmesí y se eliminó el amarillo visual de botones principales en la web pública.
+- Se compactaron las secciones públicas para escritorio, con el objetivo de que cada bloque principal calce en una pantalla promedio.
+- CM Experience queda como semi-cartelera en desarrollo, sin publicar fechas ni eventos.
+- Se reorganizó el panel interno para dar más aire visual: menos efecto de cuadro flotante, tarjetas más livianas, tamaños más armónicos y mejor uso del espacio.
