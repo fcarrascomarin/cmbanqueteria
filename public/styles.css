@@ -8753,3 +8753,349 @@ body.internal-screen-theme .menu-screen-card{
     background:rgba(123,12,22,.72)!important;
   }
 }
+
+
+/* ===== Ajuste v26 · CM Experience oculto, footer visual y panel sin doble scroll ===== */
+
+/* Ocultar definitivamente cualquier resto accidental de CM Experience */
+.public-v2 #experiencias,
+.public-v2 .cm-experience-section{
+  display:none!important;
+}
+
+/* Hero con dos imágenes: más aire y fotos más protagonistas */
+.public-v2 .hero-photo-collage.hero-photo-collage-equal{
+  grid-template-rows:repeat(2, minmax(145px, 1fr))!important;
+  gap:18px!important;
+  padding:22px!important;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card{
+  min-height:160px!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card span{
+  opacity:0!important;
+  transform:translateY(10px)!important;
+  background:rgba(98,9,7,.86)!important;
+  color:#fff!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card:hover span,
+.public-v2 .hero-photo-collage .hero-collage-card:focus-visible span,
+.public-v2 .hero-photo-collage .hero-collage-card:active span{
+  opacity:1!important;
+  transform:translateY(0)!important;
+}
+
+/* Formulario: contraste correcto en pasos */
+.public-v2 .quote-step-progress span{
+  color:#620907!important;
+  background:#fffaf6!important;
+  border:1px solid rgba(98,9,7,.18)!important;
+}
+.public-v2 .quote-step-progress span.active{
+  color:#fff!important;
+  background:#620907!important;
+  border-color:#620907!important;
+  box-shadow:0 12px 26px rgba(98,9,7,.18)!important;
+}
+.public-v2 .quote-step-progress span.active::before,
+.public-v2 .quote-step-progress span.active *{
+  color:#fff!important;
+}
+.public-v2 .quote-step-head{
+  background:rgba(255,250,244,.96)!important;
+  border:1px solid rgba(98,9,7,.14)!important;
+}
+.public-v2 .quote-step-head strong{
+  color:#620907!important;
+}
+
+/* Footer con datos visuales e iconografía */
+.public-v2 .public-footer{
+  background:
+    linear-gradient(110deg, rgba(52,7,6,.98), rgba(98,9,7,.96) 48%, rgba(148,22,19,.94)),
+    url('/assets/web/R11_restaurant_recurso_lineal_interior.jpg') center/cover no-repeat!important;
+  color:#fff!important;
+  padding:46px 0 34px!important;
+}
+.public-v2 .footer-grid-enhanced{
+  display:grid!important;
+  grid-template-columns:minmax(260px,.72fr) minmax(360px,1fr)!important;
+  gap:34px!important;
+  align-items:start!important;
+}
+.public-v2 .public-footer h3,
+.public-v2 .public-footer h4,
+.public-v2 .public-footer p,
+.public-v2 .public-footer a{
+  color:#fff!important;
+}
+.public-v2 .footer-brand{
+  display:grid!important;
+  grid-template-columns:92px 1fr!important;
+  gap:18px!important;
+  align-items:start!important;
+}
+.public-v2 .footer-logo{
+  width:86px!important;
+  height:86px!important;
+  object-fit:contain!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.95)!important;
+  padding:6px!important;
+}
+.public-v2 .footer-contact-cards{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+.public-v2 .footer-contact-cards h4{
+  grid-column:1/-1!important;
+  margin:0 0 2px!important;
+  font-size:1.05rem!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+}
+.public-v2 .footer-info-card{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:42px 1fr!important;
+  gap:4px 12px!important;
+  align-items:center!important;
+  padding:14px!important;
+  border-radius:20px!important;
+  background:rgba(255,250,244,.10)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  box-shadow:0 12px 30px rgba(18,2,2,.14)!important;
+}
+.public-v2 .footer-info-card .material-symbols-rounded{
+  grid-row:1/3!important;
+  width:42px!important;
+  height:42px!important;
+  border-radius:999px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#bd2b47!important;
+  color:#fff!important;
+  font-size:1.35rem!important;
+}
+.public-v2 .footer-info-card strong{
+  color:#fff!important;
+  font-size:.96rem!important;
+  line-height:1.15!important;
+}
+.public-v2 .footer-info-card small{
+  color:rgba(255,255,255,.78)!important;
+  line-height:1.25!important;
+}
+
+/* Panel interno: eliminar doble scroll vertical y dar aire visual */
+body.internal-cm-theme:not(.internal-screen-theme){
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  min-height:100vh!important;
+}
+body.internal-cm-theme:not(.internal-screen-theme) .topbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:30!important;
+}
+body.internal-cm-theme .admin-shell{
+  display:grid!important;
+  grid-template-columns:250px minmax(0,1fr)!important;
+  gap:24px!important;
+  align-items:start!important;
+  min-height:auto!important;
+  height:auto!important;
+  padding:22px clamp(18px,2.6vw,36px) 40px!important;
+  overflow:visible!important;
+}
+body.internal-cm-theme .sidebar{
+  position:sticky!important;
+  top:104px!important;
+  align-self:start!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  border-radius:26px!important;
+  padding:18px!important;
+  background:rgba(255,250,244,.88)!important;
+  box-shadow:0 14px 34px rgba(34,6,6,.12)!important;
+}
+body.internal-cm-theme .sidebar h3{
+  margin:0 0 12px!important;
+  font-size:1rem!important;
+  color:#620907!important;
+}
+body.internal-cm-theme .side-group{
+  margin-bottom:10px!important;
+}
+body.internal-cm-theme .side-group-toggle{
+  min-height:46px!important;
+  padding:11px 12px!important;
+  border-radius:18px!important;
+  font-size:.78rem!important;
+}
+body.internal-cm-theme .side-submenu{
+  padding:8px 0 2px!important;
+  gap:6px!important;
+}
+body.internal-cm-theme .side-btn{
+  min-height:34px!important;
+  padding:8px 12px!important;
+  border-radius:14px!important;
+  font-size:.74rem!important;
+}
+body.internal-cm-theme .admin-main{
+  max-height:none!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+body.internal-cm-theme .admin-main > .toolbar{
+  margin:0 0 18px!important;
+  padding:18px 20px!important;
+  border-radius:24px!important;
+  background:rgba(255,250,244,.90)!important;
+  border:1px solid rgba(98,9,7,.10)!important;
+  box-shadow:0 14px 34px rgba(34,6,6,.10)!important;
+}
+body.internal-cm-theme #viewTitle,
+body.internal-cm-theme .admin-main > .toolbar h2{
+  font-size:clamp(1.55rem,2.4vw,2.35rem)!important;
+  line-height:1.05!important;
+}
+body.internal-cm-theme #content{
+  overflow:visible!important;
+  min-width:0!important;
+}
+body.internal-cm-theme #content > .card,
+body.internal-cm-theme .dashboard-columns > .card,
+body.internal-cm-theme .documents-columns > .card,
+body.internal-cm-theme .operation-admin-card,
+body.internal-cm-theme .menu-editor,
+body.internal-cm-theme .menu-preview-card,
+body.internal-cm-theme .sweet-promo-studio{
+  border-radius:22px!important;
+  background:rgba(255,250,244,.92)!important;
+  box-shadow:0 12px 30px rgba(34,6,6,.09)!important;
+  border:1px solid rgba(98,9,7,.10)!important;
+}
+body.internal-cm-theme .card,
+body.internal-cm-theme .notice,
+body.internal-cm-theme .admin-help{
+  max-height:none!important;
+  overflow:visible!important;
+}
+body.internal-cm-theme .table-wrap,
+body.internal-cm-theme .admin-table-wrap,
+body.internal-cm-theme .table-scroll,
+body.internal-cm-theme .quotes-table-wrap,
+body.internal-cm-theme .suppliers-table-wrap{
+  max-height:none!important;
+  overflow-y:visible!important;
+  overflow-x:auto!important;
+}
+body.internal-cm-theme table{
+  border-collapse:separate!important;
+  border-spacing:0!important;
+}
+body.internal-cm-theme th{
+  position:static!important;
+}
+body.internal-cm-theme .dashboard-columns,
+body.internal-cm-theme .documents-columns,
+body.internal-cm-theme .stat-grid{
+  gap:16px!important;
+}
+
+/* Panel demo y pantalla interna */
+body.panel-theme .panel-grid{
+  align-items:start!important;
+  gap:22px!important;
+}
+body.panel-theme main.section{
+  padding:24px 0 42px!important;
+}
+body.internal-screen-theme{
+  overflow:hidden!important;
+}
+body.internal-screen-theme .kds-shell{
+  height:100vh!important;
+  overflow:hidden!important;
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+  gap:14px!important;
+}
+body.internal-screen-theme .kds-grid{
+  min-height:0!important;
+  overflow:hidden!important;
+}
+body.internal-screen-theme .kds-list{
+  overflow:auto!important;
+  min-height:0!important;
+}
+
+/* Escritorio: cada sección pública intenta calzar en pantalla completa */
+@media (min-width:1024px){
+  .public-v2 .service-section,
+  .public-v2 .founder-section,
+  .public-v2 .quote-section,
+  .public-v2 .visit-section{
+    min-height:calc(100svh - 84px)!important;
+    display:flex!important;
+    align-items:center!important;
+    padding:clamp(36px,5vh,62px) 0!important;
+  }
+  .public-v2 .service-section > .container,
+  .public-v2 .founder-section > .container,
+  .public-v2 .quote-section > .container,
+  .public-v2 .visit-section > .container{
+    width:min(1220px,calc(100% - 52px))!important;
+  }
+  .public-v2 .service-copy h2,
+  .public-v2 .founder-copy h2,
+  .public-v2 .quote-head h2,
+  .public-v2 .visit-section h2{
+    font-size:clamp(2.3rem,3.8vw,4.25rem)!important;
+  }
+}
+
+@media(max-width:980px){
+  .public-v2 .footer-grid-enhanced{
+    grid-template-columns:1fr!important;
+  }
+  .public-v2 .footer-contact-cards{
+    grid-template-columns:1fr!important;
+  }
+  body.internal-cm-theme .admin-shell{
+    grid-template-columns:1fr!important;
+  }
+  body.internal-cm-theme .sidebar{
+    position:relative!important;
+    top:auto!important;
+  }
+}
+
+@media(max-width:760px){
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal{
+    grid-template-rows:repeat(2, 132px)!important;
+    padding:14px!important;
+  }
+  .public-v2 .hero-photo-collage .hero-collage-card span{
+    opacity:1!important;
+    transform:none!important;
+    background:rgba(98,9,7,.72)!important;
+  }
+  .public-v2 .footer-brand{
+    grid-template-columns:70px 1fr!important;
+  }
+  .public-v2 .footer-logo{
+    width:68px!important;
+    height:68px!important;
+  }
+}
