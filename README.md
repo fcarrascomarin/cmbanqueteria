@@ -84,15 +84,11 @@ La vista actual está pensada para Claudia + Metamorfosis. La visual de trabajad
 
 Esta versión fuerza la lectura de `public/index.html` desde la raíz, desactiva caché para HTML/CSS/JS y agrega `/healthz` para comprobar que el servicio está vivo. En Render mantener Root Directory vacío, Build Command `npm install` y Start Command `npm start`.
 
-## Actualización observaciones CM · 21 de julio de 2026
 
-Esta versión incorpora las observaciones del PDF **Observaciones página web** entregado por CM:
+## Actualización 2026-07-21 · CM Experience, móvil e interno
 
-- Hero público con degradado burdeo entre `#340706` y `#a61410`, usando el recurso lineal del local como imagen de fondo semitransparente.
-- Botones y acentos públicos ajustados a carmesí `#bd2b47`, reduciendo el uso de amarillo en la web pública.
-- Títulos, íconos y subtítulos alineados a la pauta cromática indicada por CM (`#bd2b47` y `#620907`).
-- Hero con nuevas fotografías seleccionadas para Banquetería, Restaurant y Reservas especiales.
-- Restaurant mantiene horario correcto de lunes a viernes, 12:00 a 15:00 hrs., y elimina la frase marcada por CM para retiro.
-- Banquetería elimina la referencia a servicio externo, dejando la comunicación enfocada en servicios en local CM.
-- Videos públicos con valores desactualizados o problemas de recorte en PC fueron reemplazados por imágenes fijas hasta contar con nuevo material audiovisual.
-- Se mantiene la estructura pública: Restaurant, Banquetería, Trayectoria, Espacio, Cotiza y Cómo llegar.
+- Se renombra la sección pública de “Espacio” a **CM Experience**, dejándola como semi-cartelera en desarrollo, sin fechas ni eventos publicados por ahora.
+- Se pule la navegación pública para priorizar Restaurant, Banquetería, Experiencias, Cotiza y Ubicación.
+- Se mejora la versión móvil: navegación por chips, hero más compacto, formularios y secciones adaptadas a pantallas pequeñas.
+- Se refuerza la organización visual del panel interno, panel operativo y pantalla interna de comandas/mensajes con la estética burdeo del hero.
+- Se reemplazan bloques públicos con video por imágenes estáticas reales para evitar cortes en PC y prevenir referencias a material desactualizado.
