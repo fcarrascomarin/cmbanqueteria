@@ -236,7 +236,7 @@ p {
       rgba(64, 9, 24, 0.38) 62%,
       rgba(32, 2, 10, 0.18) 100%
     ),
-    url("/assets/web/H1_home_cm_banqueteria_evento_brand.jpg");
+    url("/assets/web/R11_restaurant_recurso_lineal_interior.jpg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -1033,7 +1033,7 @@ th {
         rgba(64, 9, 24, 0.76) 48%,
         rgba(32, 2, 10, 0.38) 100%
       ),
-      url("/assets/web/H1_home_cm_banqueteria_evento_brand.jpg");
+      url("/assets/web/R11_restaurant_recurso_lineal_interior.jpg");
     background-position: center center;
   }
 
@@ -1286,7 +1286,7 @@ th {
   aspect-ratio: 9 / 13;
   overflow: hidden;
   border-radius: 8px;
-  background: var(--vino-profundo) url('/assets/video-posters/prom.jpg') center / cover no-repeat;
+  background: var(--vino-profundo) url('/assets/prom.png') center / cover no-repeat;
 }
 
 .promo-video-card video {
@@ -2355,7 +2355,7 @@ th {
   padding: 86px 0;
   background-image:
     linear-gradient(90deg, rgba(33, 2, 10, .94) 0%, rgba(56, 16, 24, .85) 38%, rgba(56, 16, 24, .34) 68%, rgba(33, 2, 10, .14) 100%),
-    url("/assets/web/H1_home_cm_banqueteria_evento_brand.jpg");
+    url("/assets/web/R11_restaurant_recurso_lineal_interior.jpg");
 }
 
 .hero-editorial-grid {
@@ -2727,7 +2727,7 @@ th {
     padding: 60px 0;
     background-image:
       linear-gradient(180deg, rgba(33, 2, 10, .92) 0%, rgba(56, 16, 24, .76) 54%, rgba(33, 2, 10, .38) 100%),
-      url("/assets/web/H1_home_cm_banqueteria_evento_brand.jpg");
+      url("/assets/web/R11_restaurant_recurso_lineal_interior.jpg");
   }
 
   .nav-admin {
@@ -3302,7 +3302,7 @@ body.public-v2 {
   padding: clamp(30px, 5.5vh, 52px) 0;
   background-image:
     linear-gradient(90deg, rgba(33, 2, 10, .94) 0%, rgba(56, 16, 24, .82) 43%, rgba(56, 16, 24, .38) 72%, rgba(33, 2, 10, .20) 100%),
-    url("/assets/web/H1_home_cm_banqueteria_evento_brand.jpg");
+    url("/assets/web/R11_restaurant_recurso_lineal_interior.jpg");
   background-position: center center;
 }
 
@@ -3699,7 +3699,7 @@ body.public-v2 {
     padding: 54px 0;
     background-image:
       linear-gradient(180deg, rgba(33, 2, 10, .94) 0%, rgba(56, 16, 24, .78) 56%, rgba(33, 2, 10, .42) 100%),
-      url("/assets/web/H1_home_cm_banqueteria_evento_brand.jpg");
+      url("/assets/web/R11_restaurant_recurso_lineal_interior.jpg");
   }
 
   .public-v2 .nav-links {
@@ -7161,7 +7161,7 @@ body:not(.public-site) .side-btn[aria-current="page"] .material-symbols-rounded{
 .public-v2 .video-card video,.public-v2 .instagram-video-card video,.public-v2 .quote-video-card video,.public-v2 .video-card .lazy-video-player,.public-v2 .instagram-video-card .lazy-video-player,.public-v2 .quote-video-card .lazy-video-player{width:100%;height:100%;object-fit:cover;}
 .public-v2 #cotiza .quote-video-card,.public-v2 #como-llegar .location-video-card,.public-v2 #como-llegar .location-map-card{height:min(46vh,390px)!important;min-height:320px!important;max-height:390px!important;}
 .public-v2 #como-llegar .location-map-card iframe{height:100%!important;min-height:100%!important;}
-.promo-video-card{background:var(--vino-profundo) url('/assets/video-posters/prom.jpg') center / cover no-repeat!important;}
+.promo-video-card{background:var(--vino-profundo) url('/assets/prom.png') center / cover no-repeat!important;}
 @media(max-width:1120px){.public-v2 #cotiza .quote-video-card,.public-v2 #como-llegar .location-video-card,.public-v2 #como-llegar .location-map-card{height:340px!important;min-height:340px!important;max-height:340px!important;}}
 @media(max-width:760px){.public-v2 #cotiza .quote-video-card,.public-v2 #como-llegar .location-video-card,.public-v2 #como-llegar .location-map-card{height:300px!important;min-height:300px!important;max-height:300px!important}.video-play-icon{width:54px;height:54px;font-size:2.05rem!important;}}
 
@@ -7269,4 +7269,272 @@ body:not(.public-site) .mail-info-link.action-icon-only{width:40px!important;hei
     display:inline-grid !important;
   }
   .public-footer{padding-bottom:96px !important;}
+}
+
+/* ===== Actualización 2026-07-21 · Observaciones CM página web ===== */
+body.public-v2{
+  --cm-carmesi:#bd2b47;
+  --cm-burdeo-sub:#620907;
+  --cm-burdeo-oscuro:#340706;
+  --cm-burdeo-claro:#a61410;
+  --cm-burdeo-elemento:#941613;
+}
+
+/* Hero: degradado burdeo + dibujo semitransparente del local */
+.public-v2 .public-hero{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(104deg, var(--cm-burdeo-oscuro) 0%, var(--cm-burdeo-sub) 46%, var(--cm-burdeo-claro) 100%) !important;
+  color:#fff;
+}
+.public-v2 .public-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:url('/assets/web/R11_restaurant_recurso_lineal_interior.jpg');
+  background-repeat:no-repeat;
+  background-size:min(1050px, 78vw) auto;
+  background-position:52% 54%;
+  opacity:.18;
+  mix-blend-mode:screen;
+  filter:contrast(1.18) brightness(1.12);
+  pointer-events:none;
+  z-index:0;
+}
+.public-v2 .public-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 82% 42%, rgba(255,255,255,.16), transparent 28%),
+    linear-gradient(90deg, rgba(52,7,6,.72) 0%, rgba(98,9,7,.22) 58%, rgba(166,20,16,.12) 100%);
+  pointer-events:none;
+  z-index:0;
+}
+.public-v2 .public-hero .hero-content{
+  position:relative;
+  z-index:2;
+}
+.public-v2 .public-hero .kicker,
+.public-v2 .hero-photo .kicker{
+  color:#fff !important;
+  opacity:.92;
+  text-shadow:none;
+}
+.public-v2 .public-hero h1,
+.public-v2 .public-hero .lead{
+  color:#fff !important;
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal{
+  background:rgba(255,255,255,.13) !important;
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 32px 78px rgba(20,3,5,.28);
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card{
+  border:1px solid rgba(255,255,255,.18);
+}
+.public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card img{
+  filter:saturate(1.03) contrast(1.03);
+}
+
+/* Paleta pública sugerida por CM: carmesí para títulos/acciones y burdeo oscuro para subtítulos */
+.public-v2 .btn-primary,
+.public-v2 .quote-step-progress span.active{
+  background:var(--cm-carmesi) !important;
+  border-color:var(--cm-carmesi) !important;
+  color:#fff !important;
+}
+.public-v2 .btn-gold{
+  background:var(--cm-carmesi) !important;
+  border-color:var(--cm-carmesi) !important;
+  color:#fff !important;
+}
+.public-v2 .public-hero .hero-actions .btn-gold{
+  background:#fff !important;
+  color:var(--cm-burdeo-sub) !important;
+  border-color:rgba(255,255,255,.72) !important;
+}
+.public-v2 .public-hero .hero-actions .hero-secondary{
+  background:var(--cm-carmesi) !important;
+  border-color:var(--cm-carmesi) !important;
+  color:#fff !important;
+}
+.public-v2 .btn-secondary{
+  color:var(--cm-burdeo-sub) !important;
+  border-color:rgba(98,9,7,.18) !important;
+}
+.public-v2 .public-topbar .nav-links a,
+.public-v2 .public-topbar .brand,
+.public-v2 .public-topbar .nav-admin{
+  color:var(--cm-burdeo-sub) !important;
+}
+.public-v2 .service-copy h2,
+.public-v2 .founder-copy h2,
+.public-v2 .quote-head h2,
+.public-v2 .visit-grid h2,
+.public-v2 .menu-empty h3,
+.public-v2 .footer-brand h3{
+  color:var(--cm-carmesi) !important;
+}
+.public-v2 .kicker,
+.public-v2 .feature-list strong,
+.public-v2 .founder-timeline strong,
+.public-v2 .quote-step-head strong,
+.public-v2 .service-montage figcaption,
+.public-v2 .hero-collage-card span,
+.public-v2 .info-card strong,
+.public-v2 .video-caption span,
+.public-v2 .quote-photo-card span,
+.public-v2 .static-feature-caption span{
+  color:var(--cm-burdeo-sub) !important;
+}
+.public-v2 .service-montage figcaption{
+  background:rgba(255,255,255,.92) !important;
+}
+.public-v2 .feature-list div,
+.public-v2 .feature-list.compact div{
+  border-color:rgba(98,9,7,.13) !important;
+}
+.public-v2 .quote-step-head,
+.public-v2 .quote-step-progress span{
+  background:#fffaf6;
+  border-color:rgba(98,9,7,.14);
+}
+.public-v2 .info-card strong{
+  color:#fff !important;
+}
+
+/* Mantiene legibilidad sin amarillo en botones ni textos públicos */
+.public-v2 .price-note,
+.public-v2 .badge:not(.green){
+  background:rgba(189,43,71,.11) !important;
+  color:var(--cm-burdeo-sub) !important;
+  border-color:rgba(189,43,71,.24) !important;
+}
+.public-v2 .footer-credit a,
+.public-v2 .footer-contact a:hover{
+  color:var(--cm-carmesi) !important;
+}
+
+/* Videos públicos reemplazados por imágenes fijas hasta contar con material renovado */
+.public-v2 .static-feature-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:30px;
+  background:var(--cm-burdeo-oscuro);
+  box-shadow:var(--sombra);
+  border:1px solid rgba(98,9,7,.10);
+}
+.public-v2 .static-feature-card img{
+  width:100%;
+  height:100%;
+  min-height:inherit;
+  display:block;
+  object-fit:cover;
+}
+.public-v2 .static-feature-caption,
+.public-v2 .location-photo-card .video-caption,
+.public-v2 .quote-photo-card > div{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:18px;
+  z-index:2;
+  padding:16px 18px;
+  border-radius:20px;
+  background:rgba(255,255,255,.88);
+  color:var(--cm-burdeo-sub);
+  backdrop-filter:blur(8px);
+}
+.public-v2 .static-feature-caption span,
+.public-v2 .location-photo-card .video-caption span,
+.public-v2 .quote-photo-card > div span{
+  display:block;
+  margin-bottom:4px;
+  font-size:.78rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.public-v2 .static-feature-caption strong,
+.public-v2 .location-photo-card .video-caption strong,
+.public-v2 .quote-photo-card > div strong{
+  display:block;
+  color:var(--cm-burdeo-sub);
+  font-family:"Montserrat", system-ui, sans-serif;
+  font-weight:900;
+  font-size:1.18rem;
+  line-height:1.08;
+}
+.public-v2 #experiencias .static-feature-card,
+.public-v2 #experiencias .static-feature-card img{
+  min-height:430px;
+}
+.public-v2 #cotiza .quote-photo-card.static-feature-card,
+.public-v2 #cotiza .quote-photo-card.static-feature-card img{
+  min-height:520px;
+}
+.public-v2 #como-llegar .location-photo-card,
+.public-v2 #como-llegar .location-map-card{
+  height:min(46vh,390px) !important;
+  min-height:320px !important;
+  max-height:390px !important;
+}
+.public-v2 #como-llegar .location-photo-card img{
+  height:100%;
+  min-height:0;
+}
+
+/* Ajustes de copy y layout para las correcciones CM */
+.public-v2 #restaurant .feature-list span,
+.public-v2 #banqueteria .feature-list span{
+  color:#5f5350;
+}
+.public-v2 #banqueteria .service-copy h2{
+  max-width:15ch;
+}
+.public-v2 #restaurant .service-copy h2{
+  max-width:13ch;
+}
+.public-v2 .menu-empty .muted{
+  max-width:62ch;
+}
+
+@media(max-width:1120px){
+  .public-v2 #como-llegar .location-photo-card,
+  .public-v2 #como-llegar .location-map-card{
+    height:340px !important;
+    min-height:340px !important;
+    max-height:340px !important;
+  }
+  .public-v2 .public-hero::before{
+    background-size:1100px auto;
+    background-position:center;
+    opacity:.12;
+  }
+}
+@media(max-width:760px){
+  .public-v2 .public-hero::before{
+    background-size:900px auto;
+    opacity:.10;
+  }
+  .public-v2 #experiencias .static-feature-card,
+  .public-v2 #experiencias .static-feature-card img,
+  .public-v2 #cotiza .quote-photo-card.static-feature-card,
+  .public-v2 #cotiza .quote-photo-card.static-feature-card img,
+  .public-v2 #como-llegar .location-photo-card,
+  .public-v2 #como-llegar .location-map-card{
+    min-height:300px !important;
+    height:300px !important;
+    max-height:300px !important;
+  }
+  .public-v2 .static-feature-caption,
+  .public-v2 .location-photo-card .video-caption,
+  .public-v2 .quote-photo-card > div{
+    left:14px;
+    right:14px;
+    bottom:14px;
+    padding:14px;
+  }
 }
