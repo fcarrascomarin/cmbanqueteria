@@ -118,3 +118,11 @@ Ver instrucciones en:
 
 - `public-static/README_DEPLOY_STATIC.md`
 - `deployment/SEPARACION_PUBLICA_E_INTERNA.md`
+
+## Actualización 2026-07-21 · v30 móvil y GitHub estático
+
+- Se corrigió la sobreposición móvil de imágenes en montajes y ubicación.
+- Se estabilizó el footer móvil en una sola columna real.
+- `public-static/config.js` quedó apuntando a `https://cmbanqueteria.onrender.com`.
+- `public-static/CNAME` quedó preparado para `cmbanqueteria.cl`.
+- La carpeta `public-static` queda lista para ser subida a GitHub Pages como web pública estática.
