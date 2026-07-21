@@ -109,3 +109,12 @@ Esta versión fuerza la lectura de `public/index.html` desde la raíz, desactiva
 - El formulario de cotización mejora contraste en los pasos activos.
 - El footer incorpora datos visuales con iconografía: ubicación, teléfono/WhatsApp, correo, Instagram y horario.
 - El panel interno elimina el doble scroll vertical: la página completa baja junto al menú lateral, salvo elementos extensos que mantienen scroll horizontal cuando corresponde.
+
+## Actualización 2026-07-21 · web pública estática + backend Render
+
+Se agrega la carpeta `public-static` para desplegar la web pública fuera de Render y evitar que clientes vean la pantalla de espera por cold start. El panel interno y APIs se mantienen en Render mediante `server.js`.
+
+Ver instrucciones en:
+
+- `public-static/README_DEPLOY_STATIC.md`
+- `deployment/SEPARACION_PUBLICA_E_INTERNA.md`
