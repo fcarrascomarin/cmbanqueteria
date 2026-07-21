@@ -101,3 +101,11 @@ Esta versión fuerza la lectura de `public/index.html` desde la raíz, desactiva
 - Se compactaron las secciones públicas para escritorio, con el objetivo de que cada bloque principal calce en una pantalla promedio.
 - CM Experience queda como semi-cartelera en desarrollo, sin publicar fechas ni eventos.
 - Se reorganizó el panel interno para dar más aire visual: menos efecto de cuadro flotante, tarjetas más livianas, tamaños más armónicos y mejor uso del espacio.
+
+## Actualización 2026-07-21 · sin CM Experience pública y panel sin doble scroll
+
+- CM Experience quedó oculto temporalmente de la web pública.
+- La navegación prioriza Restaurant, Banquetería, Cotiza y Ubicación.
+- El formulario de cotización mejora contraste en los pasos activos.
+- El footer incorpora datos visuales con iconografía: ubicación, teléfono/WhatsApp, correo, Instagram y horario.
+- El panel interno elimina el doble scroll vertical: la página completa baja junto al menú lateral, salvo elementos extensos que mantienen scroll horizontal cuando corresponde.
