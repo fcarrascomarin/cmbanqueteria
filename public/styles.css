@@ -9895,3 +9895,414 @@ body.public-site{
     font-size:1.18rem!important;
   }
 }
+
+
+/* ===== v30 · reparación real mobile: sin sobreposiciones, footer estable y static ready ===== */
+@media (max-width: 900px){
+  html,
+  body,
+  body.public-site{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+  }
+
+  .public-v2 .container,
+  .public-v2 .public-hero > .container,
+  .public-v2 .hero-editorial-grid,
+  .public-v2 .service-layout,
+  .public-v2 .founder-layout,
+  .public-v2 .quote-media-grid,
+  .public-v2 .location-layout,
+  .public-v2 .footer-clean-inner{
+    width:min(100% - 28px, 1120px)!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Las secciones móviles vuelven a flujo normal. Nada de alturas forzadas. */
+  .public-v2 .section,
+  .public-v2 .service-section,
+  .public-v2 .founder-section,
+  .public-v2 .quote-section,
+  .public-v2 .visit-section{
+    display:block!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:44px 0!important;
+    overflow:visible!important;
+  }
+
+  .public-v2 .service-layout,
+  .public-v2 .service-layout-montage,
+  .public-v2 .restaurant-layout-v8,
+  .public-v2 .banqueteria-layout-v8,
+  .public-v2 .founder-layout,
+  .public-v2 .quote-media-grid,
+  .public-v2 .location-layout,
+  .public-v2 .location-media-pair{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:24px!important;
+    grid-template-columns:none!important;
+  }
+
+  /* Hero móvil estable */
+  .public-v2 .public-hero{
+    padding:34px 0 40px!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  .public-v2 .hero-editorial-grid{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:24px!important;
+  }
+  .public-v2 .hero-copy{
+    max-width:100%!important;
+    padding:0!important;
+  }
+  .public-v2 .hero-copy h1{
+    max-width:12.2ch!important;
+    font-size:clamp(2.2rem, 10.8vw, 3.45rem)!important;
+    line-height:.98!important;
+    letter-spacing:-.018em!important;
+    margin:0 0 16px!important;
+  }
+  .public-v2 .hero-copy .lead{
+    max-width:100%!important;
+    font-size:1rem!important;
+    line-height:1.42!important;
+  }
+  .public-v2 .hero-actions{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:10px!important;
+    margin-top:22px!important;
+  }
+  .public-v2 .hero-actions .btn{
+    width:100%!important;
+    min-height:46px!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    max-width:100%!important;
+    padding:12px!important;
+    gap:16px!important;
+    border-radius:26px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    grid-template-columns:none!important;
+    grid-template-rows:none!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card{
+    display:block!important;
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    height:clamp(230px, 62vw, 320px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    overflow:hidden!important;
+    border-radius:22px!important;
+    margin:0!important;
+  }
+  .public-v2 .hero-photo-collage.hero-photo-collage-equal .hero-collage-card img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    object-fit:cover!important;
+    object-position:center center!important;
+  }
+  .public-v2 .hero-photo-collage .hero-collage-card span{
+    position:absolute!important;
+    left:14px!important;
+    right:auto!important;
+    bottom:14px!important;
+    top:auto!important;
+    max-width:calc(100% - 28px)!important;
+    opacity:1!important;
+    transform:none!important;
+    padding:9px 15px!important;
+    border-radius:999px!important;
+    background:rgba(98,9,7,.84)!important;
+    color:#fff!important;
+    font-size:.95rem!important;
+    line-height:1!important;
+    white-space:normal!important;
+    z-index:2!important;
+  }
+
+  /* Reparación concreta de montajes: imágenes independientes, sin superposición */
+  .public-v2 #restaurant .service-side-stack,
+  .public-v2 #banqueteria .service-montage,
+  .public-v2 .service-montage.two-up,
+  .public-v2 .restaurant-montage.two-up,
+  .public-v2 .banqueteria-montage.two-up{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:22px!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    grid-template-columns:none!important;
+    grid-template-rows:none!important;
+  }
+  .public-v2 .service-montage.two-up figure,
+  .public-v2 .restaurant-montage.two-up figure,
+  .public-v2 .banqueteria-montage.two-up figure{
+    display:block!important;
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    height:clamp(300px, 72vw, 390px)!important;
+    min-height:0!important;
+    max-height:none!important;
+    aspect-ratio:auto!important;
+    overflow:hidden!important;
+    margin:0!important;
+    border-radius:26px!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+  }
+  .public-v2 .service-montage.two-up figure + figure,
+  .public-v2 .restaurant-montage.two-up figure + figure,
+  .public-v2 .banqueteria-montage.two-up figure + figure{
+    margin-top:0!important;
+  }
+  .public-v2 .service-montage.two-up img,
+  .public-v2 .restaurant-montage.two-up img,
+  .public-v2 .banqueteria-montage.two-up img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    object-fit:cover!important;
+    object-position:center center!important;
+    transform:none!important;
+  }
+  .public-v2 .service-montage.two-up figcaption,
+  .public-v2 .restaurant-montage.two-up figcaption,
+  .public-v2 .banqueteria-montage.two-up figcaption{
+    position:absolute!important;
+    left:14px!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:14px!important;
+    max-width:calc(100% - 28px)!important;
+    padding:9px 14px!important;
+    border-radius:999px!important;
+    background:rgba(98,9,7,.86)!important;
+    color:#fff!important;
+    font-size:.84rem!important;
+    line-height:1!important;
+    z-index:3!important;
+    transform:none!important;
+  }
+
+  /* Ubicación: información, foto y mapa separados con aire */
+  .public-v2 #como-llegar .location-info{
+    margin:22px 0 0!important;
+    position:relative!important;
+    z-index:1!important;
+  }
+  .public-v2 #como-llegar .location-media-pair{
+    margin-top:0!important;
+    gap:24px!important;
+  }
+  .public-v2 #como-llegar .location-image-card,
+  .public-v2 #como-llegar .location-map-card{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    position:relative!important;
+    overflow:hidden!important;
+    border-radius:26px!important;
+    height:auto!important;
+    max-height:none!important;
+  }
+  .public-v2 #como-llegar .location-image-card{
+    height:clamp(390px, 100vw, 520px)!important;
+    min-height:390px!important;
+  }
+  .public-v2 #como-llegar .location-image-card img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    object-fit:cover!important;
+    object-position:center center!important;
+  }
+  .public-v2 #como-llegar .location-image-caption{
+    position:absolute!important;
+    left:16px!important;
+    right:16px!important;
+    bottom:16px!important;
+    max-width:none!important;
+    padding:18px!important;
+    border-radius:22px!important;
+  }
+  .public-v2 #como-llegar .location-image-caption strong{
+    font-size:clamp(1.35rem, 7vw, 2.05rem)!important;
+    line-height:1.04!important;
+  }
+  .public-v2 #como-llegar .location-map-card{
+    height:320px!important;
+    min-height:320px!important;
+    max-height:320px!important;
+  }
+  .public-v2 #como-llegar .location-map-card iframe{
+    position:absolute!important;
+    inset:0!important;
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:100%!important;
+    border:0!important;
+  }
+
+  /* Footer móvil: rediseño fijo, una sola columna, sin textos partidos */
+  .public-v2 footer.footer-clean,
+  .public-v2 .footer-clean{
+    padding:36px 0 calc(38px + env(safe-area-inset-bottom, 0px))!important;
+    overflow:hidden!important;
+  }
+  .public-v2 .footer-clean-inner{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:26px!important;
+    align-items:stretch!important;
+    grid-template-columns:none!important;
+  }
+  .public-v2 .footer-clean-brand{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:14px!important;
+    min-width:0!important;
+    width:100%!important;
+    grid-template-columns:none!important;
+  }
+  .public-v2 .footer-logo-clean{
+    width:76px!important;
+    height:76px!important;
+    min-width:76px!important;
+  }
+  .public-v2 .footer-clean h3{
+    max-width:100%!important;
+    font-size:clamp(1.65rem, 8vw, 2.1rem)!important;
+    line-height:1.08!important;
+    margin:0 0 8px!important;
+    word-break:normal!important;
+    overflow-wrap:normal!important;
+  }
+  .public-v2 .footer-clean p{
+    max-width:100%!important;
+    font-size:1rem!important;
+    line-height:1.45!important;
+    word-break:normal!important;
+    overflow-wrap:normal!important;
+  }
+  .public-v2 .footer-clean-contact{
+    width:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:14px!important;
+    min-width:0!important;
+  }
+  .public-v2 .footer-clean-contact h4{
+    margin:0!important;
+    text-align:left!important;
+    font-size:1.1rem!important;
+    line-height:1.1!important;
+  }
+  .public-v2 .footer-clean-list{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:12px!important;
+    width:100%!important;
+    grid-template-columns:none!important;
+  }
+  .public-v2 .footer-clean-item{
+    display:flex!important;
+    align-items:center!important;
+    gap:13px!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:70px!important;
+    box-sizing:border-box!important;
+    padding:13px!important;
+    border-radius:18px!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+  }
+  .public-v2 .footer-clean-item > .material-symbols-rounded{
+    flex:0 0 40px!important;
+    width:40px!important;
+    height:40px!important;
+    min-width:40px!important;
+    margin:0!important;
+    font-size:1.18rem!important;
+  }
+  .public-v2 .footer-clean-item span:last-child{
+    flex:1 1 auto!important;
+    min-width:0!important;
+  }
+  .public-v2 .footer-clean-item strong,
+  .public-v2 .footer-clean-item small{
+    display:block!important;
+    max-width:100%!important;
+    word-break:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+  .public-v2 .footer-clean-item strong{
+    font-size:.95rem!important;
+    line-height:1.14!important;
+  }
+  .public-v2 .footer-clean-item small{
+    font-size:.82rem!important;
+    line-height:1.25!important;
+  }
+
+  /* WhatsApp flotante en móvil: no tapa etiquetas ni tarjetas */
+  .public-v2 .floating-whatsapp,
+  .public-v2 .always-whatsapp{
+    width:54px!important;
+    height:54px!important;
+    min-width:54px!important;
+    min-height:54px!important;
+    right:14px!important;
+    left:auto!important;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 78px)!important;
+    padding:0!important;
+    z-index:80!important;
+  }
+  .public-v2 .floating-whatsapp img,
+  .public-v2 .always-whatsapp img{
+    width:30px!important;
+    height:30px!important;
+  }
+}
+
+@media (max-width: 420px){
+  .public-v2 .hero-copy h1{
+    font-size:clamp(2.05rem, 10.3vw, 3rem)!important;
+    max-width:12ch!important;
+  }
+  .public-v2 .footer-clean h3{
+    font-size:1.55rem!important;
+  }
+  .public-v2 .footer-clean-item strong{
+    font-size:.9rem!important;
+  }
+}
