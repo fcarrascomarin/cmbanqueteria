@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Montserrat:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=20260714-video-control-v25">
+  <link rel="stylesheet" href="/styles.css?v=20260721-mobile-interno-v23">
 </head>
-<body>
+<body class="internal-cm-theme admin-theme">
   <div id="loginView" class="login-page">
     <form class="card login-card form-grid" id="loginForm">
       <img src="/assets/logo-cm.png" style="width:120px;margin:auto" alt="CM">
@@ -20,7 +20,7 @@
     </form>
   </div>
   <div id="adminView" class="hidden">
-    <header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel interno<br><small>Administración</small></span></a><div style="display:flex;gap:10px"><a class="btn btn-secondary" href="/pantalla.html" target="_blank">Pantalla restaurant</a><a class="btn btn-secondary" href="/" target="_blank">Ver web</a><button class="btn btn-primary" id="logoutBtn">Salir</button></div></div></header>
+    <header class="topbar"><div class="container nav"><a class="brand" href="/"><img class="brand-logo" src="/assets/logo-cm.png" alt="CM"><span>Panel CM<br><small>Administración interna</small></span></a><div class="internal-top-actions"><a class="btn btn-secondary" href="/pantalla.html" target="_blank">Pantalla</a><a class="btn btn-secondary" href="/" target="_blank">Web</a><button class="btn btn-primary" id="logoutBtn">Salir</button></div></div></header>
     <div class="admin-shell">
       <aside class="sidebar">
         <h3>Módulos</h3>
@@ -74,9 +74,9 @@
     </div>
   </div>
   <dialog class="modal" id="modal"><form class="modal-content form-grid" id="modalForm"></form></dialog>
-  <script src="/menu-graphic.js?v=20260714-video-control-v25"></script>
-  <script src="/admin.js?v=20260714-video-control-v25"></script>
-  <script src="/purchases.js?v=20260714-video-control-v25"></script>
-  <script src="/kitchen-minutas.js?v=20260714-video-control-v25"></script>
+  <script src="/menu-graphic.js?v=20260721-mobile-interno-v23"></script>
+  <script src="/admin.js?v=20260721-mobile-interno-v23"></script>
+  <script src="/purchases.js?v=20260721-mobile-interno-v23"></script>
+  <script src="/kitchen-minutas.js?v=20260721-mobile-interno-v23"></script>
 </body>
 </html>
