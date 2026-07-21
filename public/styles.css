@@ -8710,3 +8710,46 @@ body.internal-screen-theme .menu-screen-card{
     max-height:none!important;
   }
 }
+
+/* ===== Ajuste hero v24 · la cinta burdeo aparece al interactuar ===== */
+.public-v2 .hero-photo-collage .hero-collage-card{
+  overflow:hidden!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card::after{
+  opacity:0!important;
+  background:linear-gradient(180deg, rgba(0,0,0,.04) 8%, rgba(45,4,8,.20) 100%)!important;
+  transition:opacity .28s ease!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card span{
+  opacity:0!important;
+  transform:translateY(12px)!important;
+  transition:opacity .25s ease, transform .25s ease, background .25s ease!important;
+  background:rgba(123,12,22,.84)!important;
+  backdrop-filter:blur(3px)!important;
+  pointer-events:none!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card:hover::after,
+.public-v2 .hero-photo-collage .hero-collage-card:focus-visible::after,
+.public-v2 .hero-photo-collage .hero-collage-card:active::after{
+  opacity:1!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card:hover span,
+.public-v2 .hero-photo-collage .hero-collage-card:focus-visible span,
+.public-v2 .hero-photo-collage .hero-collage-card:active span{
+  opacity:1!important;
+  transform:translateY(0)!important;
+}
+.public-v2 .hero-photo-collage .hero-collage-card:hover img,
+.public-v2 .hero-photo-collage .hero-collage-card:focus-visible img,
+.public-v2 .hero-photo-collage .hero-collage-card:active img{
+  transform:scale(1.035)!important;
+  filter:saturate(1.06) contrast(1.04)!important;
+}
+@media (max-width:760px){
+  .public-v2 .hero-photo-collage .hero-collage-card::after{opacity:.18!important;}
+  .public-v2 .hero-photo-collage .hero-collage-card span{
+    opacity:1!important;
+    transform:none!important;
+    background:rgba(123,12,22,.72)!important;
+  }
+}
