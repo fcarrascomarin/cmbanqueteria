@@ -126,3 +126,11 @@ Ver instrucciones en:
 - `public-static/config.js` quedó apuntando a `https://cmbanqueteria.onrender.com`.
 - `public-static/CNAME` quedó preparado para `cmbanqueteria.cl`.
 - La carpeta `public-static` queda lista para ser subida a GitHub Pages como web pública estática.
+
+## Actualización 2026-08-03 · separación pública/interna
+
+- La web pública vive en el repositorio `cmbanqueteria-public` y en GitHub Pages.
+- Este repositorio queda como backend y panel interno para Render.
+- La raíz `/` y `/index.html` del servicio Render redirigen a `/admin.html`, evitando una segunda web pública en `admin.cmbanqueteria.cl`.
+- Las cotizaciones se guardan en `event_quotes` vía `/api/public/quotes`.
+- El correo receptor por defecto queda en `claudiamendezbanqueteria@gmail.com`. Para envío real de correos desde Render se deben configurar `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` y `MAIL_TO`.

@@ -48,9 +48,14 @@ try{
 app.use(session(sessionConfig));
 
 app.get('/healthz',(req,res)=>res.status(200).json({ok:true,service:'cm-banqueteria',time:new Date().toISOString()}));
+// Render/administración: la raíz del backend no debe mostrar una segunda web pública.
 app.get('/',(req,res)=>{
   res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.sendFile(path.join(PUBLIC_DIR,'index.html'));
+  res.redirect(302,'/admin.html');
+});
+app.get('/index.html',(req,res)=>{
+  res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.redirect(302,'/admin.html');
 });
 app.use(express.static(PUBLIC_DIR,{
   etag:true,
@@ -172,7 +177,7 @@ INSERT INTO consultation_milestones(stage_key,week_number,title,objective,delive
 ('activacion',1,'Activación institucional y documental','Registrar la ruta institucional, reunir documentos vigentes y dejar trazabilidad de los primeros respaldos del negocio.','Acta reunión Patentes Municipales|Recepción patente comercial vigente|Recepción resolución sanitaria vigente|Autorización de uso del inmueble|Mandato de representación o autorización de gestión|Carpeta documental base compartida','en_curso',1,'Iniciada el 18 de junio de 2026. Se mantiene abierta hasta completar autorización de uso del inmueble y carpeta base.'),
 ('observacion_real',2,'Observación activa de operación real','Sistematizar la participación de Metamorfosis durante el servicio completo del 19 de junio y convertir observaciones en evidencia ordenada.','Bitácora de servicio 19 de junio|Registro de afluencia y procesos|Hipótesis operativas preliminares|Evidencia fotográfica o notas de campo|Registro interno de hito realizado','realizado',2,'Hito realizado el 19 de junio de 2026; falta sistematizar evidencia y acta retrospectiva.'),
 ('sanitaria',3,'Preparación sanitaria y matriz de riesgos','Preparar a CM para la actualización de resolución sanitaria mediante manual, checklist, visita en terreno, croquis y matriz de riesgos sanitarios.','Manual sanitario base entregado|Checklist sanitario operativo entregado|Aplicación del checklist en terreno|Croquis operativo sanitario|Matriz de riesgos sanitarios','en_curso',3,'Proceso prioritario de julio. La matriz se entrega dentro de los cinco días siguientes a la aplicación del checklist.'),
-('regularizacion',4,'Regularización web, comercial, jurídica y tributaria','Ordenar la presencia digital, el correo institucional, el flujo de cotizaciones y la revisión de figura jurídica y giro.','Maqueta web externa e interna|Dominio cmbanqueteria.cl activo|Correo contacto@cmbanqueteria.cl configurado|Flujo de cotizaciones web-correo-panel|Revisión de figura jurídica y giro','en_curso',4,'Proceso paralelo a la preparación sanitaria. Metamorfosis administra dominio, hosting y correo hasta la entrega formal.'),
+('regularizacion',4,'Regularización web, comercial, jurídica y tributaria','Ordenar la presencia digital, el correo institucional, el flujo de cotizaciones y la revisión de figura jurídica y giro.','Maqueta web externa e interna|Dominio cmbanqueteria.cl activo|Correo claudiamendezbanqueteria@gmail.com configurado|Flujo de cotizaciones web-correo-panel|Revisión de figura jurídica y giro','en_curso',4,'Proceso paralelo a la preparación sanitaria. Metamorfosis administra dominio, hosting y correo hasta la entrega formal.'),
 ('solicitud_sanitaria',5,'Solicitud sanitaria y visita inspectiva','Ingresar o preparar la solicitud sanitaria online y dejar seguimiento de SEREMI, visita inspectiva y eventuales observaciones.','Carpeta sanitaria preparada|Solicitud sanitaria online|Seguimiento SEREMI|Acta visita inspectiva|Respuesta a observaciones','pendiente_inmediato',5,'Debe activarse después de ejecutar ajustes de julio, con solicitud proyectada para agosto.'),
 ('municipal_sii',6,'Patente municipal y ampliación de giro SII','Volver a Municipalidad y ajustar patente o giro tributario solo después de contar con mayor claridad sanitaria.','Retorno a Patentes Municipales|Carpeta municipal robusta|Solicitud de patente o adecuación|Revisión/ampliación de giro SII|Registro de resolución o respuesta','pendiente_posterior',6,'Hito posterior a la regularización sanitaria.'),
 ('economica',7,'Medición económica inicial','Reemplazar estimaciones por datos reales de ventas, compras, costos, mermas, servicios básicos y punto de equilibrio.','Registro de ventas|Registro de compras y costos|Ficha de costo por menú|Control de servicios básicos y mermas|Punto de equilibrio preliminar','pendiente_posterior',7,'Debe iniciarse después de estabilizar la etapa sanitaria y documental.'),
@@ -364,7 +369,7 @@ app.post('/api/public/quotes',async(req,res)=>{
     if(m){
       await m.sendMail({
         from:process.env.MAIL_FROM||`"CM Banquetería" <${process.env.SMTP_USER}>`,
-        to:process.env.MAIL_TO||'contacto@cmbanqueteria.cl',
+        to:process.env.MAIL_TO||'claudiamendezbanqueteria@gmail.com',
         replyTo:b.email||undefined,
         subject:`Nueva cotización web - ${clientName}`,
         text:`Nueva cotización\nNombre: ${clientName}\nTeléfono: ${b.phone}\nCorreo: ${b.email||'No informado'}\nFecha: ${eventDate||'No informada'}\nTipo: ${eventType||''}\nPersonas: ${b.guests||''}\nLugar: ${b.location||''}\nServicio: ${requestedService||''}\nComentarios: ${internalNotes||''}`,
