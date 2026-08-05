@@ -10306,3 +10306,68 @@ body.public-site{
     font-size:.9rem!important;
   }
 }
+
+/* ===== CM Administradora v40 · costos y carpeta documental ===== */
+.cm-cost-intro,.cm-doc-intro{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+  padding:24px 26px;margin-bottom:16px;border-radius:24px;
+  background:linear-gradient(135deg,#fffaf6,#f5e9e4);border:1px solid rgba(98,9,7,.13);
+  box-shadow:0 14px 36px rgba(52,7,6,.08)
+}
+.cm-cost-intro h3,.cm-doc-intro h3{margin:0;color:#620907;font-size:clamp(1.55rem,2.4vw,2.25rem)}
+.cm-cost-intro p,.cm-doc-intro p{margin:8px 0 0;max-width:760px;color:#6f6060}
+.cm-month-control,.cm-doc-intro>label{display:grid;gap:7px;min-width:210px;color:#620907;font-weight:850;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.cm-month-control input,.cm-doc-intro select{width:100%;min-height:48px;padding:9px 12px;border:1px solid rgba(98,9,7,.18);border-radius:14px;background:#fff;color:#2a2020}
+.cm-cost-actions-row{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.cm-cost-action{min-height:42px;padding-inline:16px;text-transform:none;letter-spacing:0}
+.cm-cost-action .material-symbols-rounded{font-size:1.2rem}
+.cm-cost-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.cm-cost-stat{position:relative;min-height:128px;padding:18px 16px 15px 58px;border-radius:20px;background:#fff;border:1px solid rgba(98,9,7,.11);box-shadow:0 12px 30px rgba(52,7,6,.07)}
+.cm-cost-stat>.material-symbols-rounded{position:absolute;left:16px;top:18px;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:#620907;color:#fff;font-size:1.12rem}
+.cm-cost-stat small{display:block;color:#756666;font-weight:800;line-height:1.2}
+.cm-cost-stat strong{display:block;margin-top:10px;color:#620907;font-size:clamp(1.2rem,2vw,1.72rem);line-height:1}
+.cm-cost-stat em{display:block;margin-top:7px;color:#8c7775;font-size:.74rem;font-style:normal}
+.cm-cost-chart-grid{display:grid;grid-template-columns:1fr;gap:18px}
+.cm-cost-chart-card,.cm-cost-table-card{padding:22px;border-radius:24px;background:#fff;border:1px solid rgba(98,9,7,.1);box-shadow:0 14px 36px rgba(52,7,6,.08)}
+.cm-cost-chart-card h3,.cm-cost-table-card h3{margin:0;color:#620907}
+.cm-cost-chart-card p{margin:5px 0 14px;color:#7c6e6d;font-size:.88rem}
+.cm-cost-svg{display:block;width:100%;height:auto;min-height:300px}
+.cm-chart-grid{stroke:rgba(98,9,7,.12);stroke-width:1}
+.cm-chart-zero{stroke:rgba(35,31,32,.5);stroke-width:1.5}
+.cm-chart-axis{fill:#6f6362;font:12px Montserrat,Arial,sans-serif}
+.cm-chart-date{font-weight:700}
+.cm-chart-legend{fill:#3f3434;font:700 13px Montserrat,Arial,sans-serif}
+.cm-chart-title{fill:#6f6362;font:700 12px Montserrat,Arial,sans-serif}
+.cm-chart-empty{min-height:250px;display:grid;place-items:center;text-align:center;padding:28px;border-radius:20px;background:#fbf5f0;color:#766765}
+.cm-cost-table-card{margin-top:18px}
+.cm-row-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.cm-positive{color:#2b6b45}.cm-negative{color:#b3223e}
+.cm-cost-items-editor{padding:16px;border:1px solid rgba(98,9,7,.12);border-radius:18px;background:#fffaf6}
+.cm-cost-items-editor .toolbar{margin-bottom:10px}
+.cm-cost-items-editor table{min-width:860px}
+.cm-cost-items-editor input,.cm-cost-items-editor select{width:100%;min-width:90px;padding:9px 8px;border:1px solid rgba(98,9,7,.16);border-radius:10px;background:#fff}
+.cm-cost-items-editor .cm-item-name{min-width:170px}
+.cm-remove-cost-row{width:36px;height:36px;border:0;border-radius:50%;display:grid;place-items:center;background:#f8dfe4;color:#a91f3c;cursor:pointer}
+.cm-cost-form-summary{display:flex;gap:12px;flex-wrap:wrap}
+.cm-cost-form-summary span{flex:1;min-width:220px;padding:14px 16px;border-radius:16px;background:#620907;color:#fff}
+.cm-cost-form-summary strong{float:right;color:#fff}
+.cm-doc-intro{align-items:center}
+
+@media print{
+  .sidebar,.topbar,#viewActions,.cm-cost-actions-row,.cm-row-buttons,.cm-cost-table-card .toolbar .btn{display:none!important}
+  .admin-shell{display:block!important}.admin-main{padding:0!important}.cm-cost-chart-card,.cm-cost-table-card,.cm-cost-stat{box-shadow:none;break-inside:avoid}
+  .cm-cost-stats{grid-template-columns:repeat(5,1fr)}
+}
+@media (max-width:1180px){
+  .cm-cost-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .cm-cost-intro,.cm-doc-intro{align-items:stretch;flex-direction:column;padding:18px}
+  .cm-month-control,.cm-doc-intro>label{min-width:0;width:100%}
+  .cm-cost-stats{grid-template-columns:1fr 1fr}
+  .cm-cost-chart-card,.cm-cost-table-card{padding:15px;border-radius:18px}
+  .cm-cost-svg{min-width:720px}
+  .cm-cost-chart-card{overflow-x:auto}
+  .cm-cost-stat{min-height:118px;padding-left:54px}
+}
+@media (max-width:470px){.cm-cost-stats{grid-template-columns:1fr}}
