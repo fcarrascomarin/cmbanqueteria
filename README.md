@@ -1,136 +1,80 @@
-# CM Banquetería — Web pública + Plataforma Interna
+# CM Banquetería & Restaurant · Panel interno v40
 
-Versión pública actualizada para explicar con claridad las líneas visibles de CM y sumar una capa de confianza mediante la trayectoria de su fundadora, Claudia Méndez.
+Aplicación administrativa para la operación cotidiana de CM Banquetería & Restaurant. Incluye autenticación, menú del día, cotizaciones, compras, inventario, personal, documentos y un nuevo módulo de costos diarios con gráficos y exportación.
 
-1. **CM Restaurant**: menú del día, almuerzos caseros y atención diurna de lunes a viernes, 12:00 a 15:00 hrs.
-2. **CM Banquetería**: eventos familiares, empresas, celebraciones, coffee break, almuerzos, cenas y servicios a medida.
-3. **Trayectoria fundadora**: relato público breve sobre formación hotelera, alimentación colectiva, servicios para empresas, banquetería, etapa educacional y apertura del restaurant familiar.
-4. **Espacio y reservas especiales**: línea disponible para consultas, sin cartelera activa por ahora.
+## Cambios principales de v40
 
-La web pública prioriza conversión por WhatsApp, cotización ordenada, menú del día ligado al Restaurant, ubicación con mapa, galería real del local y una presentación más profesional del oficio detrás de CM. La plataforma interna se mantiene en `/admin.html`.
+- Nueva vista **Compras y stock > Costos diarios**.
+- Registro diario de clientes, ingresos, personal, gastos básicos e insumos detallados.
+- Cálculo automático de gasto de alimentos, porcentaje de costo y neto.
+- Tabla diaria y resumen mensual.
+- Gráfico diario de ingreso, costo y neto.
+- Gráfico mensual de clientes promedio y costo de alimentos.
+- Descarga CSV, gráficos PNG e impresión/guardado en PDF.
+- Vista documental simplificada como **Carpeta sanitaria y documental**.
+- Retiro de la pestaña visible de consultoría/Metamorfosis.
+- Panel inicial orientado exclusivamente al uso de la administradora.
 
-## Qué incluye esta actualización
+## Arquitectura
 
-- Hero principal con el mensaje “Tres maneras de vivir CM en un mismo lugar”.
-- Navegación pública ordenada: Restaurant, Banquetería, Trayectoria, Espacio, Cotiza y Cómo llegar.
-- Sección Restaurant con menú del día dinámico desde el panel interno.
-- Imagen fija del bloque de menú cuando no exista publicación diaria, evitando mostrar menús vencidos.
-- Sección Banquetería con galería real de montajes y preparaciones.
-- Nueva sección “La experiencia detrás de CM”, con relato fundador y línea de tiempo de Claudia Méndez.
-- Sección de espacio y reservas especiales, manteniendo CM Experiencias en suspenso hasta que exista cartelera activa.
-- Formulario de cotización que abre WhatsApp con los datos preparados y también intenta registrar la solicitud en el panel interno.
-- Sección “Cómo llegar” con dirección, botones de contacto y mapa embebido.
-- Imágenes optimizadas en `public/assets/web/`, incluyendo hero de portada comprimido.
+- Node.js + Express.
+- PostgreSQL.
+- Frontend administrativo en `/public/admin.html`.
+- API y servidor en `server.js`.
+- Esquema en `schema.sql`.
 
-## Rutas principales
+## Variables de entorno
 
-- `/` web pública.
-- `/admin.html` panel interno.
-- `/pantalla.html` vista para TV/pantallas del restaurant.
-- `/health` estado del servidor.
+Copiar `.env.example` y completar solo en el servicio de hosting o entorno local seguro. No guardar contraseñas, claves SMTP, cadena de base de datos ni secretos de sesión en Git.
 
-## Variables de entorno en Render
+Variables principales:
 
-```env
-DATABASE_URL=postgresql://...
-SITE_URL=https://cmbanqueteria.cl
-ADMIN_USER=admin@cmbanqueteria.cl
-ADMIN_PASS=una_clave_segura
-SESSION_SECRET=un_secreto_largo
-
-OPENAI_API_KEY=sk-...
-OPENAI_VISION_MODEL=gpt-5.5
-
-SMTP_HOST=smtp.zoho.com
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USER=cotizaciones@cmbanqueteria.cl
-SMTP_PASS=clave_o_app_password
-MAIL_TO=cotizaciones@cmbanqueteria.cl
-MAIL_FROM="CM Banquetería" <cotizaciones@cmbanqueteria.cl>
-```
+- `DATABASE_URL`
+- `SESSION_SECRET`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `PUBLIC_SITE_URL`
+- `MAIL_TO`
+- `MAIL_FROM`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
 
 ## Instalación local
 
 ```bash
 npm install
-cp .env.example .env
-npm run dev
+npm start
 ```
 
-En Windows PowerShell:
+La aplicación ejecuta el esquema al iniciar. Antes de actualizar producción, respaldar la base de datos.
 
-```bash
-copy .env.example .env
-npm run dev
-```
+## Tablas nuevas
 
-## Notas
+- `daily_financials`: un registro por fecha con clientes, ingreso, personal, gastos básicos y notas.
+- `daily_cost_items`: insumos o costos directos asociados a cada jornada.
 
-- No subir `.env` a GitHub.
-- La web pública no expone costos, diagnóstico, trámites, hoja de ruta ni información interna de la consultoría.
-- Los nombres de terceros se mantienen con redacción prudente. La trayectoria pública evita convertir la página en un currículum extenso.
-- El menú del día depende del panel interno y de `/api/public/menu/today`.
+## API de costos
 
+- `GET /api/admin/daily-financials?month=YYYY-MM`
+- `GET /api/admin/daily-financials/summary?months=12`
+- `POST /api/admin/daily-financials`
+- `DELETE /api/admin/daily-financials/:id`
 
-## Actualización panel interno · 08 de julio de 2026
+Todas requieren sesión administrativa.
 
-Esta versión reemplaza la lógica rígida de “Semana 1 a Semana 6” por el módulo **Proceso de Regularización y Consolidación CM by Metamorfosis Lab**. El proceso queda organizado por hitos, con trazabilidad de hitos realizados, pendientes inmediatos, preparación sanitaria, Drive como respaldo, biblioteca documental, actas y cotizaciones vinculadas al correo institucional `contacto@cmbanqueteria.cl`.
+## Orden de despliegue recomendado
 
-La vista actual está pensada para Claudia + Metamorfosis. La visual de trabajadoras debe desarrollarse después como pantalla separada y mucho más simple.
+1. Crear respaldo de la base de datos.
+2. Desplegar el panel/backend.
+3. Revisar `/healthz`.
+4. Iniciar sesión y registrar una jornada de prueba.
+5. Confirmar gráficos y descargas.
+6. Publicar la web pública.
+7. Completar la lista de pruebas incluida en el manual de traspaso.
 
+## Legado técnico
 
-## Deploy v21
-
-Esta versión fuerza la lectura de `public/index.html` desde la raíz, desactiva caché para HTML/CSS/JS y agrega `/healthz` para comprobar que el servicio está vivo. En Render mantener Root Directory vacío, Build Command `npm install` y Start Command `npm start`.
-
-
-## Actualización 2026-07-21 · CM Experience, móvil e interno
-
-- Se renombra la sección pública de “Espacio” a **CM Experience**, dejándola como semi-cartelera en desarrollo, sin fechas ni eventos publicados por ahora.
-- Se pule la navegación pública para priorizar Restaurant, Banquetería, Experiencias, Cotiza y Ubicación.
-- Se mejora la versión móvil: navegación por chips, hero más compacto, formularios y secciones adaptadas a pantallas pequeñas.
-- Se refuerza la organización visual del panel interno, panel operativo y pantalla interna de comandas/mensajes con la estética burdeo del hero.
-- Se reemplazan bloques públicos con video por imágenes estáticas reales para evitar cortes en PC y prevenir referencias a material desactualizado.
-
-
-## Actualización final observaciones CM · 21-07-2026
-
-- Se revisó la implementación contra el PDF de observaciones de CM.
-- Se reforzó el uso de burdeos/carmesí y se eliminó el amarillo visual de botones principales en la web pública.
-- Se compactaron las secciones públicas para escritorio, con el objetivo de que cada bloque principal calce en una pantalla promedio.
-- CM Experience queda como semi-cartelera en desarrollo, sin publicar fechas ni eventos.
-- Se reorganizó el panel interno para dar más aire visual: menos efecto de cuadro flotante, tarjetas más livianas, tamaños más armónicos y mejor uso del espacio.
-
-## Actualización 2026-07-21 · sin CM Experience pública y panel sin doble scroll
-
-- CM Experience quedó oculto temporalmente de la web pública.
-- La navegación prioriza Restaurant, Banquetería, Cotiza y Ubicación.
-- El formulario de cotización mejora contraste en los pasos activos.
-- El footer incorpora datos visuales con iconografía: ubicación, teléfono/WhatsApp, correo, Instagram y horario.
-- El panel interno elimina el doble scroll vertical: la página completa baja junto al menú lateral, salvo elementos extensos que mantienen scroll horizontal cuando corresponde.
-
-## Actualización 2026-07-21 · web pública estática + backend Render
-
-Se agrega la carpeta `public-static` para desplegar la web pública fuera de Render y evitar que clientes vean la pantalla de espera por cold start. El panel interno y APIs se mantienen en Render mediante `server.js`.
-
-Ver instrucciones en:
-
-- `public-static/README_DEPLOY_STATIC.md`
-- `deployment/SEPARACION_PUBLICA_E_INTERNA.md`
-
-## Actualización 2026-07-21 · v30 móvil y GitHub estático
-
-- Se corrigió la sobreposición móvil de imágenes en montajes y ubicación.
-- Se estabilizó el footer móvil en una sola columna real.
-- `public-static/config.js` quedó apuntando a `https://cmbanqueteria.onrender.com`.
-- `public-static/CNAME` quedó preparado para `cmbanqueteria.cl`.
-- La carpeta `public-static` queda lista para ser subida a GitHub Pages como web pública estática.
-
-## Actualización 2026-08-03 · separación pública/interna
-
-- La web pública vive en el repositorio `cmbanqueteria-public` y en GitHub Pages.
-- Este repositorio queda como backend y panel interno para Render.
-- La raíz `/` y `/index.html` del servicio Render redirigen a `/admin.html`, evitando una segunda web pública en `admin.cmbanqueteria.cl`.
-- Las cotizaciones se guardan en `event_quotes` vía `/api/public/quotes`.
-- El correo receptor por defecto queda en `claudiamendezbanqueteria@gmail.com`. Para envío real de correos desde Render se deben configurar `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` y `MAIL_TO`.
+Las rutas y tablas históricas de consultoría pueden conservarse temporalmente para no eliminar información anterior, pero no forman parte de la navegación ni del uso entregado a la administradora. Una eliminación física futura debe realizarse solo después de respaldar y confirmar que esos datos ya no son necesarios.

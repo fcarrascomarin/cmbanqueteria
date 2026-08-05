@@ -139,4 +139,34 @@ JOIN consultation_milestones m ON m.stage_key=k.stage_key
 LEFT JOIN consultation_deliverables d ON d.milestone_id=m.id AND d.title=k.deliverable_title
 WHERE NOT EXISTS (SELECT 1 FROM consultation_documents cd WHERE cd.file_url=k.file_url);
 DELETE FROM consultation_deliverables d USING consultation_milestones m WHERE d.milestone_id=m.id AND d.status='pendiente' AND d.document_url IS NULL AND d.notes IS NULL AND NOT EXISTS (SELECT 1 FROM unnest(string_to_array(m.deliverables,'|')) AS x(title) WHERE TRIM(x.title)=d.title);
+
+
+-- Registro diario de costos, ventas y resultado del restaurant.
+CREATE TABLE IF NOT EXISTS daily_financials (
+  id BIGSERIAL PRIMARY KEY,
+  financial_date DATE NOT NULL UNIQUE,
+  customers_count INTEGER NOT NULL DEFAULT 0 CHECK(customers_count>=0),
+  income INTEGER NOT NULL DEFAULT 0 CHECK(income>=0),
+  personnel_cost INTEGER NOT NULL DEFAULT 0 CHECK(personnel_cost>=0),
+  basic_expenses INTEGER NOT NULL DEFAULT 15000 CHECK(basic_expenses>=0),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS daily_cost_items (
+  id BIGSERIAL PRIMARY KEY,
+  financial_id BIGINT NOT NULL REFERENCES daily_financials(id) ON DELETE CASCADE,
+  category TEXT NOT NULL DEFAULT 'Ingredientes',
+  item_name TEXT NOT NULL,
+  quantity NUMERIC(12,3) NOT NULL DEFAULT 0 CHECK(quantity>=0),
+  unit TEXT,
+  unit_cost INTEGER NOT NULL DEFAULT 0 CHECK(unit_cost>=0),
+  total_cost INTEGER NOT NULL DEFAULT 0 CHECK(total_cost>=0),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_daily_financials_date ON daily_financials(financial_date DESC);
+CREATE INDEX IF NOT EXISTS idx_daily_cost_items_financial ON daily_cost_items(financial_id);
+
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(expense_date); CREATE INDEX IF NOT EXISTS idx_daily_menus_date ON daily_menus(menu_date); CREATE INDEX IF NOT EXISTS idx_quotes_status ON event_quotes(status); CREATE INDEX IF NOT EXISTS idx_documents_expiration ON documents(expiration_date);

@@ -153,6 +153,36 @@ ALTER TABLE daily_menus ADD COLUMN IF NOT EXISTS option_3 TEXT;
 ALTER TABLE daily_menus ADD COLUMN IF NOT EXISTS accompaniment_change_price INTEGER NOT NULL DEFAULT 1200;
 CREATE TABLE IF NOT EXISTS weekly_menus (id BIGSERIAL PRIMARY KEY, week_start DATE NOT NULL, week_end DATE NOT NULL, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS weekly_menu_days (id BIGSERIAL PRIMARY KEY, weekly_menu_id BIGINT NOT NULL REFERENCES weekly_menus(id) ON DELETE CASCADE, day_name TEXT NOT NULL, menu_date DATE, title TEXT, planned_portions INTEGER NOT NULL DEFAULT 0, notes TEXT);
+
+
+-- Registro diario de costos, ventas y resultado del restaurant.
+CREATE TABLE IF NOT EXISTS daily_financials (
+  id BIGSERIAL PRIMARY KEY,
+  financial_date DATE NOT NULL UNIQUE,
+  customers_count INTEGER NOT NULL DEFAULT 0 CHECK(customers_count>=0),
+  income INTEGER NOT NULL DEFAULT 0 CHECK(income>=0),
+  personnel_cost INTEGER NOT NULL DEFAULT 0 CHECK(personnel_cost>=0),
+  basic_expenses INTEGER NOT NULL DEFAULT 15000 CHECK(basic_expenses>=0),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS daily_cost_items (
+  id BIGSERIAL PRIMARY KEY,
+  financial_id BIGINT NOT NULL REFERENCES daily_financials(id) ON DELETE CASCADE,
+  category TEXT NOT NULL DEFAULT 'Ingredientes',
+  item_name TEXT NOT NULL,
+  quantity NUMERIC(12,3) NOT NULL DEFAULT 0 CHECK(quantity>=0),
+  unit TEXT,
+  unit_cost INTEGER NOT NULL DEFAULT 0 CHECK(unit_cost>=0),
+  total_cost INTEGER NOT NULL DEFAULT 0 CHECK(total_cost>=0),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_daily_financials_date ON daily_financials(financial_date DESC);
+CREATE INDEX IF NOT EXISTS idx_daily_cost_items_financial ON daily_cost_items(financial_id);
+
 CREATE TABLE IF NOT EXISTS rations (id BIGSERIAL PRIMARY KEY, ration_date DATE NOT NULL DEFAULT CURRENT_DATE, title TEXT NOT NULL, planned_portions INTEGER NOT NULL DEFAULT 0, estimated_total_cost INTEGER NOT NULL DEFAULT 0, estimated_cost_per_portion INTEGER NOT NULL DEFAULT 0, sale_price INTEGER NOT NULL DEFAULT 0, estimated_margin INTEGER NOT NULL DEFAULT 0, notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS event_quotes (id BIGSERIAL PRIMARY KEY, client_name TEXT NOT NULL, phone TEXT NOT NULL, email TEXT, event_date DATE, event_type TEXT, guests INTEGER, location TEXT, requested_service TEXT, estimated_budget INTEGER, status TEXT NOT NULL DEFAULT 'recibida', quoted_total INTEGER NOT NULL DEFAULT 0, internal_notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS staff (id BIGSERIAL PRIMARY KEY, full_name TEXT NOT NULL, rut TEXT, role TEXT, phone TEXT, start_date DATE, contract_type TEXT, schedule TEXT, status TEXT NOT NULL DEFAULT 'activo', notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
@@ -533,4 +563,106 @@ app.delete('/api/admin/consultation/records/:id',auth,async(req,res)=>{const c=a
 app.post('/api/admin/weekly_menus',auth,async(req,res)=>{const c=await pool.connect();try{const {week_start,week_end,notes,days}=req.body;if(!week_start||!week_end)return res.status(400).json({error:'Faltan fechas.'}); await c.query('BEGIN'); const w=await c.query('INSERT INTO weekly_menus(week_start,week_end,notes) VALUES($1,$2,$3) RETURNING *',[week_start,week_end,notes||null]); for(const d of days||[]) await c.query('INSERT INTO weekly_menu_days(weekly_menu_id,day_name,menu_date,title,planned_portions,notes) VALUES($1,$2,$3,$4,$5,$6)',[w.rows[0].id,d.day_name,d.menu_date||null,d.title||null,Number(d.planned_portions||0),d.notes||null]); await c.query('COMMIT'); res.status(201).json({item:w.rows[0]})}catch(e){await c.query('ROLLBACK');console.error(e);res.status(500).json({error:'No se pudo guardar minuta.'})}finally{c.release()}});
 app.get('/api/admin/weekly_menus',auth,async(req,res)=>{const w=await pool.query('SELECT * FROM weekly_menus ORDER BY week_start DESC LIMIT 50');const full=[];for(const x of w.rows){const d=await pool.query('SELECT * FROM weekly_menu_days WHERE weekly_menu_id=$1 ORDER BY id',[x.id]);full.push({...x,days:d.rows})}res.json({items:full})}); app.delete('/api/admin/weekly_menus/:id',auth,async(req,res)=>{await pool.query('DELETE FROM weekly_menus WHERE id=$1',[req.params.id]);res.json({ok:true})});
 app.post('/api/admin/rations',auth,async(req,res)=>{const b=req.body, portions=Number(b.planned_portions||0), total=int(b.estimated_total_cost), price=int(b.sale_price), cpp=portions>0?Math.round(total/portions):0;const r=await pool.query('INSERT INTO rations(ration_date,title,planned_portions,estimated_total_cost,estimated_cost_per_portion,sale_price,estimated_margin,notes) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',[b.ration_date||new Date().toISOString().slice(0,10),b.title,portions,total,cpp,price,price-cpp,b.notes||null]);res.status(201).json({item:r.rows[0]})}); app.get('/api/admin/rations',auth,async(req,res)=>{const r=await pool.query('SELECT * FROM rations ORDER BY ration_date DESC,id DESC LIMIT 100');res.json({items:r.rows})}); app.delete('/api/admin/rations/:id',auth,async(req,res)=>{await pool.query('DELETE FROM rations WHERE id=$1',[req.params.id]);res.json({ok:true})});
+
+
+// ===== Costos y resultados diarios =====
+function monthParam(value){
+  const month=String(value||'').trim();
+  return /^\d{4}-\d{2}$/.test(month)?month:new Date().toISOString().slice(0,7);
+}
+async function dailyFinancialRows(month){
+  const rows=await pool.query(`
+    SELECT f.*,
+      COALESCE(SUM(i.total_cost),0)::int AS food_cost,
+      CASE WHEN f.income>0 THEN ROUND(COALESCE(SUM(i.total_cost),0)*100.0/f.income,1) ELSE 0 END AS cost_percentage,
+      (f.income-COALESCE(SUM(i.total_cost),0)-f.personnel_cost-f.basic_expenses)::int AS net
+    FROM daily_financials f
+    LEFT JOIN daily_cost_items i ON i.financial_id=f.id
+    WHERE to_char(f.financial_date,'YYYY-MM')=$1
+    GROUP BY f.id
+    ORDER BY f.financial_date ASC`,[month]);
+  const ids=rows.rows.map(r=>r.id);
+  let items=[];
+  if(ids.length){
+    items=(await pool.query(`SELECT * FROM daily_cost_items WHERE financial_id=ANY($1::bigint[]) ORDER BY financial_id,id`,[ids])).rows;
+  }
+  return rows.rows.map(row=>({...row,items:items.filter(item=>Number(item.financial_id)===Number(row.id))}));
+}
+app.get('/api/admin/daily-financials',auth,async(req,res)=>{
+  try{
+    const month=monthParam(req.query.month);
+    res.json({month,items:await dailyFinancialRows(month)});
+  }catch(e){console.error(e);res.status(500).json({error:'No se pudieron cargar los costos diarios.'})}
+});
+app.get('/api/admin/daily-financials/summary',auth,async(req,res)=>{
+  try{
+    const months=Math.min(24,Math.max(1,int(req.query.months||12)));
+    const r=await pool.query(`
+      WITH daily AS (
+        SELECT f.id,f.financial_date,f.customers_count,f.income,f.personnel_cost,f.basic_expenses,
+          COALESCE(SUM(i.total_cost),0)::int food_cost
+        FROM daily_financials f LEFT JOIN daily_cost_items i ON i.financial_id=f.id
+        GROUP BY f.id
+      )
+      SELECT to_char(date_trunc('month',financial_date),'YYYY-MM') AS month,
+        COUNT(*)::int AS recorded_days,
+        ROUND(AVG(customers_count),1) AS customers_average,
+        SUM(income)::int AS income,
+        SUM(food_cost)::int AS food_cost,
+        SUM(personnel_cost)::int AS personnel_cost,
+        SUM(basic_expenses)::int AS basic_expenses,
+        SUM(income-food_cost-personnel_cost-basic_expenses)::int AS net,
+        ROUND(AVG(income-food_cost-personnel_cost-basic_expenses),0)::int AS net_average,
+        CASE WHEN SUM(income)>0 THEN ROUND(SUM(food_cost)*100.0/SUM(income),1) ELSE 0 END AS cost_percentage
+      FROM daily
+      GROUP BY date_trunc('month',financial_date)
+      ORDER BY date_trunc('month',financial_date) DESC
+      LIMIT $1`,[months]);
+    res.json({items:r.rows.reverse()});
+  }catch(e){console.error(e);res.status(500).json({error:'No se pudo generar el resumen mensual.'})}
+});
+app.post('/api/admin/daily-financials',auth,async(req,res)=>{
+  const b=req.body||{};
+  const financialDate=validDate(b.financial_date);
+  if(!financialDate)return res.status(400).json({error:'La fecha del registro es obligatoria.'});
+  const items=Array.isArray(b.items)?b.items:[];
+  const c=await pool.connect();
+  try{
+    await c.query('BEGIN');
+    const r=await c.query(`
+      INSERT INTO daily_financials(financial_date,customers_count,income,personnel_cost,basic_expenses,notes)
+      VALUES($1,$2,$3,$4,$5,$6)
+      ON CONFLICT(financial_date) DO UPDATE SET
+        customers_count=EXCLUDED.customers_count,
+        income=EXCLUDED.income,
+        personnel_cost=EXCLUDED.personnel_cost,
+        basic_expenses=EXCLUDED.basic_expenses,
+        notes=EXCLUDED.notes,
+        updated_at=NOW()
+      RETURNING *`,[financialDate,int(b.customers_count),int(b.income),int(b.personnel_cost),int(b.basic_expenses||0),b.notes||null]);
+    const financialId=r.rows[0].id;
+    await c.query('DELETE FROM daily_cost_items WHERE financial_id=$1',[financialId]);
+    for(const raw of items){
+      const itemName=String(raw.item_name||'').trim();
+      if(!itemName)continue;
+      const quantity=Math.max(0,num(raw.quantity));
+      const unitCost=int(raw.unit_cost);
+      const calculated=Math.round(quantity*unitCost);
+      const total=calculated>0?calculated:int(raw.total_cost);
+      await c.query(`INSERT INTO daily_cost_items(financial_id,category,item_name,quantity,unit,unit_cost,total_cost,notes)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,[financialId,String(raw.category||'Ingredientes').trim()||'Ingredientes',itemName,quantity,String(raw.unit||'').trim()||null,unitCost,total,String(raw.notes||'').trim()||null]);
+    }
+    await c.query('COMMIT');
+    const month=financialDate.slice(0,7);
+    const updated=(await dailyFinancialRows(month)).find(x=>Number(x.id)===Number(financialId));
+    res.status(201).json({item:updated});
+  }catch(e){
+    await c.query('ROLLBACK');console.error(e);res.status(500).json({error:'No se pudo guardar el registro diario.'});
+  }finally{c.release()}
+});
+app.delete('/api/admin/daily-financials/:id',auth,async(req,res)=>{
+  try{await pool.query('DELETE FROM daily_financials WHERE id=$1',[req.params.id]);res.json({ok:true})}
+  catch(e){console.error(e);res.status(500).json({error:'No se pudo eliminar el registro diario.'})}
+});
+
 pool.query(schema).then(()=>seedKnownSuppliers()).then(()=>seedInitialStaff()).then(()=>refreshConsultationProgress()).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});
