@@ -78,3 +78,13 @@ Todas requieren sesión administrativa.
 ## Legado técnico
 
 Las rutas y tablas históricas de consultoría pueden conservarse temporalmente para no eliminar información anterior, pero no forman parte de la navegación ni del uso entregado a la administradora. Una eliminación física futura debe realizarse solo después de respaldar y confirmar que esos datos ya no son necesarios.
+
+
+## Ajuste v45 · administración CM
+
+- Navegación simplificada en **Inicio**, **Restaurant** y **Gestión interna**.
+- **Costos diarios** forma parte del módulo Restaurant.
+- Gestión interna reúne Personal, Proveedores, Carpeta documental y Cotizaciones.
+- El módulo Gastos se retiró de la navegación.
+- Se incorporó una carga inicial idempotente de 53 jornadas entre abril y julio de 2026. La carga no reemplaza registros existentes ni vuelve a imponer valores después de que la administradora los edite.
+- Cada jornada histórica puede corregirse con **Editar**, y las jornadas nuevas se agregan mediante **Registrar jornada**.

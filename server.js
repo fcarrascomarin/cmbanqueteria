@@ -309,6 +309,73 @@ async function seedInitialStaff(db=pool){
       WHERE NOT EXISTS (SELECT 1 FROM staff WHERE LOWER(full_name)=LOWER($1) AND LOWER(COALESCE(role,''))=LOWER($2))`,[fullName,role]);
   }
 }
+async function seedInitialDailyFinancials(db=pool){
+  const initialRows=[
+    ['2026-04-24',62,403100,77000,15000,161400],
+    ['2026-04-27',49,317000,77000,15000,132930],
+    ['2026-04-28',35,225000,77000,15000,111307],
+    ['2026-04-29',38,247500,77000,15000,100672],
+    ['2026-04-30',54,352941,77000,15000,151881],
+    ['2026-05-04',56,362326,77000,15000,177684],
+    ['2026-05-05',66,430000,77000,15000,198378],
+    ['2026-05-06',85,555700,77000,15000,240625],
+    ['2026-05-07',86,556800,77000,15000,235604],
+    ['2026-05-08',70,452100,77000,15000,148415],
+    ['2026-05-11',30,193000,77000,15000,78005],
+    ['2026-05-12',16,105900,77000,15000,49581],
+    ['2026-05-13',58,379600,136000,15000,143478],
+    ['2026-05-14',81,529600,131600,15000,227930],
+    ['2026-05-15',51,333900,131600,15000,145084],
+    ['2026-05-18',78,506600,131600,15000,258014],
+    ['2026-05-19',87,562800,131600,15000,195878],
+    ['2026-05-20',23,148900,75000,15000,73889],
+    ['2026-05-21',23,148900,75000,15000,56249],
+    ['2026-05-22',60,388100,131600,15000,126706],
+    ['2026-05-25',98,639000,131600,15000,262865],
+    ['2026-05-26',39,252000,108500,15000,82638],
+    ['2026-05-27',27,176000,121500,15000,65163],
+    ['2026-05-29',38,246000,75000,15000,66152],
+    ['2026-06-01',28,179500,103500,15000,77355],
+    ['2026-06-02',41,264000,131600,15000,89267],
+    ['2026-06-03',25,162000,131600,15000,81814],
+    ['2026-06-09',30,198000,121500,15000,88007],
+    ['2026-06-10',30,198000,121500,15000,93712],
+    ['2026-06-11',85,550900,131600,15000,226680],
+    ['2026-06-12',113,737000,196500,15000,258292],
+    ['2026-06-15',70,452100,131600,15000,144905],
+    ['2026-06-16',40,258000,121500,15000,96795],
+    ['2026-06-17',38,247500,136000,15000,93460],
+    ['2026-06-19',41,264000,131600,15000,119041],
+    ['2026-06-22',18,120000,131600,15000,58946],
+    ['2026-06-23',22,141600,130000,15000,64606],
+    ['2026-06-24',26,167000,121500,15000,49025],
+    ['2026-06-25',23,150000,121500,15000,78504],
+    ['2026-07-01',50,350000,129500,15000,97282],
+    ['2026-07-03',50,350000,146500,15000,107739],
+    ['2026-07-04',34,240000,121600,15000,95427],
+    ['2026-07-06',27,189000,121500,15000,71451],
+    ['2026-07-07',32,225000,146500,15000,83497],
+    ['2026-07-08',22,154000,121500,15000,71278],
+    ['2026-07-13',13,91000,95000,15000,55015],
+    ['2026-07-14',35,245000,100000,15000,95759],
+    ['2026-07-15',31,217000,110000,15000,78294],
+    ['2026-07-17',24,168000,95000,15000,67664],
+    ['2026-07-20',29,203000,95000,15000,73214],
+    ['2026-07-21',29,203000,95000,15000,83777],
+    ['2026-07-22',29,203000,95000,15000,70819],
+    ['2026-07-23',14,98000,95000,15000,67276],
+  ];
+  for(const [financialDate,customersCount,income,personnelCost,basicExpenses,foodCost] of initialRows){
+    const inserted=await db.query(`INSERT INTO daily_financials(financial_date,customers_count,income,personnel_cost,basic_expenses,notes)
+      VALUES($1,$2,$3,$4,$5,$6)
+      ON CONFLICT(financial_date) DO NOTHING
+      RETURNING id`,[financialDate,customersCount,income,personnelCost,basicExpenses,'Registro histórico abril-julio 2026 importado desde la planilla inicial de CM. El costo de alimentos está consolidado y puede reemplazarse por su desglose real mediante Editar.']);
+    if(!inserted.rows.length)continue;
+    await db.query(`INSERT INTO daily_cost_items(financial_id,category,item_name,quantity,unit,unit_cost,total_cost,notes)
+      VALUES($1,'Ingredientes','Costo de alimentos consolidado',1,'jornada',$2,$2,$3)`,[inserted.rows[0].id,foodCost,'Carga inicial histórica. Editar para corregir el monto o sustituirlo por insumos detallados.']);
+  }
+}
+
 function parseImageData(value){
   const match=String(value||'').match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
   if(!match)throw Error('Selecciona una imagen JPG, PNG o WebP válida.');
@@ -613,7 +680,7 @@ app.get('/api/admin/daily-financials/summary',auth,async(req,res)=>{
         SUM(basic_expenses)::int AS basic_expenses,
         SUM(income-food_cost-personnel_cost-basic_expenses)::int AS net,
         ROUND(AVG(income-food_cost-personnel_cost-basic_expenses),0)::int AS net_average,
-        CASE WHEN SUM(income)>0 THEN ROUND(SUM(food_cost)*100.0/SUM(income),1) ELSE 0 END AS cost_percentage
+        ROUND(AVG(CASE WHEN income>0 THEN food_cost*100.0/income ELSE 0 END),1) AS cost_percentage
       FROM daily
       GROUP BY date_trunc('month',financial_date)
       ORDER BY date_trunc('month',financial_date) DESC
@@ -665,4 +732,4 @@ app.delete('/api/admin/daily-financials/:id',auth,async(req,res)=>{
   catch(e){console.error(e);res.status(500).json({error:'No se pudo eliminar el registro diario.'})}
 });
 
-pool.query(schema).then(()=>seedKnownSuppliers()).then(()=>seedInitialStaff()).then(()=>refreshConsultationProgress()).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});
+pool.query(schema).then(()=>seedKnownSuppliers()).then(()=>seedInitialStaff()).then(()=>seedInitialDailyFinancials()).then(()=>refreshConsultationProgress()).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});
