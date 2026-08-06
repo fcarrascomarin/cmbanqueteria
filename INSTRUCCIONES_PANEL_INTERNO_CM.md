@@ -1,42 +1,76 @@
-# Instrucciones del panel interno CM · v40
+# Instrucciones del panel interno CM · v47
 
-## Objetivo
+## Inicio
 
-El panel queda preparado para uso cotidiano de la administradora de CM Banquetería & Restaurant. La navegación visible ya no incluye la antigua pestaña de consultoría. El respaldo de resoluciones, certificados, registros y otros antecedentes se concentra en **Gestión interna > Carpeta documental**.
+El Inicio funciona como centro de la jornada. No muestra dinero ni totales históricos. Prioriza cuatro acciones:
 
-## Costos diarios
+- registrar o revisar costos de hoy;
+- publicar el menú;
+- registrar una reserva o retiro;
+- enviar un mensaje a la pantalla de cocina.
 
-Abrir **Compras y stock > Costos diarios**.
+También resume el estado operativo del día, próximos movimientos y accesos directos a los documentos más usados.
 
-1. Seleccionar **Registrar día**.
-2. Completar fecha, clientes aproximados, ingreso total, costo de personal y gastos básicos.
-3. Agregar los insumos de la jornada. La cantidad multiplicada por el valor unitario calcula el total; también puede escribirse un total directo.
-4. Revisar el costo de alimentos y el neto estimado.
-5. Guardar. La tabla y los gráficos del mes se actualizan automáticamente.
-6. Usar **Editar** para corregir una jornada existente. Existe un único registro por fecha.
+## Restaurant
 
-La pantalla permite:
+### Reservas / Cocina
 
-- revisar ingresos, costo de alimentos, personal, gastos básicos y neto;
-- comparar clientes promedio y porcentaje de costo por mes;
-- descargar los datos en CSV;
-- descargar ambos gráficos en PNG;
-- imprimir o guardar la vista como PDF.
+Permite registrar reservas, retiros y entregas, actualizar su estado y crear mensajes visibles para cocina. La información se presenta sobre tarjetas claras y con colores distintos según prioridad y estado.
 
-## Carpeta documental
+### Menú del día
 
-Abrir **Gestión interna > Carpeta documental** y registrar el nombre, tipo, carpeta, fechas, enlace al archivo y notas. Las carpetas disponibles son: Sanitario, Municipal, Tributario, Laboral, Operación, Proveedores, Web y tecnología y Empresa/general.
+Permite cargar o actualizar las opciones que se muestran en la web pública y en la pantalla interna.
 
-El panel conserva el enlace y la información de control. El archivo original debe mantenerse en la carpeta oficial de CM.
+### Costos diarios
+
+Cada fecha corresponde a una sola jornada. Desde **Editar** se pueden corregir clientes, ingreso, personal, gastos básicos, insumos y observaciones sin crear duplicados.
+
+Descargas disponibles:
+
+- Excel del mes;
+- CSV del mes;
+- gráficos PNG;
+- impresión o guardado en PDF.
+
+## Gestión interna
+
+### Personal
+
+Cada ficha contiene cargo, contacto, jornada, contrato, estado, tareas y observaciones. Las funciones iniciales pueden editarse cuando Claudia redistribuya responsabilidades. La tabla completa se descarga en Excel.
+
+### Proveedores
+
+Incluye tarjetas, buscador, ficha editable, antecedentes de contacto e historial. La tabla se descarga en Excel.
+
+### Carpeta documental
+
+Se divide visualmente en:
+
+- **Carpeta sanitaria**: manual y checklist.
+- **Documentos operacionales**: limpieza, uniformes, charla inicial y controles de temperatura.
+- **Documentos agregados por CM**: enlaces, certificados, vencimientos y respaldos posteriores.
+
+### Cotizaciones
+
+Mantiene el seguimiento comercial de solicitudes y eventos.
+
+## Pantalla interna de cocina
+
+Abrir el botón **Pantalla** en un computador, televisor o tablet visible para el equipo. Se actualiza automáticamente y muestra:
+
+- pedidos pendientes y listos;
+- menú del día;
+- mensajes para cocina, atención o todo el equipo;
+- minuta de preparación cuando exista.
 
 ## Despliegue
 
-Antes de publicar esta versión:
+1. Respaldar la base PostgreSQL.
+2. Desplegar la versión nueva.
+3. Reiniciar el servicio para ejecutar alteraciones y cargas iniciales.
+4. Comprobar los seis documentos PDF.
+5. Verificar la descarga de Excel.
+6. Registrar y editar una jornada de prueba.
+7. Probar un mensaje en la pantalla de cocina.
 
-1. Respaldar la base de datos.
-2. Desplegar primero el backend/panel interno, para que el esquema cree las tablas `daily_financials` y `daily_cost_items`.
-3. Confirmar inicio de sesión y registrar una jornada de prueba.
-4. Probar edición, eliminación, CSV, PNG e impresión/PDF.
-5. Publicar luego la web pública y revisar navegación fija, sección Restaurant y sección Cómo llegar en escritorio y móvil.
-
-Las credenciales y variables de entorno no deben agregarse al repositorio. Usar `.env.example` únicamente como referencia de nombres.
+Las credenciales y variables de entorno no deben incluirse en el repositorio.

@@ -1,7 +1,7 @@
 {
   "name": "cm-banqueteria-plan-admin",
-  "version": "3.1.0",
-  "description": "Panel interno CM Banquetería: operación del restaurant, costos diarios, cotizaciones, personal, proveedores y carpeta documental.",
+  "version": "3.2.0",
+  "description": "Panel interno CM Banquetería v47: inicio operativo diario, comunicación con cocina, costos, personal, proveedores y carpeta documental sanitaria.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

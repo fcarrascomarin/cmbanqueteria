@@ -1,31 +1,40 @@
-# CM Banquetería & Restaurant · Panel interno v40
+# CM Banquetería & Restaurant · Panel interno v47
 
-Aplicación administrativa para la operación cotidiana de CM Banquetería & Restaurant. Incluye autenticación, menú del día, cotizaciones, compras, inventario, personal, documentos y un nuevo módulo de costos diarios con gráficos y exportación.
+Aplicación administrativa para el uso cotidiano de CM Banquetería & Restaurant. La navegación se concentra en tres áreas: **Inicio**, **Restaurant** y **Gestión interna**.
 
-## Cambios principales de v40
+## Prioridades de uso
 
-- Nueva vista **Compras y stock > Costos diarios**.
-- Registro diario de clientes, ingresos, personal, gastos básicos e insumos detallados.
-- Cálculo automático de gasto de alimentos, porcentaje de costo y neto.
-- Tabla diaria y resumen mensual.
-- Gráfico diario de ingreso, costo y neto.
-- Gráfico mensual de clientes promedio y costo de alimentos.
-- Descarga CSV, gráficos PNG e impresión/guardado en PDF.
-- Vista documental simplificada como **Carpeta sanitaria y documental**.
-- Retiro de la pestaña visible de consultoría/Metamorfosis.
-- Panel inicial orientado exclusivamente al uso de la administradora.
+1. Registrar y revisar costos diarios.
+2. Publicar el menú del día.
+3. Registrar reservas, retiros y entregas.
+4. Comunicar instrucciones mediante la pantalla interna de cocina.
+5. Mantener personal, proveedores, cotizaciones y carpeta documental.
+
+## Cambios de v47
+
+- Contraste reforzado en todo el panel y en la pantalla de cocina.
+- Paneles opacos y textos oscuros sobre fondos claros para evitar pérdida de lectura.
+- Inicio reorganizado según acciones de la jornada, sin mostrar montos ni totales históricos cargados.
+- Tarjetas de costos con cifras adaptables al ancho, sin desbordes.
+- Personal con funciones y tareas editables.
+- Proveedores con tarjetas, buscador y vista tabular.
+- Descarga Excel dinámica para costos, personal y proveedores.
+- Carpeta sanitaria con manual y checklist incorporados.
+- Subcarpeta visual de documentos operacionales con programas de limpieza, entrega de uniformes y controles internos.
+- Base histórica de 53 jornadas de abril a julio de 2026, editable por fecha.
 
 ## Arquitectura
 
 - Node.js + Express.
 - PostgreSQL.
 - Frontend administrativo en `/public/admin.html`.
+- Pantalla interna de cocina en `/public/pantalla.html`.
 - API y servidor en `server.js`.
-- Esquema en `schema.sql`.
+- Esquema en `schema.sql` y `scripts/schema.sql`.
 
 ## Variables de entorno
 
-Copiar `.env.example` y completar solo en el servicio de hosting o entorno local seguro. No guardar contraseñas, claves SMTP, cadena de base de datos ni secretos de sesión en Git.
+Copiar `.env.example` y completar solo en el hosting o entorno local seguro. No guardar credenciales en Git.
 
 Variables principales:
 
@@ -49,42 +58,40 @@ npm install
 npm start
 ```
 
-La aplicación ejecuta el esquema al iniciar. Antes de actualizar producción, respaldar la base de datos.
+La aplicación ejecuta el esquema y las cargas iniciales al iniciar. Antes de actualizar producción, respaldar la base de datos.
 
-## Tablas nuevas
-
-- `daily_financials`: un registro por fecha con clientes, ingreso, personal, gastos básicos y notas.
-- `daily_cost_items`: insumos o costos directos asociados a cada jornada.
-
-## API de costos
+## API y descargas
 
 - `GET /api/admin/daily-financials?month=YYYY-MM`
-- `GET /api/admin/daily-financials/summary?months=12`
 - `POST /api/admin/daily-financials`
 - `DELETE /api/admin/daily-financials/:id`
+- `GET /api/admin/daily-financials.xlsx?month=YYYY-MM`
+- `GET /api/admin/staff.xlsx`
+- `GET /api/admin/suppliers.xlsx`
 
-Todas requieren sesión administrativa.
+Todas las rutas administrativas requieren sesión iniciada.
+
+## Documentos incorporados
+
+Los archivos se encuentran en `public/docs/cm` y se muestran en **Gestión interna > Carpeta documental**:
+
+- Manual sanitario base.
+- Checklist sanitario operativo por zonas.
+- Programa de limpieza de cocina y bodega.
+- Programa de limpieza de comedores.
+- Entrega de uniformes.
+- Formatos internos: charla de cinco minutos, control de frío y control de cocción.
 
 ## Orden de despliegue recomendado
 
-1. Crear respaldo de la base de datos.
-2. Desplegar el panel/backend.
+1. Respaldar la base de datos.
+2. Desplegar panel y backend.
 3. Revisar `/healthz`.
-4. Iniciar sesión y registrar una jornada de prueba.
-5. Confirmar gráficos y descargas.
-6. Publicar la web pública.
-7. Completar la lista de pruebas incluida en el manual de traspaso.
+4. Iniciar sesión y comprobar Inicio, Restaurant, Costos, Personal, Proveedores y Documentos.
+5. Abrir `/pantalla.html` en otra ventana y probar un mensaje a cocina.
+6. Descargar un Excel de costos, personal y proveedores.
+7. Confirmar que las 53 jornadas históricas siguen siendo editables y no se duplican.
 
 ## Legado técnico
 
-Las rutas y tablas históricas de consultoría pueden conservarse temporalmente para no eliminar información anterior, pero no forman parte de la navegación ni del uso entregado a la administradora. Una eliminación física futura debe realizarse solo después de respaldar y confirmar que esos datos ya no son necesarios.
-
-
-## Ajuste v45 · administración CM
-
-- Navegación simplificada en **Inicio**, **Restaurant** y **Gestión interna**.
-- **Costos diarios** forma parte del módulo Restaurant.
-- Gestión interna reúne Personal, Proveedores, Carpeta documental y Cotizaciones.
-- El módulo Gastos se retiró de la navegación.
-- Se incorporó una carga inicial idempotente de 53 jornadas entre abril y julio de 2026. La carga no reemplaza registros existentes ni vuelve a imponer valores después de que la administradora los edite.
-- Cada jornada histórica puede corregirse con **Editar**, y las jornadas nuevas se agregan mediante **Registrar jornada**.
+Algunas tablas y rutas históricas permanecen en el código para no destruir información anterior. No aparecen en la navegación entregada a la administradora. Su eliminación física solo debe hacerse después de un respaldo y una decisión explícita.
