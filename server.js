@@ -746,7 +746,7 @@ app.get('/api/admin/daily-financials',auth,async(req,res)=>{
 });
 app.get('/api/admin/daily-financials/summary',auth,async(req,res)=>{
   try{
-    const months=Math.min(24,Math.max(1,int(req.query.months||12)));
+    const months=Math.min(120,Math.max(1,int(req.query.months||24)));
     const r=await pool.query(`
       WITH daily AS (
         SELECT f.id,f.financial_date,f.customers_count,f.income,f.personnel_cost,f.basic_expenses,
