@@ -10409,3 +10409,31 @@ body.internal-cm-theme .side-btn-standalone .material-symbols-rounded{
 .side-btn-standalone .material-symbols-rounded{font-size:20px}
 .cm-home-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:980px){.cm-home-stat-grid{grid-template-columns:1fr}}
+
+
+/* CM Panel v46 · historial completo, desglose y entrada diaria clara */
+.cm-cost-stats{grid-template-columns:repeat(6,minmax(0,1fr))}
+.cm-month-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.cm-month-chip{border:1px solid rgba(98,9,7,.18);background:#fff;color:#620907;border-radius:999px;padding:8px 13px;font:800 .78rem Montserrat,sans-serif;cursor:pointer;text-transform:capitalize}
+.cm-month-chip.active,.cm-month-chip:hover{background:#620907;color:#fff}
+.cm-monthly-history-card{margin:0 0 18px}
+.cm-monthly-history-card .table-wrap{margin-top:14px}
+.cm-month-link{border:0;background:none;color:#620907;font:800 .88rem Montserrat,sans-serif;text-transform:capitalize;cursor:pointer;text-align:left;padding:0}
+.cm-selected-month{background:rgba(201,45,82,.06)}
+.cm-cost-table-card table tfoot th{background:#f4e6e3;color:#620907;border-top:2px solid rgba(98,9,7,.25);white-space:nowrap}
+.cm-cost-detail-row>td{padding:0!important;background:#f9f0ec}
+.cm-cost-detail-box{padding:18px 20px;border-left:4px solid #c92d52}
+.cm-cost-detail-box h4{margin:0;color:#620907}
+.cm-cost-detail-box p{margin:4px 0 0;color:#7a6967;font-size:.82rem}
+.cm-cost-detail-box>.toolbar>strong{color:#620907;font-size:1rem}
+.cm-cost-detail-box table{min-width:720px}
+.cm-quick-cost-entry{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,260px) auto;gap:12px;align-items:center;padding:15px 16px;border-radius:18px;background:#f5e8e3;border:1px solid rgba(98,9,7,.12)}
+.cm-quick-cost-entry strong,.cm-quick-cost-entry span{display:block}
+.cm-quick-cost-entry strong{color:#620907}
+.cm-quick-cost-entry span{margin-top:3px;color:#766663;font-size:.8rem}
+.cm-quick-cost-entry input{width:100%;min-height:44px;padding:9px 11px;border:1px solid rgba(98,9,7,.18);border-radius:12px;background:#fff}
+.cm-cost-form-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.cm-home-stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1320px){.cm-cost-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.cm-cost-form-summary{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){.cm-quick-cost-entry{grid-template-columns:1fr}.cm-home-stat-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.cm-cost-stats,.cm-cost-form-summary,.cm-home-stat-grid{grid-template-columns:1fr}}

@@ -1,9 +1,10 @@
-/* CM Banquetería · Restaurant, costos diarios e inicio simplificado · v45 */
+/* CM Banquetería · control diario completo y continuidad histórica · v46 */
 let cmCostsMonth=new Date().toISOString().slice(0,7);
+let cmCostsMonthResolved=false;
 let cmDailyCostCache=[];
 let cmMonthlyCostCache=[];
 
-cfg.dashboard=['INICIO','Panel diario'];
+cfg.dashboard=['INICIO','Inicio'];
 cfg.operations=['RESTAURANT','Reservas / Cocina'];
 cfg.menus=['RESTAURANT','Menú del día'];
 cfg.dailyCosts=['RESTAURANT','Costos diarios'];
@@ -28,7 +29,7 @@ function cmCostMonthName(value){
   const [y,m]=value.split('-').map(Number);
   return new Intl.DateTimeFormat('es-CL',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,1)));
 }
-function cmCostPct(value){return `${new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(cmCostNum(value))}%`}
+function cmCostPct(value){return `${new Intl.NumberFormat('es-CL',{minimumFractionDigits:0,maximumFractionDigits:2}).format(cmCostNum(value))}%`}
 function cmCostAction(icon,label,onclick,kind='secondary'){
   return `<button class="btn btn-${kind} cm-cost-action" type="button" data-cm-decorated-v23="1" onclick="${onclick}"><span class="material-symbols-rounded" aria-hidden="true">${icon}</span><span>${cmCostEsc(label)}</span></button>`;
 }
@@ -93,42 +94,63 @@ function cmCostAggregate(rows){
   return totals;
 }
 async function dailyCosts(){
-  const [daily,monthly]=await Promise.all([api(`/api/admin/daily-financials?month=${encodeURIComponent(cmCostsMonth)}`),api('/api/admin/daily-financials/summary?months=12')]);
-  cmDailyCostCache=daily.items||[];cmMonthlyCostCache=monthly.items||[];
+  const monthly=await api('/api/admin/daily-financials/summary?months=24');
+  cmMonthlyCostCache=monthly.items||[];
+  if(!cmCostsMonthResolved){
+    const latest=cmMonthlyCostCache.at(-1)?.month;
+    if(latest)cmCostsMonth=latest;
+    cmCostsMonthResolved=true;
+  }
+  const daily=await api(`/api/admin/daily-financials?month=${encodeURIComponent(cmCostsMonth)}`);
+  cmDailyCostCache=daily.items||[];
   const a=cmCostAggregate(cmDailyCostCache);
+  const totalDays=cmMonthlyCostCache.reduce((sum,row)=>sum+cmCostNum(row.recorded_days),0);
+  const monthButtons=cmMonthlyCostCache.map(row=>`<button type="button" class="cm-month-chip ${row.month===cmCostsMonth?'active':''}" onclick="changeCostsMonth('${row.month}')">${cmCostEsc(cmCostMonthName(row.month).split(' ')[0])}</button>`).join('');
+  const monthlyRows=cmMonthlyCostCache.map(row=>`<tr class="${row.month===cmCostsMonth?'cm-selected-month':''}"><td><button type="button" class="cm-month-link" onclick="changeCostsMonth('${row.month}')">${cmCostEsc(cmCostMonthName(row.month))}</button></td><td>${row.recorded_days}</td><td>${money(row.food_cost)}</td><td>${money(row.income)}</td><td>${new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(cmCostNum(row.customers_average))}</td><td>${cmCostPct(row.cost_percentage)}</td><td>${money(row.personnel_cost)}</td><td>${money(row.basic_expenses)}</td><td><strong class="${cmCostNum(row.net)<0?'cm-negative':'cm-positive'}">${money(row.net)}</strong></td><td>${money(row.net_average)}</td></tr>`).join('');
+  const detailRows=cmDailyCostCache.map(r=>{
+    const detail=(r.items||[]).map(item=>`<tr><td>${cmCostEsc(item.category||'')}</td><td><strong>${cmCostEsc(item.item_name||'')}</strong></td><td>${cmCostNum(item.quantity)}</td><td>${cmCostEsc(item.unit||'')}</td><td>${money(item.unit_cost)}</td><td>${money(item.total_cost)}</td></tr>`).join('')||'<tr><td colspan="6" class="muted">Sin desglose registrado.</td></tr>';
+    const source=String(r.notes||'').includes('histórico')?'<span class="badge blue">Histórico</span>':'<span class="badge green">Diario</span>';
+    return `<tr><td>${fmtDate(r.financial_date)}</td><td>${money(r.food_cost)}</td><td>${money(r.income)}</td><td>${r.customers_count}</td><td><span class="badge ${cmCostNum(r.cost_percentage)>50?'red':'blue'}">${cmCostPct(r.cost_percentage)}</span></td><td>${money(r.personnel_cost)}</td><td>${money(r.basic_expenses)}</td><td><strong class="${cmCostNum(r.net)<0?'cm-negative':'cm-positive'}">${money(r.net)}</strong></td><td>${source}</td><td class="cm-row-buttons"><button type="button" class="btn btn-secondary btn-small" data-cm-decorated-v23="1" onclick="toggleCostDetail(${r.id})">Ver detalle</button><button type="button" class="btn btn-secondary btn-small" data-cm-decorated-v23="1" onclick="openDailyCostForm(${r.id})">Editar</button><button type="button" class="btn btn-danger btn-small" data-cm-decorated-v23="1" onclick="deleteDailyCost(${r.id})">Eliminar</button></td></tr><tr id="cmCostDetail${r.id}" class="cm-cost-detail-row hidden"><td colspan="10"><div class="cm-cost-detail-box"><div class="toolbar"><div><h4>Desglose de costos · ${fmtDate(r.financial_date)}</h4><p>${cmCostEsc(r.notes||'Registro diario')}</p></div><strong>Total ${money(r.food_cost)}</strong></div><div class="table-wrap"><table><thead><tr><th>Categoría</th><th>Insumo o concepto</th><th>Cantidad</th><th>Unidad</th><th>Valor unitario</th><th>Total</th></tr></thead><tbody>${detail}</tbody></table></div></div></td></tr>`;
+  }).join('');
   viewActions.innerHTML=cmCostAction('add_circle','Registrar día','openDailyCostForm()','primary');
   content.innerHTML=`
     <section class="cm-cost-intro">
-      <div><div class="kicker">CONTROL ECONÓMICO DIARIO</div><h3>Ventas, costos y resultado en un solo lugar</h3><p>Los registros históricos de abril a julio de 2026 ya están precargados. Selecciona un mes para revisarlos o registra la jornada actual; la tabla y los gráficos se actualizan automáticamente.</p></div>
+      <div><div class="kicker">CONTROL ECONÓMICO DEL RESTAURANT</div><h3>Seguimiento diario con la base real de CM</h3><p>La sección contiene las ${totalDays} jornadas compartidas de abril, mayo, junio y julio de 2026. Cada fila puede revisarse, desplegar su costo y editarse sin crear duplicados.</p><div class="cm-month-chips">${monthButtons}</div></div>
       <label class="cm-month-control"><span>Mes a revisar</span><input id="cmCostsMonth" type="month" value="${cmCostsMonth}" onchange="changeCostsMonth(this.value)"></label>
     </section>
     <div class="cm-cost-actions-row">
-      ${cmCostAction('download','Descargar datos CSV','downloadCostsCsv()')}
+      ${cmCostAction('download','Descargar mes en CSV','downloadCostsCsv()')}
       ${cmCostAction('image','Descargar gráfico diario','downloadCostChart(\'cmDailyChart\',\'costos-diarios\')')}
       ${cmCostAction('image','Descargar gráfico mensual','downloadCostChart(\'cmMonthlyChart\',\'resumen-mensual\')')}
       ${cmCostAction('print','Imprimir / guardar PDF','window.print()')}
     </div>
     <div class="cm-cost-stats">
+      ${cmCostStat('calendar_month','Jornadas del mes',cmDailyCostCache.length)}
       ${cmCostStat('payments','Ingresos del mes',money(a.income))}
       ${cmCostStat('shopping_cart','Costo alimentos',money(a.food),cmCostPct(a.costPct)+' de las ventas')}
       ${cmCostStat('groups','Personal',money(a.personnel))}
       ${cmCostStat('account_balance_wallet','Neto del mes',money(a.net),`Promedio diario ${money(a.avgNet)}`)}
       ${cmCostStat('restaurant','Clientes promedio',new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(a.avgClients))}
     </div>
+    <section class="cm-cost-table-card cm-monthly-history-card">
+      <div><h3>Resumen histórico abril–julio 2026</h3><p class="admin-help">Esta tabla reproduce el seguimiento mensual construido desde las jornadas de la planilla compartida.</p></div>
+      <div class="table-wrap"><table><thead><tr><th>Mes</th><th>Días</th><th>Gasto alimentos</th><th>Ingreso</th><th>Clientes promedio</th><th>Costo promedio</th><th>Personal</th><th>Gastos básicos</th><th>Neto</th><th>Neto promedio</th></tr></thead><tbody>${monthlyRows||'<tr><td colspan="10" class="muted">Sin datos mensuales.</td></tr>'}</tbody></table></div>
+    </section>
     <div class="cm-cost-chart-grid">
-      <article class="cm-cost-chart-card"><div><h3>Ingreso, costo y neto diario</h3><p>${cmCostMonthName(cmCostsMonth)} · cada punto corresponde a una jornada registrada.</p></div>${cmCostLineChart(cmDailyCostCache)}</article>
+      <article class="cm-cost-chart-card"><div><h3>Ingreso, gasto y neto por jornada</h3><p>${cmCostMonthName(cmCostsMonth)} · cada punto corresponde a una fila de la tabla diaria.</p></div>${cmCostLineChart(cmDailyCostCache)}</article>
       <article class="cm-cost-chart-card"><div><h3>Evolución mensual</h3><p>Clientes promedio y proporción del costo de alimentos.</p></div>${cmCostMonthlyChart(cmMonthlyCostCache)}</article>
     </div>
     <section class="cm-cost-table-card">
-      <div class="toolbar"><div><h3>Tabla diaria · ${cmCostMonthName(cmCostsMonth)}</h3><p class="admin-help">El gasto se construye desde los insumos ingresados en cada jornada. Para corregir un registro, utiliza el botón Editar de la misma fila.</p></div>${cmCostAction('add','Registrar jornada','openDailyCostForm()','primary')}</div>
-      <div class="table-wrap embedded-table-wrap"><table><thead><tr><th>Fecha</th><th>Clientes</th><th>Gasto alimentos</th><th>Ingreso</th><th>Costo</th><th>Personal</th><th>Gastos básicos</th><th>Neto</th><th>Acciones</th></tr></thead><tbody>
-        ${cmDailyCostCache.length?cmDailyCostCache.map(r=>`<tr><td>${fmtDate(r.financial_date)}</td><td>${r.customers_count}</td><td>${money(r.food_cost)}</td><td>${money(r.income)}</td><td><span class="badge ${cmCostNum(r.cost_percentage)>50?'red':'blue'}">${cmCostPct(r.cost_percentage)}</span></td><td>${money(r.personnel_cost)}</td><td>${money(r.basic_expenses)}</td><td><strong class="${cmCostNum(r.net)<0?'cm-negative':'cm-positive'}">${money(r.net)}</strong></td><td class="cm-row-buttons"><button type="button" class="btn btn-secondary btn-small" data-cm-decorated-v23="1" onclick="openDailyCostForm(${r.id})">Editar</button><button type="button" class="btn btn-danger btn-small" data-cm-decorated-v23="1" onclick="deleteDailyCost(${r.id})">Eliminar</button></td></tr>`).join(''):`<tr><td colspan="9" class="muted">No hay jornadas registradas para este mes. Usa “Registrar jornada” para continuar el seguimiento diario o selecciona abril, mayo, junio o julio de 2026 para revisar la base histórica.</td></tr>`}
-      </tbody></table></div>
+      <div class="toolbar"><div><h3>Tabla diaria · ${cmCostMonthName(cmCostsMonth)}</h3><p class="admin-help">Contiene gasto, ingreso, clientes, porcentaje de costo, personal, gastos básicos y neto por jornada. “Ver detalle” muestra cómo se construyó el gasto; “Editar” permite corregir cualquier dato.</p></div>${cmCostAction('add','Registrar jornada','openDailyCostForm()','primary')}</div>
+      <div class="table-wrap embedded-table-wrap"><table><thead><tr><th>Fecha</th><th>Gasto</th><th>Ingreso</th><th>Clientes</th><th>Costo %</th><th>Personal</th><th>Gastos básicos</th><th>Neto</th><th>Origen</th><th>Acciones</th></tr></thead><tbody>
+        ${detailRows||`<tr><td colspan="10" class="muted">No hay jornadas registradas para este mes. Usa “Registrar jornada” para continuar el seguimiento diario.</td></tr>`}
+      </tbody>${cmDailyCostCache.length?`<tfoot><tr><th>Resumen</th><th>${money(a.food)}</th><th>${money(a.income)}</th><th>Prom. ${new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(a.avgClients)}</th><th>${cmCostPct(a.costPct)}</th><th>${money(a.personnel)}</th><th>${money(a.basic)}</th><th>${money(a.net)}<br><small>Prom. ${money(a.avgNet)}</small></th><th colspan="2">${cmDailyCostCache.length} jornadas</th></tr></tfoot>`:''}</table></div>
     </section>`;
   requestAnimationFrame(cmAdminAfterRender);
 }
 window.dailyCosts=dailyCosts;
-window.changeCostsMonth=value=>{if(/^\d{4}-\d{2}$/.test(value)){cmCostsMonth=value;dailyCosts()}};
+window.changeCostsMonth=value=>{if(/^\d{4}-\d{2}$/.test(value)){cmCostsMonth=value;cmCostsMonthResolved=true;dailyCosts()}};
+window.toggleCostDetail=id=>{const row=document.querySelector(`#cmCostDetail${id}`);if(row)row.classList.toggle('hidden')};
 
 function cmCostItemRow(item={}){
   return `<tr class="cm-cost-item-row">
@@ -143,32 +165,42 @@ function cmCostItemRow(item={}){
 }
 function cmBindCostRows(){
   const body=modalForm.querySelector('#cmCostItemsBody');if(!body)return;
-  const update=()=>{
-    let total=0;
-    body.querySelectorAll('.cm-cost-item-row').forEach(row=>{
-      const q=cmCostNum(row.querySelector('.cm-item-quantity').value),u=cmCostNum(row.querySelector('.cm-item-unit-cost').value),t=row.querySelector('.cm-item-total');
-      if(q>0&&u>0)t.value=Math.round(q*u);
-      total+=cmCostNum(t.value);
-    });
-    const food=modalForm.querySelector('#cmFoodCostPreview'),net=modalForm.querySelector('#cmNetPreview');
+  const updateSummary=()=>{
+    const total=[...body.querySelectorAll('.cm-item-total')].reduce((sum,input)=>sum+cmCostNum(input.value),0);
+    const income=cmCostNum(modalForm.elements.income?.value),personal=cmCostNum(modalForm.elements.personnel_cost?.value),basic=cmCostNum(modalForm.elements.basic_expenses?.value),clients=cmCostNum(modalForm.elements.customers_count?.value);
+    const food=modalForm.querySelector('#cmFoodCostPreview'),net=modalForm.querySelector('#cmNetPreview'),pct=modalForm.querySelector('#cmCostPctPreview'),ticket=modalForm.querySelector('#cmTicketPreview');
     if(food)food.textContent=money(total);
-    if(net){const income=cmCostNum(modalForm.elements.income?.value),personal=cmCostNum(modalForm.elements.personnel_cost?.value),basic=cmCostNum(modalForm.elements.basic_expenses?.value);net.textContent=money(income-total-personal-basic)}
+    if(net)net.textContent=money(income-total-personal-basic);
+    if(pct)pct.textContent=cmCostPct(income?total*100/income:0);
+    if(ticket)ticket.textContent=money(clients?income/clients:0);
   };
-  body.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',update));
-  body.querySelectorAll('.cm-remove-cost-row').forEach(btn=>btn.onclick=()=>{btn.closest('tr').remove();update()});
-  ['income','personnel_cost','basic_expenses'].forEach(name=>modalForm.elements[name]?.addEventListener('input',update));
+  body.querySelectorAll('.cm-cost-item-row').forEach(row=>{
+    const q=row.querySelector('.cm-item-quantity'),u=row.querySelector('.cm-item-unit-cost'),t=row.querySelector('.cm-item-total');
+    const recalc=()=>{const quantity=cmCostNum(q.value),unitCost=cmCostNum(u.value);if(quantity>0&&unitCost>0)t.value=Math.round(quantity*unitCost);updateSummary()};
+    q.addEventListener('input',recalc);u.addEventListener('input',recalc);t.addEventListener('input',updateSummary);
+    row.querySelectorAll('input,select').forEach(el=>{if(![q,u,t].includes(el))el.addEventListener('input',updateSummary)});
+    row.querySelector('.cm-remove-cost-row').onclick=()=>{row.remove();updateSummary()};
+  });
+  ['income','personnel_cost','basic_expenses','customers_count'].forEach(name=>modalForm.elements[name]?.addEventListener('input',updateSummary));
   modalForm.querySelector('#cmAddCostItem').onclick=()=>{body.insertAdjacentHTML('beforeend',cmCostItemRow());cmBindCostRows()};
-  update();
+  const quickButton=modalForm.querySelector('#cmUseQuickCost');
+  if(quickButton)quickButton.onclick=()=>{
+    const total=Math.round(cmCostNum(modalForm.querySelector('#cmQuickFoodCost')?.value));
+    if(total<0)return;
+    body.innerHTML=cmCostItemRow({category:'Ingredientes',item_name:'Costo de alimentos consolidado',quantity:1,unit:'jornada',unit_cost:total,total_cost:total});
+    cmBindCostRows();
+  };
+  updateSummary();
 }
 window.openDailyCostForm=id=>{
   const record=id?cmDailyCostCache.find(r=>Number(r.id)===Number(id)):null;
   const date=record?cmCostDate(record.financial_date):(cmCostsMonth===today().slice(0,7)?today():`${cmCostsMonth}-01`);
   openForm(record?'Editar jornada':'Registrar jornada',`
-    <div class="notice"><strong>Una jornada, un registro.</strong> Los insumos suman el gasto de alimentos; la web calcula el porcentaje de costo y el neto.</div>
+    <div class="notice"><strong>Una jornada, un registro editable.</strong> La fecha evita duplicados: si corriges una jornada existente, se actualiza la misma fila. Puedes ingresar solo el gasto total o detallar cada insumo.</div>
     <div class="three-cols">${field('financial_date','Fecha','date',date,'required')}${field('customers_count','Clientes aproximados','number',record?.customers_count||0,'min="0"')}${field('income','Ingreso / venta total','number',record?.income||0,'min="0"')}</div>
     <div class="two-cols">${field('personnel_cost','Costo de personal','number',record?.personnel_cost||0,'min="0"')}${field('basic_expenses','Gastos básicos','number',record?.basic_expenses??15000,'min="0"')}</div>
-    <section class="cm-cost-items-editor"><div class="toolbar"><div><h3>Costos del día</h3><p class="admin-help">Cantidad × valor unitario calcula el total. También puedes escribir directamente un total.</p></div><button id="cmAddCostItem" class="btn btn-secondary" type="button" data-cm-decorated-v23="1"><span class="material-symbols-rounded">add</span><span>Agregar insumo</span></button></div><div class="table-wrap"><table><thead><tr><th>Categoría</th><th>Insumo</th><th>Cantidad</th><th>Unidad</th><th>Valor unitario</th><th>Total</th><th></th></tr></thead><tbody id="cmCostItemsBody">${(record?.items?.length?record.items:[{}]).map(cmCostItemRow).join('')}</tbody></table></div></section>
-    <div class="cm-cost-form-summary"><span>Gasto alimentos <strong id="cmFoodCostPreview">$0</strong></span><span>Neto estimado <strong id="cmNetPreview">$0</strong></span></div>
+    <section class="cm-quick-cost-entry"><div><strong>Ingreso rápido</strong><span>Úsalo cuando solo tengas el gasto total de alimentos de la jornada.</span></div><input id="cmQuickFoodCost" type="number" min="0" step="1" value="${record?.items?.length===1&&record.items[0].item_name==='Costo de alimentos consolidado'?record.items[0].total_cost:''}" placeholder="Gasto total del día"><button id="cmUseQuickCost" class="btn btn-secondary" type="button">Usar total</button></section><section class="cm-cost-items-editor"><div class="toolbar"><div><h3>Desglose del costo diario</h3><p class="admin-help">Cantidad × valor unitario recalcula la fila. El total escrito manualmente se conserva mientras no cambies cantidad o valor.</p></div><button id="cmAddCostItem" class="btn btn-secondary" type="button" data-cm-decorated-v23="1"><span class="material-symbols-rounded">add</span><span>Agregar insumo</span></button></div><div class="table-wrap"><table><thead><tr><th>Categoría</th><th>Insumo</th><th>Cantidad</th><th>Unidad</th><th>Valor unitario</th><th>Total</th><th></th></tr></thead><tbody id="cmCostItemsBody">${(record?.items?.length?record.items:[{}]).map(cmCostItemRow).join('')}</tbody></table></div></section>
+    <div class="cm-cost-form-summary"><span>Gasto alimentos <strong id="cmFoodCostPreview">$0</strong></span><span>Costo sobre venta <strong id="cmCostPctPreview">0%</strong></span><span>Neto estimado <strong id="cmNetPreview">$0</strong></span><span>Venta por cliente <strong id="cmTicketPreview">$0</strong></span></div>
     ${textArea('notes','Observaciones',cmCostEsc(record?.notes||''))}`,
     async e=>{
       e.preventDefault();
@@ -189,8 +221,8 @@ window.openDailyCostForm=id=>{
 };
 window.deleteDailyCost=async id=>{if(!confirm('¿Eliminar esta jornada y todos sus insumos?'))return;await api(`/api/admin/daily-financials/${id}`,{method:'DELETE'});dailyCosts()};
 window.downloadCostsCsv=()=>{
-  const cols=['Fecha','Clientes','Gasto alimentos','Ingreso','Costo %','Personal','Gastos básicos','Neto'];
-  const lines=[cols,...cmDailyCostCache.map(r=>[cmCostDate(r.financial_date),r.customers_count,r.food_cost,r.income,r.cost_percentage,r.personnel_cost,r.basic_expenses,r.net])];
+  const cols=['Fecha','Clientes','Gasto alimentos','Ingreso','Costo %','Personal','Gastos básicos','Neto','Origen','Observaciones','Desglose de costos'];
+  const lines=[cols,...cmDailyCostCache.map(r=>[cmCostDate(r.financial_date),r.customers_count,r.food_cost,r.income,r.cost_percentage,r.personnel_cost,r.basic_expenses,r.net,String(r.notes||'').includes('histórico')?'Histórico':'Diario',r.notes||'',(r.items||[]).map(i=>`${i.item_name}: ${i.total_cost}`).join(' | ')])];
   const csv='\ufeff'+lines.map(row=>row.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(';')).join('\n');
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=`CM_costos_${cmCostsMonth}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
@@ -223,15 +255,15 @@ window.openCmDocumentForm=()=>openForm('Agregar documento',`
 
 documents=cmDocumentsView;
 
-// Panel principal simplificado para Claudia, sin espacios de consultoría.
+// Inicio operativo: no muestra montos. Todo el dinero se consulta exclusivamente en Costos diarios.
 dashboard=async function(){
-  const [d,months]=await Promise.all([api('/api/admin/dashboard'),api('/api/admin/daily-financials/summary?months=2')]);
-  const current=(months.items||[]).at(-1)||null;
+  const [d,staffData,supplierData,months]=await Promise.all([api('/api/admin/dashboard'),api('/api/admin/staff'),api('/api/admin/suppliers'),api('/api/admin/daily-financials/summary?months=24')]);
+  const registeredDays=(months.items||[]).reduce((sum,row)=>sum+cmCostNum(row.recorded_days),0);
   const stat=(icon,label,value)=>`<div class="stat stat-with-icon"><span class="stat-icon material-symbols-rounded" aria-hidden="true">${icon}</span><span>${cmCostEsc(label)}</span><strong>${value}</strong></div>`;
-  content.innerHTML=`<section class="daily-hero-card"><div><div class="kicker">ADMINISTRACIÓN CM</div><h3>Panel de control diario</h3><p>Accesos directos para revisar costos, actualizar el menú y gestionar cotizaciones del restaurant.</p></div><a class="mail-info-link" href="mailto:claudiamendezbanqueteria@gmail.com"><span>claudiamendezbanqueteria@gmail.com</span></a></section>
-  <div class="quick-actions daily-actions"><button class="btn btn-primary" type="button" onclick="renderView('dailyCosts')">${cmIconHTML('Costos')}</button><button class="btn btn-primary" type="button" onclick="renderView('quotes')">${cmIconHTML('Nueva cotización')}</button><button class="btn btn-secondary" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button></div>
-  <div class="stat-grid stat-grid-icons cm-home-stat-grid">${stat('payments','Ingresos mes registrado',money(current?.income||0))}${stat('account_balance_wallet','Neto mes registrado',money(current?.net||0))}${stat('request_quote','Cotizaciones pendientes',d.pendingQuotes)}</div>
-  <div class="grid-2"><div class="card"><h3>Menú de hoy</h3>${d.todayMenu?`<p><strong>${cmCostEsc(d.todayMenu.title)}</strong></p><p class="muted">${cmCostEsc(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">Abrir menú</button></div><div class="card"><h3>Control económico</h3><p class="muted">${current?`${cmCostMonthName(current.month)}: ${current.recorded_days} jornadas · ${money(current.net)} neto registrado.`:'Los datos históricos de abril a julio están precargados. Registra cada nueva jornada para mantener la continuidad.'}</p><button class="btn btn-primary btn-small" type="button" onclick="renderView('dailyCosts')">Abrir costos diarios</button></div></div>`;
+  content.innerHTML=`<section class="daily-hero-card"><div><div class="kicker">ADMINISTRACIÓN CM</div><h3>Inicio</h3><p>Accesos directos para organizar el restaurant. Los montos, resultados y gráficos se mantienen únicamente dentro de Costos diarios.</p></div><a class="mail-info-link" href="mailto:claudiamendezbanqueteria@gmail.com"><span>claudiamendezbanqueteria@gmail.com</span></a></section>
+  <div class="quick-actions daily-actions"><button class="btn btn-primary" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button><button class="btn btn-secondary" type="button" onclick="renderView('operations')">${cmIconHTML('Reservas / Cocina')}</button><button class="btn btn-secondary" type="button" onclick="renderView('dailyCosts')">${cmIconHTML('Costos diarios')}</button><button class="btn btn-primary" type="button" onclick="renderView('quotes')">${cmIconHTML('Nueva cotización')}</button></div>
+  <div class="stat-grid stat-grid-icons cm-home-stat-grid">${stat('request_quote','Cotizaciones pendientes',d.pendingQuotes)}${stat('groups','Personas registradas',(staffData.items||[]).length)}${stat('local_shipping','Proveedores registrados',(supplierData.items||[]).length)}${stat('calendar_month','Jornadas de costos cargadas',registeredDays)}</div>
+  <div class="grid-2"><div class="card"><h3>Menú de hoy</h3>${d.todayMenu?`<p><strong>${cmCostEsc(d.todayMenu.title)}</strong></p><p class="muted">${cmCostEsc(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">Abrir menú</button></div><div class="card"><h3>Continuidad del registro</h3><p class="muted">La base histórica de abril a julio está disponible en Costos diarios. Allí puedes revisar cada jornada, abrir su desglose, editar errores y agregar el día actual.</p><button class="btn btn-secondary btn-small" type="button" onclick="renderView('dailyCosts')">Ir a costos diarios</button></div></div>`;
 };
 
 // Envuelve la navegación final para incorporar el nuevo módulo.
