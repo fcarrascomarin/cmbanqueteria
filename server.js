@@ -376,6 +376,36 @@ async function seedInitialDailyFinancials(db=pool){
   }
 }
 
+async function seedHistoricalDailyCostDetails(db=pool){
+  const financial=await db.query(`SELECT id,notes FROM daily_financials WHERE financial_date='2026-06-09'::date LIMIT 1`);
+  if(!financial.rows.length)return;
+  const financialId=financial.rows[0].id;
+  const current=await db.query(`SELECT item_name,total_cost FROM daily_cost_items WHERE financial_id=$1 ORDER BY id`,[financialId]);
+  const canReplace=current.rows.length===1&&current.rows[0].item_name==='Costo de alimentos consolidado'&&Number(current.rows[0].total_cost)===88007;
+  if(!canReplace)return;
+  const items=[
+    ['Ingredientes','crema',0.5,'',4990,2495],['Ingredientes','huevo',3,'',250,750],['Ingredientes','cilantro',0.5,'',1000,500],['Ingredientes','ensalada surtida',0,'',0,0],
+    ['Ingredientes','tomate',4,'',1000,4000],['Ingredientes','cebolla',2,'',450,900],['Ingredientes','cilantro',0.2,'',1000,200],['Ingredientes','pollo asado',25,'',1180,29500],
+    ['Ingredientes','aceite',1,'',1690,1690],['Ingredientes','sal',1,'',590,590],['Ingredientes','arroz',2,'',1800,3600],['Ingredientes','papa rellena',1.5,'',750,1125],
+    ['Ingredientes','papas',6,'',500,3000],['Ingredientes','huevo',8,'',250,2000],['Ingredientes','harina',1,'',1000,1000],['Ingredientes','molida',2,'',5000,10000],
+    ['Ingredientes','cebolla',4,'',200,800],['Ingredientes','aceite',1,'',1690,1690],['Ingredientes','lentejas',5,'',700,3500],['Ingredientes','longaniza',0.2,'',6990,1398],
+    ['Ingredientes','media pechuga',0,'',0,0],['Ingredientes','flan',1,'',2764,6910],['Ingredientes','pan',30,'',170,5100],['Aseo','cloro',1,'',600,600],
+    ['Aseo','guantes',4,'',77,308],['Ingredientes','aceite alcuzas',0,'',1590,0],['Envases','servilletas',0.5,'',1302,651],['Ingredientes','jugo pulpa',0.5,'',1998,999],
+    ['Ingredientes','jugo de limón',0.5,'',1442,721],['Ingredientes','ají',0.5,'',2000,1000],['Aseo','toalla de papel',0.5,'',1924,962],['Aseo','alcohol',0.2,'',3700,740],
+    ['Aseo','lavaloza Virginia',0.3,'',1925,578],['Envases','saco de papel',70,'',10,700],['Envases','desechable CMPC',0,'',450,0],['Ingredientes','limoneta',0,'',26,0]
+  ];
+  const c=await db.connect();
+  try{
+    await c.query('BEGIN');
+    await c.query('DELETE FROM daily_cost_items WHERE financial_id=$1',[financialId]);
+    for(const [category,itemName,quantity,unit,unitCost,totalCost] of items){
+      await c.query(`INSERT INTO daily_cost_items(financial_id,category,item_name,quantity,unit,unit_cost,total_cost,notes) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,[financialId,category,itemName,quantity,unit||null,unitCost,totalCost,'Desglose importado desde la planilla compartida del martes 9 de junio de 2026.']);
+    }
+    await c.query(`UPDATE daily_financials SET notes=$2,updated_at=NOW() WHERE id=$1`,[financialId,'Registro histórico del 9 de junio de 2026 importado con el desglose completo de insumos de la planilla compartida.']);
+    await c.query('COMMIT');
+  }catch(e){await c.query('ROLLBACK');throw e}finally{c.release()}
+}
+
 function parseImageData(value){
   const match=String(value||'').match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
   if(!match)throw Error('Selecciona una imagen JPG, PNG o WebP válida.');
@@ -732,4 +762,4 @@ app.delete('/api/admin/daily-financials/:id',auth,async(req,res)=>{
   catch(e){console.error(e);res.status(500).json({error:'No se pudo eliminar el registro diario.'})}
 });
 
-pool.query(schema).then(()=>seedKnownSuppliers()).then(()=>seedInitialStaff()).then(()=>seedInitialDailyFinancials()).then(()=>refreshConsultationProgress()).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});
+pool.query(schema).then(()=>seedKnownSuppliers()).then(()=>seedInitialStaff()).then(()=>seedInitialDailyFinancials()).then(()=>seedHistoricalDailyCostDetails()).then(()=>refreshConsultationProgress()).then(()=>app.listen(PORT,()=>console.log(`CM Banquetería Admin corriendo en ${SITE_URL}`))).catch(e=>{console.error('No se pudo inicializar Neon/Postgres:',e);process.exit(1)});

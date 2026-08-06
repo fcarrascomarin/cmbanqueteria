@@ -240,3 +240,38 @@ INSERT INTO daily_cost_items(financial_id,category,item_name,quantity,unit,unit_
 SELECT i.id,'Ingredientes','Costo de alimentos consolidado',1,'jornada',s.food_cost,s.food_cost,
   'Carga inicial histórica. Editar para corregir el monto o sustituirlo por insumos detallados.'
 FROM inserted i JOIN seed s USING(financial_date);
+
+
+-- Desglose real compartido para la jornada del 9 de junio de 2026.
+-- Reemplaza únicamente la fila consolidada inicial; no toca registros que ya hayan sido editados.
+DO $$
+DECLARE fid BIGINT;
+BEGIN
+  SELECT f.id INTO fid FROM daily_financials f
+  WHERE f.financial_date='2026-06-09'::date
+    AND (SELECT COUNT(*) FROM daily_cost_items i WHERE i.financial_id=f.id)=1
+    AND EXISTS (SELECT 1 FROM daily_cost_items i WHERE i.financial_id=f.id AND i.item_name='Costo de alimentos consolidado' AND i.total_cost=88007);
+  IF fid IS NOT NULL THEN
+    DELETE FROM daily_cost_items WHERE financial_id=fid;
+    INSERT INTO daily_cost_items(financial_id,category,item_name,quantity,unit,unit_cost,total_cost,notes) VALUES
+      (fid,'Ingredientes','crema',0.5,NULL,4990,2495,'Planilla 09-06-2026'),(fid,'Ingredientes','huevo',3,NULL,250,750,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','cilantro',0.5,NULL,1000,500,'Planilla 09-06-2026'),(fid,'Ingredientes','ensalada surtida',0,NULL,0,0,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','tomate',4,NULL,1000,4000,'Planilla 09-06-2026'),(fid,'Ingredientes','cebolla',2,NULL,450,900,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','cilantro',0.2,NULL,1000,200,'Planilla 09-06-2026'),(fid,'Ingredientes','pollo asado',25,NULL,1180,29500,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','aceite',1,NULL,1690,1690,'Planilla 09-06-2026'),(fid,'Ingredientes','sal',1,NULL,590,590,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','arroz',2,NULL,1800,3600,'Planilla 09-06-2026'),(fid,'Ingredientes','papa rellena',1.5,NULL,750,1125,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','papas',6,NULL,500,3000,'Planilla 09-06-2026'),(fid,'Ingredientes','huevo',8,NULL,250,2000,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','harina',1,NULL,1000,1000,'Planilla 09-06-2026'),(fid,'Ingredientes','molida',2,NULL,5000,10000,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','cebolla',4,NULL,200,800,'Planilla 09-06-2026'),(fid,'Ingredientes','aceite',1,NULL,1690,1690,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','lentejas',5,NULL,700,3500,'Planilla 09-06-2026'),(fid,'Ingredientes','longaniza',0.2,NULL,6990,1398,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','media pechuga',0,NULL,0,0,'Planilla 09-06-2026'),(fid,'Ingredientes','flan',1,NULL,2764,6910,'Total directo de la planilla 09-06-2026'),
+      (fid,'Ingredientes','pan',30,NULL,170,5100,'Planilla 09-06-2026'),(fid,'Aseo','cloro',1,NULL,600,600,'Planilla 09-06-2026'),
+      (fid,'Aseo','guantes',4,NULL,77,308,'Planilla 09-06-2026'),(fid,'Ingredientes','aceite alcuzas',0,NULL,1590,0,'Planilla 09-06-2026'),
+      (fid,'Envases','servilletas',0.5,NULL,1302,651,'Planilla 09-06-2026'),(fid,'Ingredientes','jugo pulpa',0.5,NULL,1998,999,'Planilla 09-06-2026'),
+      (fid,'Ingredientes','jugo de limón',0.5,NULL,1442,721,'Planilla 09-06-2026'),(fid,'Ingredientes','ají',0.5,NULL,2000,1000,'Planilla 09-06-2026'),
+      (fid,'Aseo','toalla de papel',0.5,NULL,1924,962,'Planilla 09-06-2026'),(fid,'Aseo','alcohol',0.2,NULL,3700,740,'Planilla 09-06-2026'),
+      (fid,'Aseo','lavaloza Virginia',0.3,NULL,1925,578,'Redondeo del total 577,5 de la planilla'),(fid,'Envases','saco de papel',70,NULL,10,700,'Planilla 09-06-2026'),
+      (fid,'Envases','desechable CMPC',0,NULL,450,0,'Planilla 09-06-2026'),(fid,'Ingredientes','limoneta',0,NULL,26,0,'Planilla 09-06-2026');
+    UPDATE daily_financials SET notes='Registro histórico del 9 de junio de 2026 importado con el desglose completo de insumos de la planilla compartida.',updated_at=NOW() WHERE id=fid;
+  END IF;
+END $$;
