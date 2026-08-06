@@ -1,4 +1,4 @@
-/* CM Banquetería · Costos diarios y traspaso administrador · v40 */
+/* CM Banquetería · Costos diarios y navegación simplificada · v44 */
 let cmCostsMonth=new Date().toISOString().slice(0,7);
 let cmDailyCostCache=[];
 let cmMonthlyCostCache=[];
@@ -217,7 +217,7 @@ dashboard=async function(){
   const current=(months.items||[]).at(-1)||null;
   const stat=(icon,label,value)=>`<div class="stat stat-with-icon"><span class="stat-icon material-symbols-rounded" aria-hidden="true">${icon}</span><span>${cmCostEsc(label)}</span><strong>${value}</strong></div>`;
   content.innerHTML=`<section class="daily-hero-card"><div><div class="kicker">ADMINISTRACIÓN CM</div><h3>Panel de control diario</h3><p>Accesos directos para registrar la operación, revisar costos, actualizar el menú y mantener la carpeta documental.</p></div><a class="mail-info-link" href="mailto:claudiamendezbanqueteria@gmail.com"><span>claudiamendezbanqueteria@gmail.com</span></a></section>
-  <div class="quick-actions daily-actions"><button class="btn btn-primary" type="button" onclick="renderView('dailyCosts')">${cmIconHTML('Costos')}</button><button class="btn btn-primary" type="button" onclick="renderView('quotes')">${cmIconHTML('Nueva cotización')}</button><button class="btn btn-secondary" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button><button class="btn btn-secondary" type="button" onclick="renderView('purchases')">${cmIconHTML('Compras')}</button><button class="btn btn-secondary" type="button" onclick="renderView('documents')">${cmIconHTML('Documentos CM')}</button></div>
+  <div class="quick-actions daily-actions"><button class="btn btn-primary" type="button" onclick="renderView('dailyCosts')">${cmIconHTML('Costos')}</button><button class="btn btn-primary" type="button" onclick="renderView('quotes')">${cmIconHTML('Nueva cotización')}</button><button class="btn btn-secondary" type="button" onclick="renderView('menus')">${cmIconHTML('Menú del día')}</button><button class="btn btn-secondary" type="button" onclick="renderView('expenses')">${cmIconHTML('Gastos')}</button><button class="btn btn-secondary" type="button" onclick="renderView('documents')">${cmIconHTML('Documentos CM')}</button></div>
   <div class="stat-grid stat-grid-icons">${stat('payments','Ingresos mes registrado',money(current?.income||0))}${stat('account_balance_wallet','Neto mes registrado',money(current?.net||0))}${stat('request_quote','Cotizaciones pendientes',d.pendingQuotes)}${stat('warning','Stock crítico',d.criticalStock.length)}${stat('edit_note','Observaciones abiertas',d.openObservations||0)}${stat('folder_open','Documentos por vencer',d.expiringDocuments.length)}</div>
   <div class="grid-2"><div class="card"><h3>Menú de hoy</h3>${d.todayMenu?`<p><strong>${cmCostEsc(d.todayMenu.title)}</strong></p><p class="muted">${cmCostEsc(d.todayMenu.main_dish||'')} · Raciones: ${d.todayMenu.available_portions||0}</p>`:'<p class="muted">No hay menú cargado para hoy.</p>'}<button class="btn btn-secondary btn-small" type="button" onclick="renderView('menus')">Abrir menú</button></div><div class="card"><h3>Control económico</h3><p class="muted">${current?`${cmCostMonthName(current.month)}: ${current.recorded_days} jornadas · ${money(current.net)} neto registrado.`:'Comienza registrando una jornada para construir las gráficas mensuales.'}</p><button class="btn btn-primary btn-small" type="button" onclick="renderView('dailyCosts')">Abrir costos diarios</button></div></div>`;
 };
@@ -232,3 +232,17 @@ renderView=async function(v){
 };
 window.renderView=renderView;
 requestAnimationFrame(()=>{cmDecorateSidebar();cmAdminAfterRender()});
+
+
+/* Navegación simplificada solicitada para uso cotidiano de la administradora · v44 */
+cfg.expenses=['COMPRAS Y STOCK','GASTOS'];
+try{CM_ADMIN_LABEL_ICONS['Gastos']='payments';}catch(_e){}
+
+// Conserva los datos históricos y las rutas técnicas, pero la pantalla de gastos
+// muestra solo el flujo que seguirá usando CM y el acceso a proveedores.
+expenses=async function(){
+  addAction('Agregar gasto',()=>openExpenseForm());
+  addAction('Proveedores',()=>renderView('suppliers'));
+  const d=await api('/api/admin/expenses');
+  content.innerHTML=`<section class="cm-doc-intro"><div><div class="kicker">COMPRAS Y STOCK</div><h3>Gastos</h3><p>Registra egresos generales de la operación y consulta el historial de proveedores. Los costos diarios de alimentos, personal e ingresos se registran en el módulo Costos diarios.</p></div></section><div class="notice"><strong>Uso recomendado.</strong> Crea aquí gastos que no formen parte del detalle diario de insumos. Para revisar o corregir una jornada económica, utiliza Costos diarios.</div>${table(['Fecha','Categoría','Descripción','Proveedor','Monto','Origen','Acciones'],(d.items||[]).map(x=>`<tr><td>${fmtDate(x.expense_date)}</td><td>${safe(x.category)}</td><td>${safe(x.description)}</td><td>${safe(x.supplier||'')}</td><td>${money(x.amount)}</td><td>${x.purchase_document_id?'<span class="badge blue">Registro vinculado</span>':'<span class="badge">Manual</span>'}</td><td><button class="btn btn-danger btn-small" type="button" onclick="removeRow('expenses',${x.id})">Eliminar</button></td></tr>`))}`;
+};
