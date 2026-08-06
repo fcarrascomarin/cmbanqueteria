@@ -1,0 +1,52 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pago Webpay Demo · CM Banquetería</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css?v=20260721-mobile-fixed-v30" />
+</head>
+<body>
+  <main class="mock-pay">
+    <section class="card" style="max-width:620px;">
+      <div class="kicker">Webpay demo</div>
+      <h2>Simulación de pago</h2>
+      <p class="form-note">
+        Esta pantalla reemplaza temporalmente la redirección real a Webpay. En producción,
+        el cliente será enviado al entorno seguro de Webpay y luego volverá a la web.
+      </p>
+      <div class="notice">
+        Presiona “Aprobar pago demo” para crear el pedido pagado y generar el enlace de seguimiento.
+      </div>
+      <div class="hero-buttons" style="margin-top:18px;">
+        <button class="btn btn-primary" id="approve">Aprobar pago demo</button>
+        <a class="btn btn-secondary" href="/">Cancelar</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get("orderId");
+    const token = params.get("token");
+
+    document.querySelector("#approve").addEventListener("click", async () => {
+      const res = await fetch("/api/payments/mock/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, token })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "No se pudo aprobar el pago.");
+        return;
+      }
+
+      location.href = data.order.trackingUrl;
+    });
+  </script>
+</body>
+</html>
