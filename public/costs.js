@@ -120,6 +120,7 @@ async function dailyCosts(){
     </section>
     <div class="cm-cost-actions-row">
       ${cmCostAction('download','Descargar mes en CSV','downloadCostsCsv()')}
+      ${cmCostAction('table_view','Descargar mes en Excel',"location.href='/api/admin/daily-financials.xlsx?month='+encodeURIComponent(cmCostsMonth)")}
       ${cmCostAction('image','Descargar gráfico diario','downloadCostChart(\'cmDailyChart\',\'costos-diarios\')')}
       ${cmCostAction('image','Descargar gráfico mensual','downloadCostChart(\'cmMonthlyChart\',\'resumen-mensual\')')}
       ${cmCostAction('print','Imprimir / guardar PDF','window.print()')}
