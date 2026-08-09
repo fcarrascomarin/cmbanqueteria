@@ -1,4 +1,4 @@
-/* CM Banquetería · control diario completo y continuidad histórica · v46 */
+/* CM Banquetería · control mensual escalable y continuidad histórica · v48 */
 let cmCostsMonth=new Date().toISOString().slice(0,7);
 let cmCostsMonthResolved=false;
 let cmDailyCostCache=[];
@@ -34,7 +34,7 @@ function cmCostAction(icon,label,onclick,kind='secondary'){
   return `<button class="btn btn-${kind} cm-cost-action" type="button" data-cm-decorated-v23="1" onclick="${onclick}"><span class="material-symbols-rounded" aria-hidden="true">${icon}</span><span>${cmCostEsc(label)}</span></button>`;
 }
 function cmCostStat(icon,label,value,help=''){
-  return `<article class="cm-cost-stat"><span class="material-symbols-rounded" aria-hidden="true">${icon}</span><small>${cmCostEsc(label)}</small><strong>${value}</strong>${help?`<em>${cmCostEsc(help)}</em>`:''}</article>`;
+  return `<article class="cm-cost-stat"><span class="material-symbols-rounded" aria-hidden="true">${icon}</span><div class="cm-cost-stat-copy"><small>${cmCostEsc(label)}</small><strong>${value}</strong>${help?`<em>${cmCostEsc(help)}</em>`:''}</div></article>`;
 }
 function cmCostLineChart(rows){
   const W=920,H=360,p={l:76,r:34,t:38,b:58};
@@ -94,7 +94,7 @@ function cmCostAggregate(rows){
   return totals;
 }
 async function dailyCosts(){
-  const monthly=await api('/api/admin/daily-financials/summary?months=24');
+  const monthly=await api('/api/admin/daily-financials/summary?months=120');
   cmMonthlyCostCache=monthly.items||[];
   if(!cmCostsMonthResolved){
     const latest=cmMonthlyCostCache.at(-1)?.month;
@@ -105,7 +105,6 @@ async function dailyCosts(){
   cmDailyCostCache=daily.items||[];
   const a=cmCostAggregate(cmDailyCostCache);
   const totalDays=cmMonthlyCostCache.reduce((sum,row)=>sum+cmCostNum(row.recorded_days),0);
-  const monthButtons=cmMonthlyCostCache.map(row=>`<button type="button" class="cm-month-chip ${row.month===cmCostsMonth?'active':''}" onclick="changeCostsMonth('${row.month}')">${cmCostEsc(cmCostMonthName(row.month).split(' ')[0])}</button>`).join('');
   const monthlyRows=cmMonthlyCostCache.map(row=>`<tr class="${row.month===cmCostsMonth?'cm-selected-month':''}"><td><button type="button" class="cm-month-link" onclick="changeCostsMonth('${row.month}')">${cmCostEsc(cmCostMonthName(row.month))}</button></td><td>${row.recorded_days}</td><td>${money(row.food_cost)}</td><td>${money(row.income)}</td><td>${new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(cmCostNum(row.customers_average))}</td><td>${cmCostPct(row.cost_percentage)}</td><td>${money(row.personnel_cost)}</td><td>${money(row.basic_expenses)}</td><td><strong class="${cmCostNum(row.net)<0?'cm-negative':'cm-positive'}">${money(row.net)}</strong></td><td>${money(row.net_average)}</td></tr>`).join('');
   const detailRows=cmDailyCostCache.map(r=>{
     const detail=(r.items||[]).map(item=>`<tr><td>${cmCostEsc(item.category||'')}</td><td><strong>${cmCostEsc(item.item_name||'')}</strong></td><td>${cmCostNum(item.quantity)}</td><td>${cmCostEsc(item.unit||'')}</td><td>${money(item.unit_cost)}</td><td>${money(item.total_cost)}</td></tr>`).join('')||'<tr><td colspan="6" class="muted">Sin desglose registrado.</td></tr>';
@@ -114,9 +113,9 @@ async function dailyCosts(){
   }).join('');
   viewActions.innerHTML=cmCostAction('add_circle','Registrar día','openDailyCostForm()','primary');
   content.innerHTML=`
-    <section class="cm-cost-intro">
-      <div><div class="kicker">CONTROL ECONÓMICO DEL RESTAURANT</div><h3>Seguimiento diario con la base real de CM</h3><p>La sección contiene las ${totalDays} jornadas compartidas de abril, mayo, junio y julio de 2026. Cada fila puede revisarse, desplegar su costo y editarse sin crear duplicados.</p><div class="cm-month-chips">${monthButtons}</div></div>
-      <label class="cm-month-control"><span>Mes a revisar</span><input id="cmCostsMonth" type="month" value="${cmCostsMonth}" onchange="changeCostsMonth(this.value)"></label>
+    <section class="cm-cost-intro cm-cost-intro-v48">
+      <div class="cm-cost-intro-copy"><div class="kicker">CONTROL ECONÓMICO DEL RESTAURANT</div><h3>Seguimiento mensual de costos</h3><p>Revisa un período a la vez. El selector de mes actualiza todos los indicadores, gráficos y jornadas de la pantalla. El historial contiene ${totalDays} jornadas y seguirá creciendo sin agregar una lista interminable de botones.</p></div>
+      <label class="cm-month-control cm-month-control-prominent"><span>Mes visualizado</span><strong>${cmCostEsc(cmCostMonthName(cmCostsMonth))}</strong><small>Todo lo que aparece debajo corresponde a este período.</small><input id="cmCostsMonth" type="month" value="${cmCostsMonth}" onchange="changeCostsMonth(this.value)" aria-label="Seleccionar mes a visualizar"></label>
     </section>
     <div class="cm-cost-actions-row">
       ${cmCostAction('download','Descargar mes en CSV','downloadCostsCsv()')}
@@ -134,7 +133,7 @@ async function dailyCosts(){
       ${cmCostStat('restaurant','Clientes promedio',new Intl.NumberFormat('es-CL',{maximumFractionDigits:1}).format(a.avgClients))}
     </div>
     <section class="cm-cost-table-card cm-monthly-history-card">
-      <div><h3>Resumen histórico abril–julio 2026</h3><p class="admin-help">Esta tabla reproduce el seguimiento mensual construido desde las jornadas de la planilla compartida.</p></div>
+      <div><h3>Resumen histórico mensual</h3><p class="admin-help">Cada fila corresponde a un mes. El mes seleccionado se destaca y puede abrirse desde su nombre.</p></div>
       <div class="table-wrap"><table><thead><tr><th>Mes</th><th>Días</th><th>Gasto alimentos</th><th>Ingreso</th><th>Clientes promedio</th><th>Costo promedio</th><th>Personal</th><th>Gastos básicos</th><th>Neto</th><th>Neto promedio</th></tr></thead><tbody>${monthlyRows||'<tr><td colspan="10" class="muted">Sin datos mensuales.</td></tr>'}</tbody></table></div>
     </section>
     <div class="cm-cost-chart-grid">
